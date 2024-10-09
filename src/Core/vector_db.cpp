@@ -5,10 +5,9 @@
  * Description: [Provide description here]
  */
 #include "../../include/Core/vector_db.hpp"
-#include "algorithms/search_algorithm.hpp"  // Base search algorithm interface
+#include "../../include/algorithms/search_algorithm.hpp"  // Base search algorithm interface
 
 #include <iostream>
-#include <algorithm>
 #include <mutex>
 
 // Constructor with dimensions and search algorithm injection
