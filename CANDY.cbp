@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="CANDY"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\cmake\;CMake Files\test\;CMake Files\test\CoreTests\;CMake Files\apps\;CMake Files\apps\BenchmarkTool\;CMake Files\apps\DBClient\;CMake Files\apps\OptimizerTool\;CMake Files\apps\QueryTool\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/mnt/d/Programs/CLionProjects/CANDY"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="CANDY">
+				<Option output="/mnt/d/Programs/CLionProjects/CANDY/libCANDY.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/mnt/d/Programs/CLionProjects/CANDY"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DUSELOG4CXX"/>
+					<Add directory="/usr/include"/>
+					<Add directory="/mnt/d/Programs/CLionProjects/CANDY/include"/>
+					<Add directory="/mnt/d/Programs/CLionProjects/CANDY"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/Makefile&quot;  VERBOSE=1 CANDY"/>
+					<CompileFile command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="CANDY/fast">
+				<Option output="/mnt/d/Programs/CLionProjects/CANDY/libCANDY.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/mnt/d/Programs/CLionProjects/CANDY"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DUSELOG4CXX"/>
+					<Add directory="/usr/include"/>
+					<Add directory="/mnt/d/Programs/CLionProjects/CANDY/include"/>
+					<Add directory="/mnt/d/Programs/CLionProjects/CANDY"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/Makefile&quot;  VERBOSE=1 CANDY/fast"/>
+					<CompileFile command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/mnt/d/Programs/CLionProjects/CANDY"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/mnt/d/Programs/CLionProjects/CANDY"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="list_install_components">
+				<Option working_dir="/mnt/d/Programs/CLionProjects/CANDY"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/Makefile&quot;  VERBOSE=1 list_install_components"/>
+					<CompileFile command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="install">
+				<Option working_dir="/mnt/d/Programs/CLionProjects/CANDY"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/Makefile&quot;  VERBOSE=1 install"/>
+					<CompileFile command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="install/local">
+				<Option working_dir="/mnt/d/Programs/CLionProjects/CANDY"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/Makefile&quot;  VERBOSE=1 install/local"/>
+					<CompileFile command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="install/strip">
+				<Option working_dir="/mnt/d/Programs/CLionProjects/CANDY"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/Makefile&quot;  VERBOSE=1 install/strip"/>
+					<CompileFile command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="db_client">
+				<Option output="/mnt/d/Programs/CLionProjects/CANDY/apps/DBClient/db_client" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/mnt/d/Programs/CLionProjects/CANDY/apps/DBClient"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DUSELOG4CXX"/>
+					<Add directory="/usr/include"/>
+					<Add directory="/mnt/d/Programs/CLionProjects/CANDY/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/apps/DBClient/Makefile&quot;  VERBOSE=1 db_client"/>
+					<CompileFile command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/apps/DBClient/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/apps/DBClient/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/apps/DBClient/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="db_client/fast">
+				<Option output="/mnt/d/Programs/CLionProjects/CANDY/apps/DBClient/db_client" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/mnt/d/Programs/CLionProjects/CANDY/apps/DBClient"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DUSELOG4CXX"/>
+					<Add directory="/usr/include"/>
+					<Add directory="/mnt/d/Programs/CLionProjects/CANDY/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/apps/DBClient/Makefile&quot;  VERBOSE=1 db_client/fast"/>
+					<CompileFile command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/apps/DBClient/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/apps/DBClient/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -f &quot;/mnt/d/Programs/CLionProjects/CANDY/apps/DBClient/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/apps/BenchmarkTool/benchmark_tool.cpp">
+			<Option target="db_client"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/apps/DBClient/db_client.cpp">
+			<Option target="db_client"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/Algorithms/approximate_nn.hpp">
+			<Option target="CANDY"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/Algorithms/clustering.hpp">
+			<Option target="CANDY"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/Algorithms/hybrid_search.hpp">
+			<Option target="CANDY"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/Algorithms/knn_search.hpp">
+			<Option target="CANDY"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/Algorithms/parallel_helpers.hpp">
+			<Option target="CANDY"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/Concurrency/deadlock_prevention.hpp">
+			<Option target="CANDY"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/Concurrency/locks.hpp">
+			<Option target="CANDY"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/Concurrency/thread_pool.hpp">
+			<Option target="CANDY"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/Core/partitioning.hpp">
+			<Option target="CANDY"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/Core/transaction.hpp">
+			<Option target="CANDY"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/Core/vector_db.hpp">
+			<Option target="CANDY"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/Core/versioning.hpp">
+			<Option target="CANDY"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/GPU/gpu_memory.hpp">
+			<Option target="CANDY"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/GPU/gpu_scheduler.hpp">
+			<Option target="CANDY"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/IO/backup_restore.hpp">
+			<Option target="CANDY"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/IO/data_loader.hpp">
+			<Option target="CANDY"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/IO/s3_storage.hpp">
+			<Option target="CANDY"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/IO/wal.hpp">
+			<Option target="CANDY"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/Optimization/drl_optimization.hpp">
+			<Option target="CANDY"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/Optimization/ml_models.hpp">
+			<Option target="CANDY"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/Optimization/model_training.hpp">
+			<Option target="CANDY"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/Performance/benchmark.hpp">
+			<Option target="CANDY"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/Performance/gpu_benchmark.hpp">
+			<Option target="CANDY"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/Performance/monitoring.hpp">
+			<Option target="CANDY"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/RAG/agent_integration.hpp">
+			<Option target="CANDY"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/RAG/embedding_api.hpp">
+			<Option target="CANDY"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/RAG/retriever_api.hpp">
+			<Option target="CANDY"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/Utils/config.hpp">
+			<Option target="CANDY"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/Utils/error_handling.hpp">
+			<Option target="CANDY"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/Utils/logging.hpp">
+			<Option target="CANDY"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/Utils/timing.hpp">
+			<Option target="CANDY"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/test/CoreTests/core_tests.cpp">
+			<Option target="CANDY"/>
+			<Option target="db_client"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/cmake/CompilerSetup.cmake">
+			<Option virtualFolder="CMake Files\cmake\"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/cmake/DefaultOptions.cmake">
+			<Option virtualFolder="CMake Files\cmake\"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/cmake/EnableLog4cxx.cmake">
+			<Option virtualFolder="CMake Files\cmake\"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/cmake/EnableTests.cmake">
+			<Option virtualFolder="CMake Files\cmake\"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/cmake/FindLog4cxx.cmake">
+			<Option virtualFolder="CMake Files\cmake\"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/cmake/LoggingSetup.cmake">
+			<Option virtualFolder="CMake Files\cmake\"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/cmake/SetCXXStandard.cmake">
+			<Option virtualFolder="CMake Files\cmake\"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/cmake/macros.cmake">
+			<Option virtualFolder="CMake Files\cmake\"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/test/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\test\"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/test/CoreTests/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\test\CoreTests\"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/apps/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\apps\"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/apps/BenchmarkTool/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\apps\BenchmarkTool\"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/apps/DBClient/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\apps\DBClient\"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/apps/OptimizerTool/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\apps\OptimizerTool\"/>
+		</Unit>
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/apps/QueryTool/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\apps\QueryTool\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

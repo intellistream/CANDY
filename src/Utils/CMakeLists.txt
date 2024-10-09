@@ -1,3 +1,6 @@
 add_sources(
-        UtilityFunctions.cpp
+        config.cpp
+        error_handling.cpp
+        logging.cpp
+        timing.cpp
 )
