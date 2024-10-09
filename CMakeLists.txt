@@ -52,11 +52,12 @@ set(LIBRARIES ${LIBRARIES} ${Log4cxx_LIBRARY})
 
 if (LOG4CXX_FOUND)
     message(STATUS "LOG4CXX found")
-else (LOG4CXX_FOUND)
-    message(STATUS "LOG4CXX not found")
-    message(STATUS "On Ubuntu, install the package by the following command!")
+else()
+    message(STATUS "LOG4CXX is required but not found.")
+    message(STATUS "On Ubuntu, install the package by the following command:")
     message(STATUS "sudo apt-get install -y liblog4cxx-dev")
-endif (LOG4CXX_FOUND)
+    message(FATAL_ERROR "Please install it and try again.")
+endif()
 
 option(ENABLE_UNIT_TESTS "Enable unit tests" ON)
 message(STATUS "Enable testing: ${ENABLE_UNIT_TESTS}")
@@ -98,7 +99,7 @@ target_include_directories(IntelliStream PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
 target_link_libraries(IntelliStream PUBLIC ${LIBRARIES})
 
 #Add benchmarks with command
-add_subdirectory(benchmark)
+add_subdirectory(apps)
 
 #Add tests (based on GTest suits)
 add_subdirectory(test)

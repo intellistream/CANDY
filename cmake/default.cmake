@@ -1,4 +1,4 @@
-## Build benchmark by default.
+## Build apps by default.
 if (NOT BUILD_BENCHMARKS)
     set(BUILD_BENCHMARKS 1)
 endif ()

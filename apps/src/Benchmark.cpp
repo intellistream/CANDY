@@ -10,7 +10,7 @@ using namespace std;
 
 int main(int argc, char **argv) {
   //Setup Logs.
-  setupLogging("benchmark.log", LOG_DEBUG);
+  setupLogging("apps.log", LOG_DEBUG);
 
   //Run the test here.
   INTELLI_INFO("Nothing to run." << argc << argv);

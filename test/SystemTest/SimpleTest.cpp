@@ -6,7 +6,7 @@
 
 TEST(SystemTest, SimpleTest) {
   //Setup Logs.
-  setupLogging("benchmark.log", LOG_DEBUG);
+  setupLogging("apps.log", LOG_DEBUG);
 
   //Run the test here.
   INTELLI_INFO("Nothing to test.");

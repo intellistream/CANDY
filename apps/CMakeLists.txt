@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-if (BUILD_BENCHMARKS)
-    message("---Building benchmarks ${source_dir}")
+if (BUILD_APPs)
+    message("---Building apps ${source_dir}")
     include_directories("${source_dir}/include/")
     include_directories("include/")
     add_executable(benchmark "src/Benchmark.cpp")
@@ -21,7 +21,7 @@ if (BUILD_BENCHMARKS)
 
     file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/datasets
             DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-    message("---Done building benchmarks")
-else (BUILD_BENCHMARKS)
-    message("---Not building benchmarks!")
-endif (BUILD_BENCHMARKS)
+    message("---Done building apps")
+else (BUILD_APPs)
+    message("---Not building apps!")
+endif (BUILD_APPs)
