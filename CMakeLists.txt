@@ -26,6 +26,8 @@ include(cmake/LoggingSetup.cmake)
 include(cmake/EnableTests.cmake)
 
 # Collect Source Files
+add_subdirectory(src)
+
 # Assume that all the source files under src/ will be included in the library
 get_sources(CANDY_SOURCE_FILES)
 message(STATUS "CANDY_SOURCE_FILES: ${CANDY_SOURCE_FILES}")
