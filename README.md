@@ -6,7 +6,10 @@
 
 ## Overview
 
-The **High Performance Streaming Approximate Nearest Neighbor Search (ANNS) Engine**, also known as **CANDY**, is a cutting-edge, streaming-capable engine designed to perform real-time, high-performance approximate nearest neighbor search tasks on continuously evolving data streams. The engine leverages a vector database system optimized for streaming environments, enabling fast and efficient ANNS over dynamically changing datasets.
+The **High Performance Streaming Approximate Nearest Neighbor Search (ANNS) Engine**, also known as **CANDY**, is a
+cutting-edge, streaming-capable engine designed to perform real-time, high-performance approximate nearest neighbor
+search tasks on continuously evolving data streams. The engine leverages a vector database system optimized for
+streaming environments, enabling fast and efficient ANNS over dynamically changing datasets.
 
 ## Features
 
@@ -18,7 +21,8 @@ The **High Performance Streaming Approximate Nearest Neighbor Search (ANNS) Engi
 
 ## Key Use Cases
 
-- **Dynamic Data Retrieval**: Suitable for scenarios where data changes rapidly, such as recommendation systems, personalized search, and real-time anomaly detection.
+- **Dynamic Data Retrieval**: Suitable for scenarios where data changes rapidly, such as recommendation systems,
+  personalized search, and real-time anomaly detection.
 - **Real-Time Analytics**: Designed to serve high-velocity streaming data analysis use cases.
 - **Large-Scale Applications**: Ideal for billion-scale datasets with high throughput and low latency requirements.
 
@@ -41,6 +45,7 @@ Ensure you have the following dependencies installed:
 [//]: # (Install required dependencies using `pip`:)
 
 [//]: # ()
+
 [//]: # (```bash)
 
 [//]: # (pip install -r requirements.txt)
@@ -56,11 +61,13 @@ To get started with the Streaming ANNS Engine, use the following script:
 [//]: # (from candy_engine import CandyEngine)
 
 [//]: # ()
+
 [//]: # (# Initialize the engine with streaming data)
 
 [//]: # (engine = CandyEngine&#40;&#41;)
 
 [//]: # ()
+
 [//]: # (# Add vectors and query for nearest neighbors)
 
 [//]: # (engine.add_streaming_data&#40;data_stream&#41;)
@@ -70,6 +77,7 @@ To get started with the Streaming ANNS Engine, use the following script:
 [//]: # (```)
 
 [//]: # ()
+
 [//]: # (For detailed examples, please refer to the [examples]&#40;examples&#41; directory.)
 
 ## Documentation
@@ -79,9 +87,11 @@ For a complete guide on how to use and integrate the engine with your applicatio
 [//]: # (## Performance Benchmark)
 
 [//]: # ()
+
 [//]: # (The ANNS engine has been benchmarked for high performance on large-scale datasets. Some highlights include:)
 
 [//]: # ()
+
 [//]: # (- **Latency**: < 10 ms for querying 1M vectors.)
 
 [//]: # (- **Throughput**: Can handle up to 100K queries per second with GPU acceleration.)
@@ -104,6 +114,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Support
 
-If you encounter any issues or have any questions, feel free to reach out via our [Slack Channel](https://join.slack.com/t/intellistream/shared_invite/zt-2qayp8bs7-v4F71ge0RkO_rn34hBDWQg) or open an issue on GitHub.
+If you encounter any issues or have any questions, feel free to reach out via
+our [Slack Channel](https://join.slack.com/t/intellistream/shared_invite/zt-2qayp8bs7-v4F71ge0RkO_rn34hBDWQg) or open an
+issue on GitHub.
 
 ```

@@ -5,58 +5,74 @@
  * Description: [Provide description here]
  */
 #include "../../include/Core/vector_db.hpp"
-#include <cmath>        // For distance calculations
-#include <limits>       // For handling min distance comparison
-#include <iostream>     // For logging
+#include "algorithms/search_algorithm.hpp"  // Base search algorithm interface
 
-// Constructor
-VectorDB::VectorDB() {
-  // Initialize anything if needed
-}
+#include <iostream>
+#include <algorithm>
+#include <mutex>
+
+// Constructor with dimensions and search algorithm injection
+VectorDB::VectorDB(size_t dimensions, std::shared_ptr<SearchAlgorithm> search_algorithm)
+    : dimensions(dimensions), search_algorithm(search_algorithm) {}
 
 // Destructor
 VectorDB::~VectorDB() {
-  // Clean up any resources if needed
+  // Clean up if necessary
 }
 
-// Insert a new vector into the database (generates a unique ID for internal storage)
-bool VectorDB::insert_vector(const std::vector<float>& vec) {
-  std::unique_lock<std::shared_mutex> lock(db_mutex);  // Exclusive lock for writing
+// Insert a vector into the database
+bool VectorDB::insert_vector(const std::vector<float> &vec) {
+  if (vec.size() != dimensions) {
+    std::cerr << "Error: Vector dimensions do not match the expected size." << std::endl;
+    return false;
+  }
+
+  std::unique_lock<std::shared_mutex> lock(db_mutex);
+
   size_t id = generate_id();
   vector_store[id] = vec;
+
+  // Insert the vector into the search algorithm's index
+  search_algorithm->insert(id, vec);
+
   return true;
 }
 
-// Query the nearest vector based on Euclidean distance
-std::optional<std::vector<float>> VectorDB::query_nearest_vector(const std::vector<float>& query_vec) const {
-  std::shared_lock<std::shared_mutex> lock(db_mutex);  // Shared lock for reading
-
-  if (vector_store.empty()) {
-    std::cerr << "Database is empty. No vectors to search." << std::endl;
-    return std::nullopt;
+// Query the nearest vectors using the assigned search algorithm
+std::vector<std::vector<float>> VectorDB::query_nearest_vectors(const std::vector<float> &query_vec, size_t k) const {
+  if (query_vec.size() != dimensions) {
+    std::cerr << "Error: Query vector dimensions do not match." << std::endl;
+    return {};
   }
 
-  float min_distance = std::numeric_limits<float>::max();
-  std::vector<float> nearest_vec;
+  std::shared_lock<std::shared_mutex> lock(db_mutex);
 
-  for (const auto& [id, vec] : vector_store) {
-    float distance = calculate_distance(query_vec, vec);
-    if (distance < min_distance) {
-      min_distance = distance;
-      nearest_vec = vec;
-    }
+  // Use the search algorithm to retrieve the nearest neighbors
+  std::vector<size_t> nearest_ids = search_algorithm->query(query_vec, k);
+
+  // Convert the IDs back to vectors
+  std::vector<std::vector<float>> nearest_vectors;
+  for (size_t id : nearest_ids) {
+    nearest_vectors.push_back(vector_store.at(id));
   }
 
-  return nearest_vec;
+  return nearest_vectors;
 }
 
-// Delete a vector by reference (removes exact matches)
-bool VectorDB::delete_vector(const std::vector<float>& vec) {
-  std::unique_lock<std::shared_mutex> lock(db_mutex);  // Exclusive lock for writing
+// Delete a vector from the database
+bool VectorDB::delete_vector(const std::vector<float> &vec) {
+  std::unique_lock<std::shared_mutex> lock(db_mutex);
 
   for (auto it = vector_store.begin(); it != vector_store.end(); ++it) {
     if (it->second == vec) {
+      size_t id = it->first;
+
+      // Remove from the search algorithm's index
+      search_algorithm->remove(id);
+
+      // Remove from the vector store
       vector_store.erase(it);
+
       return true;
     }
   }
@@ -67,19 +83,6 @@ bool VectorDB::delete_vector(const std::vector<float>& vec) {
 
 // Get the total number of vectors in the database
 size_t VectorDB::get_vector_count() const {
-  std::shared_lock<std::shared_mutex> lock(db_mutex);  // Shared lock for reading
+  std::shared_lock<std::shared_mutex> lock(db_mutex);
   return vector_store.size();
-}
-
-// Calculate Euclidean distance between two vectors
-float VectorDB::calculate_distance(const std::vector<float>& vec1, const std::vector<float>& vec2) const {
-  if (vec1.size() != vec2.size()) {
-    throw std::invalid_argument("Vector dimensions do not match!");
-  }
-
-  float sum = 0.0;
-  for (size_t i = 0; i < vec1.size(); ++i) {
-    sum += std::pow(vec1[i] - vec2[i], 2);
-  }
-  return std::sqrt(sum);
 }

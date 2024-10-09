@@ -177,17 +177,17 @@ static log4cxx::LoggerPtr INTELLILogger(log4cxx::Logger::getLogger("INTELLI"));
 #ifndef USELOG4CXX
 #define INTELLI_TRACE(TEXT)                                                                                                          \
       std::cout << TEXT << std::endl;
-    #define INTELLI_DEBUG(TEXT)                                                                                                          \
+#define INTELLI_DEBUG(TEXT)                                                                                                          \
       std::cout << TEXT << std::endl;
-    #define INTELLI_TRACE(TEXT)                                                                                                          \
+#define INTELLI_TRACE(TEXT)                                                                                                          \
       std::cout << TEXT << std::endl;
-    #define INTELLI_INFO(TEXT)                                                                                                           \
+#define INTELLI_INFO(TEXT)                                                                                                           \
       std::cout << TEXT << std::endl;
-    #define INTELLI_WARNING(TEXT)                                                                                                        \
+#define INTELLI_WARNING(TEXT)                                                                                                        \
       std::cout << TEXT << std::endl;
-    #define INTELLI_ERROR(TEXT)                                                                                                          \
+#define INTELLI_ERROR(TEXT)                                                                                                          \
       std::cout << TEXT << std::endl;
-    #define INTELLI_FATAL_ERROR(TEXT)                                                                                                    \
+#define INTELLI_FATAL_ERROR(TEXT)                                                                                                    \
       std::cout << TEXT << std::endl;
 
 #endif
@@ -249,24 +249,24 @@ static void setupLogging(std::string logFileName, DebugLevel level) {
   // set log level
 #ifdef INTELLI_LOGGING_LEVEL
   ((void) level);
-        #if INTELLI_LOGGING_LEVEL == LEVEL_FATAL
+#if INTELLI_LOGGING_LEVEL == LEVEL_FATAL
             INTELLILogger->setLevel(log4cxx::Level::getFatal());
-        #endif
-        #if INTELLI_LOGGING_LEVEL == LEVEL_ERROR
+#endif
+#if INTELLI_LOGGING_LEVEL == LEVEL_ERROR
             INTELLILogger->setLevel(log4cxx::Level::getError());
-        #endif
-        #if INTELLI_LOGGING_LEVEL == LEVEL_WARN
+#endif
+#if INTELLI_LOGGING_LEVEL == LEVEL_WARN
             INTELLILogger->setLevel(log4cxx::Level::getWarn());
-        #endif
-        #if INTELLI_LOGGING_LEVEL == LEVEL_INFO
+#endif
+#if INTELLI_LOGGING_LEVEL == LEVEL_INFO
             INTELLILogger->setLevel(log4cxx::Level::getInfo());
-        #endif
-        #if INTELLI_LOGGING_LEVEL == LEVEL_DEBUG
+#endif
+#if INTELLI_LOGGING_LEVEL == LEVEL_DEBUG
             INTELLILogger->setLevel(log4cxx::Level::getDebug());
-        #endif
-        #if INTELLI_LOGGING_LEVEL == LEVEL_TRACE
+#endif
+#if INTELLI_LOGGING_LEVEL == LEVEL_TRACE
             INTELLILogger->setLevel(log4cxx::Level::getTrace());
-        #endif
+#endif
 #else
   if (level == LOG_NONE) {
     INTELLILogger->setLevel(log4cxx::Level::getOff());
@@ -292,24 +292,24 @@ static void setLogLevel(DebugLevel level) {
   // set log level
 #ifdef INTELLI_LOGGING_LEVEL
   ((void) level);
-        #if INTELLI_LOGGING_LEVEL == LEVEL_FATAL
+#if INTELLI_LOGGING_LEVEL == LEVEL_FATAL
             INTELLILogger->setLevel(log4cxx::Level::getFatal());
-        #endif
-        #if INTELLI_LOGGING_LEVEL == LEVEL_ERROR
+#endif
+#if INTELLI_LOGGING_LEVEL == LEVEL_ERROR
             INTELLILogger->setLevel(log4cxx::Level::getError());
-        #endif
-        #if INTELLI_LOGGING_LEVEL == LEVEL_WARN
+#endif
+#if INTELLI_LOGGING_LEVEL == LEVEL_WARN
             INTELLILogger->setLevel(log4cxx::Level::getWarn());
-        #endif
-        #if INTELLI_LOGGING_LEVEL == LEVEL_INFO
+#endif
+#if INTELLI_LOGGING_LEVEL == LEVEL_INFO
             INTELLILogger->setLevel(log4cxx::Level::getInfo());
-        #endif
-        #if INTELLI_LOGGING_LEVEL == LEVEL_DEBUG
+#endif
+#if INTELLI_LOGGING_LEVEL == LEVEL_DEBUG
             INTELLILogger->setLevel(log4cxx::Level::getDebug());
-        #endif
-        #if INTELLI_LOGGING_LEVEL == LEVEL_TRACE
+#endif
+#if INTELLI_LOGGING_LEVEL == LEVEL_TRACE
             INTELLILogger->setLevel(log4cxx::Level::getTrace());
-        #endif
+#endif
 #else
 
   if (level == LOG_NONE) {
@@ -329,7 +329,6 @@ static void setLogLevel(DebugLevel level) {
 #endif
 #endif
 }
-
 
 #define INTELLI_NOT_IMPLEMENTED()                                                                                                    \
     do {                                                                                                                         \

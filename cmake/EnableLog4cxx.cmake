@@ -3,7 +3,7 @@
 if (UNIX AND NOT APPLE)
     add_definitions(-DUSELOG4CXX)
     message(STATUS "Log4cxx support enabled (UNIX system detected)")
-endif()
+endif ()
 
 # Find Log4cxx
 find_package(Log4cxx REQUIRED)
