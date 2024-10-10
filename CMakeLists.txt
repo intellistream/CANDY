@@ -44,11 +44,9 @@ target_link_libraries(CANDY PUBLIC ${Log4cxx_LIBRARY})
 # Add applications that depend on the CANDY library
 add_subdirectory(apps)
 
-option(ENABLE_UNIT_TESTS "Enable unit tests" ON)
-message(STATUS "Enable testing: ${ENABLE_UNIT_TESTS}")
-
-# Enable Unit Tests
 include(cmake/EnableTests.cmake)
+
+add_subdirectory(test)
 
 # Install headers
 install(DIRECTORY "include" DESTINATION "/CANDY" COMPONENT CANDY)
