@@ -1,15 +1,12 @@
-# SetCXXStandard.cmake for db_client
-# Example usage of the macros for managing source files
-
 # Add source files for db_client using your add_sources macro
-add_sources(
+add_sources(db_client
         db_client.cpp
 )
 
-# Get the source files
-get_sources(DB_CLIENT_SOURCE_FILES)
+# Get the source files for db_client
+get_sources(db_client DB_CLIENT_SOURCE_FILES)
 
-# Define the executable
+# Define the executable for db_client
 add_executable(db_client ${DB_CLIENT_SOURCE_FILES})
 
 # Link the executable with the CANDY library

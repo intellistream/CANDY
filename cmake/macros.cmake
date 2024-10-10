@@ -27,6 +27,7 @@ macro(get_log_level_value ${CMAKE_PROJECT_NAME}_LOGGING_VALUE)
     endif ()
 endmacro(get_log_level_value ${CMAKE_PROJECT_NAME}_LOGGING_VALUE)
 
+# Macro to add source files to a specific property
 macro(add_source PROP_NAME SOURCE_FILES)
     set(SOURCE_FILES_ABSOLUTE)
     foreach (it ${SOURCE_FILES})
@@ -38,17 +39,14 @@ macro(add_source PROP_NAME SOURCE_FILES)
     set_property(GLOBAL PROPERTY "${PROP_NAME}_SOURCE_PROP" ${SOURCE_FILES_ABSOLUTE} ${OLD_PROP_VAL})
 endmacro()
 
-macro(add_sources)
-    add_source(${CMAKE_PROJECT_NAME} "${ARGN}")
+# Macro for adding multiple sources
+macro(add_sources TARGET_NAME)
+    add_source(${TARGET_NAME} "${ARGN}")
 endmacro()
 
-macro(get_source PROP_NAME SOURCE_FILES)
-    get_property(SOURCE_FILES_LOCAL GLOBAL PROPERTY "${PROP_NAME}_SOURCE_PROP")
-    set(${SOURCE_FILES} ${SOURCE_FILES_LOCAL})
-endmacro()
-
-macro(get_sources SOURCE_FILES)
-    get_source(${CMAKE_PROJECT_NAME} SOURCE_FILES_LOCAL)
+# Macro to get source files for a specific target
+macro(get_sources TARGET_NAME SOURCE_FILES)
+    get_property(SOURCE_FILES_LOCAL GLOBAL PROPERTY "${TARGET_NAME}_SOURCE_PROP")
     set(${SOURCE_FILES} ${SOURCE_FILES_LOCAL})
 endmacro()
 

@@ -22,14 +22,11 @@ include(cmake/CompilerSetup.cmake)
 # Logging setup (if needed)
 include(cmake/LoggingSetup.cmake)
 
-# Enable Unit Tests
-include(cmake/EnableTests.cmake)
-
 # Collect Source Files
 add_subdirectory(src)
 
 # Assume that all the source files under src/ will be included in the library
-get_sources(CANDY_SOURCE_FILES)
+get_sources(CANDY CANDY_SOURCE_FILES)
 message(STATUS "CANDY_SOURCE_FILES: ${CANDY_SOURCE_FILES}")
 
 get_headers(CANDY_HEADER_FILES)
@@ -46,6 +43,9 @@ target_link_libraries(CANDY PUBLIC ${Log4cxx_LIBRARY})
 
 # Add applications that depend on the CANDY library
 add_subdirectory(apps)
+
+# Enable Unit Tests
+include(cmake/EnableTests.cmake)
 
 # Install headers
 install(DIRECTORY "include" DESTINATION "/CANDY" COMPONENT CANDY)
