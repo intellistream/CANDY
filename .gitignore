@@ -36,3 +36,5 @@
 /cmake-build-release/
 /cmake-build-release/_deps/
 /.cmake/
+*.cmake
+*/CMakeFiles/
