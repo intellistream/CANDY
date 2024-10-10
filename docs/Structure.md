@@ -33,6 +33,13 @@ src/
 │ ├── drl_optimization.cpp # Deep Reinforcement Learning-based optimizer for ANNS
 │ ├── ml_models.cpp # Generic machine learning models for optimization
 │ └── model_training.cpp # Training logic for ML models, including DRL agents
+├── rag/ # Retrieval-Augmented Generation (RAG) and LLM Agent integration
+│ ├── embedding_api.cpp # API to interact with vector database from Python (e.g., for embeddings)
+│ ├── retriever_api.cpp # API for retrieving vectors for RAG
+│ └── agent_integration.cpp # APIs for agent-based interaction with LLMs
+└── performance/ # Performance monitoring and benchmarking tools
+│ ├── benchmark.cpp # Benchmark tools for testing performance
+│ └── monitoring.cpp # Real-time monitoring of system metrics (CPU, memory, etc.)
 `-- To be supported --
 ├── access_control/ # Security and access control features
 │ ├── rbac.cpp # Role-based access control (RBAC) implementation
@@ -54,13 +61,6 @@ src/
 │ └── data_sanitization.cpp # Data sanitization for sensitive information
 -- To be supported --
 `
-├── rag/ # Retrieval-Augmented Generation (RAG) and LLM Agent integration
-│ ├── embedding_api.cpp # API to interact with vector database from Python (e.g., for embeddings)
-│ ├── retriever_api.cpp # API for retrieving vectors for RAG
-│ └── agent_integration.cpp # APIs for agent-based interaction with LLMs
-└── performance/ # Performance monitoring and benchmarking tools
-│ ├── benchmark.cpp # Benchmark tools for testing performance
-│ └── monitoring.cpp # Real-time monitoring of system metrics (CPU, memory, etc.)
 
 include/
 ├── core/

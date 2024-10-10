@@ -5,51 +5,60 @@
  * Description: [Provide description here]
  */
 #include <Core/vector_db.hpp>
-#include <Algorithms/search_algorithm.hpp>  // Base search algorithm interface
-
 #include <iostream>
-#include <mutex>
+#include <thread>
+#include <algorithm>
 
-// Constructor with dimensions and search algorithm injection
+// Constructor: Initialize the vector database with a number of dimensions and a search algorithm
 VectorDB::VectorDB(size_t dimensions, std::shared_ptr<SearchAlgorithm> search_algorithm)
-    : dimensions(dimensions), search_algorithm(search_algorithm) {}
+    : dimensions(dimensions), search_algorithm(search_algorithm), is_running(false) {}
 
 // Destructor
 VectorDB::~VectorDB() {
-  // Clean up if necessary
+  stop_streaming();
 }
 
-// Insert a vector into the database
-bool VectorDB::insert_vector(const std::vector<float> &vec) {
+// Generate a new unique ID for each vector
+size_t VectorDB::generate_id() {
+  return next_id++;
+}
+
+// Insert a vector directly into the vector database (exclusive write access)
+bool VectorDB::insert_vector(const std::vector<float>& vec) {
   if (vec.size() != dimensions) {
-    std::cerr << "Error: Vector dimensions do not match the expected size." << std::endl;
+    std::cerr << "Error: Vector dimensions do not match the expected size (" << dimensions << ")." << std::endl;
     return false;
   }
 
-  std::unique_lock<std::shared_mutex> lock(db_mutex);
-
-  size_t id = generate_id();
-  vector_store[id] = vec;
-
-  // Insert the vector into the search algorithm's index
-  search_algorithm->insert(id, vec);
+  {
+    std::unique_lock<std::shared_mutex> lock(db_mutex);  // Exclusive write lock
+    size_t id = generate_id();
+    vector_store[id] = vec;  // Store the vector in the database
+    if (search_algorithm) {
+      search_algorithm->insert(id, vec);  // Insert into the search algorithm's index
+    }
+  }
 
   return true;
 }
 
-// Query the nearest vectors using the assigned search algorithm
-std::vector<std::vector<float>> VectorDB::query_nearest_vectors(const std::vector<float> &query_vec, size_t k) const {
+// Query the nearest vectors using the search algorithm (shared read access)
+std::vector<std::vector<float>> VectorDB::query_nearest_vectors(const std::vector<float>& query_vec, size_t k) const {
   if (query_vec.size() != dimensions) {
-    std::cerr << "Error: Query vector dimensions do not match." << std::endl;
+    std::cerr << "Error: Query vector dimensions do not match the expected size (" << dimensions << ")." << std::endl;
     return {};
   }
 
-  std::shared_lock<std::shared_mutex> lock(db_mutex);
+  std::shared_lock<std::shared_mutex> lock(db_mutex);  // Shared read lock
+  if (!search_algorithm) {
+    std::cerr << "Error: No search algorithm available for querying." << std::endl;
+    return {};
+  }
 
-  // Use the search algorithm to retrieve the nearest neighbors
+  // Query the nearest k vectors using the search algorithm
   std::vector<size_t> nearest_ids = search_algorithm->query(query_vec, k);
 
-  // Convert the IDs back to vectors
+  // Retrieve the actual vectors based on the IDs returned
   std::vector<std::vector<float>> nearest_vectors;
   for (size_t id : nearest_ids) {
     nearest_vectors.push_back(vector_store.at(id));
@@ -58,30 +67,62 @@ std::vector<std::vector<float>> VectorDB::query_nearest_vectors(const std::vecto
   return nearest_vectors;
 }
 
-// Delete a vector from the database
-bool VectorDB::delete_vector(const std::vector<float> &vec) {
-  std::unique_lock<std::shared_mutex> lock(db_mutex);
-
-  for (auto it = vector_store.begin(); it != vector_store.end(); ++it) {
-    if (it->second == vec) {
-      size_t id = it->first;
-
-      // Remove from the search algorithm's index
-      search_algorithm->remove(id);
-
-      // Remove from the vector store
-      vector_store.erase(it);
-
-      return true;
-    }
-  }
-
-  std::cerr << "Vector not found for deletion!" << std::endl;
-  return false;
+// Start the streaming engine (processes stream buffers in parallel)
+void VectorDB::start_streaming() {
+  is_running = true;
+  start_workers();  // Start the worker threads
 }
 
-// Get the total number of vectors in the database
-size_t VectorDB::get_vector_count() const {
-  std::shared_lock<std::shared_mutex> lock(db_mutex);
-  return vector_store.size();
+// Stop the streaming engine
+void VectorDB::stop_streaming() {
+  is_running = false;
+  stop_workers();  // Stop the worker threads
+}
+
+// Insert a vector into the streaming queue (exclusive write access)
+void VectorDB::insert_streaming_vector(const std::vector<float>& vec) {
+  if (vec.size() != dimensions) {
+    std::cerr << "Error: Vector dimensions do not match the expected size (" << dimensions << ")." << std::endl;
+    return;
+  }
+
+  {
+    std::unique_lock<std::shared_mutex> lock(db_mutex);  // Exclusive write lock for streaming insert
+    stream_buffer.push(vec);  // Push the vector into the streaming queue
+  }
+}
+
+// Process the streaming queue (insert vectors into the database in parallel)
+void VectorDB::process_streaming_queue() {
+  while (is_running) {
+    std::vector<float> vec;
+    {
+      std::unique_lock<std::shared_mutex> lock(db_mutex);  // Exclusive access to remove from queue
+      if (!stream_buffer.empty()) {
+        vec = stream_buffer.front();
+        stream_buffer.pop();
+      }
+    }
+
+    if (!vec.empty()) {
+      insert_vector(vec);  // Insert the vector into the database
+    }
+  }
+}
+
+// Start the worker threads to process the streaming queue
+void VectorDB::start_workers() {
+  for (int i = 0; i < std::thread::hardware_concurrency(); ++i) {
+    workers.emplace_back(&VectorDB::process_streaming_queue, this);
+  }
+}
+
+// Stop the worker threads
+void VectorDB::stop_workers() {
+  for (auto& worker : workers) {
+    if (worker.joinable()) {
+      worker.join();  // Ensure all threads are properly joined
+    }
+  }
+  workers.clear();
 }

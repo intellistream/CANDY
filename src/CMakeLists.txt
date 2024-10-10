@@ -1,4 +1,5 @@
 add_subdirectory(Algorithms)
+add_subdirectory(API)
 add_subdirectory(Concurrency)
 add_subdirectory(Core)
 add_subdirectory(GPU)
