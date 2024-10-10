@@ -4,4 +4,4 @@
  * Created on: 2024/10/9
  * Description: [Provide description here]
  */
-#include "../../include/GPU/gpu_scheduler.hpp"
+#include <GPU/gpu_scheduler.hpp>

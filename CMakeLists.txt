@@ -37,8 +37,8 @@ get_headers(CANDY_HEADER_FILES)
 # Create the CANDY library from all the source files
 add_library(CANDY SHARED ${CANDY_SOURCE_FILES} ${CANDY_HEADER_FILES})
 
-# Add include directories (for headers)
-target_include_directories(CANDY PUBLIC ${PROJECT_SOURCE_DIR}/include)
+# Add the include directory with absolute path
+target_include_directories(CANDY PUBLIC ${PROJECT_SOURCE_DIR}/include) # Include the "include/" directory as a system path
 target_include_directories(CANDY PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
 
 # Link with external libraries (e.g., Log4cxx)

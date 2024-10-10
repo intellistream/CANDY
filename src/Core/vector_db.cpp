@@ -4,8 +4,8 @@
  * Created on: 2024/10/9
  * Description: [Provide description here]
  */
-#include "../../include/Core/vector_db.hpp"
-#include "../../include/algorithms/search_algorithm.hpp"  // Base search algorithm interface
+#include <Core/vector_db.hpp>
+#include <Algorithms/search_algorithm.hpp>  // Base search algorithm interface
 
 #include <iostream>
 #include <mutex>
