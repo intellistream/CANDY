@@ -2,7 +2,6 @@ import threading
 import time
 import random
 from py_vector_db import VectorDB
-from py_vector_db_stream import VectorDBStream
 from data_preprocessing.text_preprocessor import TextPreprocessor
 from data_preprocessing.audio_preprocessor import AudioPreprocessor
 
