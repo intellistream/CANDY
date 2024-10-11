@@ -5,7 +5,6 @@
  * Description: [Provide description here]
  */
 #include <API/vectordb_stream.hpp>
-#include <PythonBinding/py_vector_db.hpp>  // Python bindings to C++ VectorDB
 #include <numeric>
 #include <iostream>
 
