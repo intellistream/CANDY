@@ -1,5 +1,5 @@
 add_sources(CANDY
-        approximate_nn.cpp
+        hnsw.cpp
         clustering.cpp
         hybrid_search.cpp
         knn_search.cpp
