@@ -1,8 +1,9 @@
 import threading
 import time
 import random
-from py_vector_db import VectorDB
-from py_vector_db_stream import VectorDBStream
+
+from pyvectordb import VectorDB  # This is for the pybind11 module (e.g., `pyvectordb.so`).
+from pyvectordb import VectorDBStream
 from data_preprocessing.text_preprocessor import TextPreprocessor
 
 # Initialize the vector database and embedding models

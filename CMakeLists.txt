@@ -1,6 +1,6 @@
 # CMakeLists.txt (root)
 
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.15)
 project(CANDY CXX)
 
 # Add the cmake/ directory to CMAKE_MODULE_PATH
@@ -41,6 +41,9 @@ target_include_directories(CANDY PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
 # Link with external libraries (e.g., Log4cxx)
 target_link_libraries(CANDY PUBLIC ${Log4cxx_LIBRARY})
 
+# Set rpath for libCANDY.so to make it available to dependent libraries
+set_target_properties(CANDY PROPERTIES INSTALL_RPATH "$ORIGIN")
+
 # Add applications that depend on the CANDY library
 add_subdirectory(apps)
 
@@ -48,5 +51,23 @@ include(cmake/EnableTests.cmake)
 
 add_subdirectory(test)
 
+add_subdirectory(python_bindings/pybind11_bindings)
+
+# Install the core shared library (libCANDY.so) to user site-packages
+execute_process(
+        COMMAND python3 -c "import site; print(site.getusersitepackages())"
+        OUTPUT_VARIABLE PYTHON_USER_SITE_PACKAGES
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+install(TARGETS CANDY
+        LIBRARY DESTINATION ${PYTHON_USER_SITE_PACKAGES})
+
 # Install headers
-install(DIRECTORY "include" DESTINATION "/CANDY" COMPONENT CANDY)
+install(DIRECTORY "include" DESTINATION "${PYTHON_USER_SITE_PACKAGES}/include/CANDY" COMPONENT CANDY)
+
+# Add a post-build custom command to automatically run `make install`
+add_custom_command(TARGET CANDY
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} --build . --target install
+        COMMENT "Installing CANDY to Python user site-packages"
+)
