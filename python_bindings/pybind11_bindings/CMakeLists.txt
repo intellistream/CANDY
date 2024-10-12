@@ -18,8 +18,6 @@ FetchContent_MakeAvailable(pybind11)
 add_library(pyvectordb MODULE vectordb_pybind.cpp)
 set_target_properties(pyvectordb PROPERTIES PREFIX "")
 
-
-
 # Get the Python user site-packages directory using sysconfig
 execute_process(
         COMMAND python3 -c "import site; print(site.getusersitepackages())"

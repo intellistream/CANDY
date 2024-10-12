@@ -1,20 +1,13 @@
 import threading
-import time
-import random
-
-import sys
-print("Python sys.path:")
-for path in sys.path:
-    print(path)
 
 from pyvectordb import VectorDB
-from data_preprocessing.text_preprocessor import TextPreprocessor
-from data_preprocessing.audio_preprocessor import AudioPreprocessor
+from Python.Embedding.TextPreprocessor import TextPreprocessor
 
 # Initialize the vector database and embedding models
+search_algorithm = 'knnsearch'
 db = VectorDB(128, search_algorithm)
+# Initialize the vector database and embedding models
 text_preprocessor = TextPreprocessor()
-audio_preprocessor = AudioPreprocessor()
 
 # Function to allow interactive data ingestion by a user
 def interactive_data_ingestion():
@@ -22,10 +15,6 @@ def interactive_data_ingestion():
         user_input = input("Enter information to store (or type 'exit' to quit): ")
         if user_input.lower() in ["exit", "quit"]:
             break
-        # Determine if the data is text or voice (assuming text for simplicity here)
-        if user_input.startswith("Voice transcript:"):
-            # Process audio data (assuming audio represented by text here for simplicity)
-            embedding = audio_preprocessor.generate_embedding_from_audio(user_input)
         else:
             # Process text data
             embedding = text_preprocessor.generate_embedding(user_input)
@@ -33,6 +22,7 @@ def interactive_data_ingestion():
         # Insert the embedding into the vector database
         db.insert_vector(embedding)
         print(f"[Data Ingestion] Stored: {user_input}")
+        print(f"The embeddings: {embedding}")
 
 # Function to allow interactive querying by a user
 def interactive_query():
@@ -40,7 +30,10 @@ def interactive_query():
         user_query = input("Enter your query: ")
         if user_query.lower() in ["exit", "quit"]:
             break
-        query_embedding = text_preprocessor.generate_embedding(user_query)
+        # Convert the numpy array to a list to ensure compatibility with pybind11
+        query_embedding = text_preprocessor.generate_embedding(user_query).tolist()
+        if not isinstance(query_embedding, list):
+            query_embedding = list(query_embedding)
         results = db.query_nearest_vectors(query_embedding, k=3)
         print(f"[Interactive Query Results] Retrieved: {results}")
 

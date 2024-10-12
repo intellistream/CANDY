@@ -1,0 +1,26 @@
+# requirements.txt for the apps/Python folder
+
+# Transformers library for working with models like BERT, GPT, etc.
+transformers
+
+# PyTorch for running deep learning models
+torch
+
+# NumPy for numerical operations
+numpy
+
+# Scikit-learn for additional machine learning utilities
+scikit-learn
+
+# Pandas for data manipulation
+pandas
+
+# Flask or FastAPI if any web APIs are needed for interacting with the system
+flask
+fastapi
+
+# PyAudio or SpeechRecognition for audio-related functionality (if needed)
+SpeechRecognition
+
+# Any other dependencies for specific modules
+# Add more dependencies here as needed

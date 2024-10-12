@@ -4,9 +4,10 @@ import random
 
 from pyvectordb import VectorDB  # This is for the pybind11 module (e.g., `pyvectordb.so`).
 from pyvectordb import VectorDBStream
-from data_preprocessing.text_preprocessor import TextPreprocessor
+from Python.Embedding.TextPreprocessor import TextPreprocessor
 
 # Initialize the vector database and embedding models
+search_algorithm = 'knnsearch'
 db = VectorDB(128, search_algorithm)
 text_preprocessor = TextPreprocessor()
 

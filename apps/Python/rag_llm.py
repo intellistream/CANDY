@@ -4,4 +4,6 @@ for path in sys.path:
     print(path)
 
 from pyvectordb import VectorDB
-from pyvectordb import VectorDBStream
+
+VectorDB.insert_vector()
+# from pyvectordb import VectorDBStream

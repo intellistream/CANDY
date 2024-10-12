@@ -4,7 +4,7 @@
  * Created on: 2024/10/9
  * Description: [Provide description here]
  */
-#include "../../include/Algorithms/knn_search.hpp"
+#include <Algorithms/knn_search.hpp>
 #include <algorithm>
 #include <stdexcept>
 

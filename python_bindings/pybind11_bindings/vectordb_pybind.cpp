@@ -8,14 +8,27 @@
 #include <pybind11/stl.h>
 #include <Core/vector_db.hpp>  // Corrected include to match header guard and existing header file
 #include <API/vectordb_stream.hpp>
+#include <Algorithms/knn_search.hpp>
 
 namespace py = pybind11;
 
 PYBIND11_MODULE(pyvectordb, m) {
+  py::class_<SearchAlgorithm, std::shared_ptr<SearchAlgorithm>>(m, "SearchAlgorithm");
+
   py::class_<VectorDB>(m, "VectorDB")
-      .def(py::init<size_t, std::shared_ptr<SearchAlgorithm>>(), py::arg("dimensions"), py::arg("search_algorithm") = nullptr)
+      .def(py::init([](size_t dimensions, const std::string &search_algorithm) {
+        std::shared_ptr<SearchAlgorithm> algorithm;
+        if (search_algorithm == "knnsearch") {
+          algorithm = std::make_shared<KnnSearch>(dimensions);
+        } else {
+          throw std::invalid_argument("Unsupported search algorithm: " + search_algorithm);
+        }
+        return std::make_unique<VectorDB>(dimensions, algorithm);
+      }), py::arg("dimensions"), py::arg("search_algorithm") = "knnsearch")
       .def("insert_vector", &VectorDB::insert_vector)
-      .def("query_nearest_vectors", &VectorDB::query_nearest_vectors)
+      .def("query_nearest_vectors", [](const VectorDB &self, const std::vector<float> &query_vec, size_t k) {
+        return self.query_nearest_vectors(query_vec, k);
+      }, py::arg("query_vec"), py::arg("k"))
       .def("start_streaming", &VectorDB::start_streaming)
       .def("stop_streaming", &VectorDB::stop_streaming)
       .def("insert_streaming_vector", &VectorDB::insert_streaming_vector)
