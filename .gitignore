@@ -36,7 +36,6 @@
 /cmake-build-debug/_deps/
 /cmake-build-release/
 /cmake-build-release/_deps/
-/build
 /.cmake/
 *.cmake
 */CMakeFiles/
