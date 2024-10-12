@@ -39,3 +39,4 @@
 /.cmake/
 *.cmake
 */CMakeFiles/
+ThirdParty/libtorch/

@@ -47,12 +47,3 @@ class ThreadPoolTaskScheduler : public TaskScheduler {
  private:
   size_t num_threads_;
 };
-
-// Example usage
-int main() {
-  ThreadPoolTaskScheduler scheduler;
-  scheduler.parallel_for(0, 10, [](size_t i) {
-    std::cout << "Processing element " << i << std::endl;
-  });
-  return 0;
-}
