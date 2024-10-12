@@ -12,7 +12,7 @@
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(pyvectordb, m) {
+PYBIND11_MODULE(pycandy, m) {
   py::class_<SearchAlgorithm, std::shared_ptr<SearchAlgorithm>>(m, "SearchAlgorithm");
 
   py::class_<VectorDB>(m, "VectorDB")

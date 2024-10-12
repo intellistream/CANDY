@@ -1,6 +1,6 @@
 import threading
 
-from pyvectordb import VectorDB
+from pycandy import VectorDB
 from Python.Embedding.TextPreprocessor import TextPreprocessor
 
 # Initialize the vector database and embedding models
