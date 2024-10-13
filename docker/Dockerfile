@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -y --allow-change-held-packages \
     python3-pip \
     openssh-server \
     gdb \
+    liblog4cxx-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
