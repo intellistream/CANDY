@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  candy:
+    build: .
+    environment:
+      - CUDACXX=/usr/local/cuda/bin/nvcc
+    ports:
+      - "2222:22"  # Map SSH port for CLion
+    volumes:
+      - "..:/workspace"  # Mount the project root to /workspace in the container
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
