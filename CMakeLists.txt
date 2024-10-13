@@ -47,16 +47,16 @@ list(APPEND CMAKE_PREFIX_PATH "/usr/local/libtorch")
 find_package(Torch REQUIRED)
 target_link_libraries(CANDY PUBLIC "${TORCH_LIBRARIES}")
 
-# --- Add CUDA specific configuration ---
-# Manually add CUDA flags to resolve CUDA20 dialect issue
+## --- Add CUDA specific configuration ---
+## Manually add CUDA flags to resolve CUDA20 dialect issue
 set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-extended-lambda --expt-relaxed-constexpr")
 set(CMAKE_CUDA_STANDARD 17)  # Explicitly set CUDA standard to C++17
 set(CMAKE_CUDA_STANDARD_REQUIRED ON)
-set(CMAKE_CUDA_ARCHITECTURES 75)  # Replace with your GPU's compute capability
+#set(CMAKE_CUDA_ARCHITECTURES 75)  # Replace with your GPU's compute capability
 
 # Make sure to use cuDNN
 set(USE_CUDNN ON CACHE BOOL "Enable cuDNN")
-find_package(CUDA REQUIRED)
+find_package(CUDAToolkit REQUIRED)
 if (CUDA_FOUND)
     message(STATUS "CUDA found: ${CUDA_VERSION}")
     include_directories(${CUDA_INCLUDE_DIRS})
