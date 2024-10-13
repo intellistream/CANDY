@@ -65,7 +65,8 @@ ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64:/us
 ENV CUDNN_INCLUDE_DIR=/usr/include
 ENV CUDNN_LIB_DIR=/usr/lib/x86_64-linux-gnu
 ENV CMAKE_PREFIX_PATH="/usr/local/libtorch/share/cmake/Torch"
-ENV TORCH_CUDA_ARCH_LIST="7.5+PTX"  # Replace 7.5 with the appropriate compute capability
+# Replace 7.5 with the appropriate compute capability
+ENV TORCH_CUDA_ARCH_LIST="7.5+PTX"
 
 # Configure SSH (For Development Only, avoid in production)
 RUN mkdir /var/run/sshd && \
