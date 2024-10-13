@@ -2,13 +2,14 @@ version: '3.8'
 
 services:
   candy:
-    build: .
+    build: ./
     environment:
       - CUDACXX=/usr/local/cuda/bin/nvcc
-    ports:
-      - "2222:22"  # Map SSH port for CLion
     volumes:
-      - "..:/workspace"  # Mount the project root to /workspace in the container
+      - "..:/workspace"
     working_dir: /workspace
+    entrypoint: /usr/sbin/sshd -D
     stdin_open: true
     tty: true
+    ports:
+      - "2222:22"  # Expose SSH port for remote connection
