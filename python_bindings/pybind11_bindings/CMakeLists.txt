@@ -49,7 +49,7 @@ install(TARGETS pycandy
 add_custom_command(TARGET pycandy
         POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:pycandy> ${PYTHON_SITE_PACKAGES}
-        COMMENT "Updating installed pycandy shared library"
+        COMMENT "Installing pycandy shared library at ${PYTHON_SITE_PACKAGES}"
 )
 
 ## Add a post-build custom command to automatically run `make install`
