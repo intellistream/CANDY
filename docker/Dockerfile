@@ -8,8 +8,6 @@ ENV DEBIAN_FRONTEND=noninteractive \
     LC_ALL=en_US.UTF-8
 
 RUN apt-get update -q && apt-get install -y -q \
-    --allow-downgrades \
-    --allow-remove-essential \
     --allow-change-held-packages \
     sudo \
     build-essential \
@@ -17,19 +15,19 @@ RUN apt-get update -q && apt-get install -y -q \
     curl \
     wget \
     unzip \
-    liblapack-dev \
-    libblas-dev \
-    libboost-dev \
-    libboost-all-dev \
-    swig \
-    graphviz \
     python3 \
     python3-pip \
     openssh-server \
     gdb \
     liblog4cxx-dev \
     git \
-    cuda-command-line-tools-11-7 \
+    cuda \
+    liblapack-dev \
+    libblas-dev \
+    graphviz \
+    libboost-dev \
+    libboost-all-dev \
+    swig \
     libcudnn8 \
     libcudnn8-dev \
     locales && \
@@ -40,7 +38,7 @@ RUN apt-get update -q && apt-get install -y -q \
     ln -s /usr/bin/python3 /usr/bin/python && \
     rm -f /usr/bin/pip && ln -s /usr/bin/pip3 /usr/bin/pip
 
-# Install Libtorch compatible with CUDA 11.6 or earlier
+# Install Libtorch compatible with CUDA 11.7 or earlier
 # Download libtorch.zip separately
 RUN wget -q --retry-connrefused --tries=5 --waitretry=5 -O libtorch.zip https://download.pytorch.org/libtorch/cu117/libtorch-shared-with-deps-1.13.1%2Bcu117.zip
 
