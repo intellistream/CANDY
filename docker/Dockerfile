@@ -39,29 +39,31 @@ RUN apt-get update -q && apt-get install -y -q --no-install-recommends \
     ln -s /usr/bin/python3 /usr/bin/python && \
     rm -f /usr/bin/pip && ln -s /usr/bin/pip3 /usr/bin/pip
 
-
 # Install a recent version of CMake
 RUN apt-get remove -y cmake && \
     curl -L https://github.com/Kitware/CMake/releases/download/v3.26.0/cmake-3.26.0-linux-x86_64.tar.gz | tar --strip-components=1 -xz -C /usr/local
 
 # Install Libtorch compatible with CUDA 11.6 or earlier
-RUN wget -q --retry-connrefused --tries=5 --waitretry=5 -O libtorch.zip https://download.pytorch.org/libtorch/cu116/libtorch-shared-with-deps-1.13.1%2Bcu116.zip && \
-    if [ -f libtorch.zip ]; then \
-        unzip libtorch.zip -d /usr/local/ && \
-        rm libtorch.zip; \
+# Download libtorch.zip separately
+RUN wget -q --retry-connrefused --tries=5 --waitretry=5 -O libtorch.zip https://download.pytorch.org/libtorch/cu117/libtorch-shared-with-deps-1.13.1%2Bcu117.zip
+
+# Extract Libtorch if the download was successful
+RUN if [ -f libtorch.zip ]; then \
+       unzip libtorch.zip -d /usr/local/ && \
+       rm libtorch.zip; \
     else \
-        echo "Libtorch download failed."; \
-        exit 1; \
+       echo "Libtorch download failed."; \
+       exit 1; \
     fi && \
     if [ ! -d "/usr/local/libtorch" ]; then \
-        echo "Extraction of Libtorch failed"; \
-        exit 1; \
+       echo "Extraction of Libtorch failed"; \
+       exit 1; \
     fi
 
 # Set environment variables for CUDA and cuDNN
 ENV PATH=/usr/local/cuda/bin:$PATH
 ENV CUDACXX=/usr/local/cuda/bin/nvcc
-ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64:/usr/local/cuda/lib64:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
+ENV LD_LIBRARY_PATH=/usr/local/libtorch/lib:/usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64:/usr/local/cuda/lib64:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
 ENV CUDNN_INCLUDE_DIR=/usr/include
 ENV CUDNN_LIB_DIR=/usr/lib/x86_64-linux-gnu
 ENV CUDNN_LIBRARY=/usr/lib/x86_64-linux-gnu/libcudnn.so
