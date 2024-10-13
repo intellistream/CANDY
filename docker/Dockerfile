@@ -28,6 +28,7 @@ RUN apt-get update -q && apt-get install -y -q --no-install-recommends \
     gdb \
     liblog4cxx-dev \
     git \
+    cuda-command-line-tools-11-7 \
     libcudnn8 \
     libcudnn8-dev \
     locales && \
@@ -36,7 +37,8 @@ RUN apt-get update -q && apt-get install -y -q --no-install-recommends \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     ln -s /usr/bin/python3 /usr/bin/python && \
-    ln -s /usr/bin/pip3 /usr/bin/pip
+    rm -f /usr/bin/pip && ln -s /usr/bin/pip3 /usr/bin/pip
+
 
 # Install a recent version of CMake
 RUN apt-get remove -y cmake && \
