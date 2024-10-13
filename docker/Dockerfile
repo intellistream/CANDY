@@ -15,6 +15,7 @@ RUN apt-get update -q && apt-get install -y -q --no-install-recommends \
     build-essential \
     cmake \
     curl \
+    wget \
     unzip \
     liblapack-dev \
     libblas-dev \
