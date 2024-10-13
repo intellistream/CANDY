@@ -2,5 +2,5 @@
 
 # Build and run the Docker container
 docker-compose build
-docker-compose up -d
+docker-compose up --remove-orphans -d
 

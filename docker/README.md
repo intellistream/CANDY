@@ -1,7 +1,7 @@
 1. Start the container with Docker Compose: `bash start.sh`
 2. Open CLion and navigate to `File > Settings > Build, Execution, Deployment > Toolchains`.
 3. Add a Remote Host toolchain:
-   - Host: `localhost`
+   - Host: `$HOST_IP_ADDRESS` (the ip addr of host running the container)
    - Port: `2222`
    - Username: `developer`
    - Password: `password` (or configure with SSH key)
