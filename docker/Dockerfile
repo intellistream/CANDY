@@ -40,10 +40,6 @@ RUN apt-get update -q && apt-get install -y -q --no-install-recommends \
     ln -s /usr/bin/python3 /usr/bin/python && \
     rm -f /usr/bin/pip && ln -s /usr/bin/pip3 /usr/bin/pip
 
-# Install a recent version of CMake
-RUN apt-get remove -y cmake && \
-    curl -L https://github.com/Kitware/CMake/releases/download/v3.26.0/cmake-3.26.0-linux-x86_64.tar.gz | tar --strip-components=1 -xz -C /usr/local
-
 # Install Libtorch compatible with CUDA 11.6 or earlier
 # Download libtorch.zip separately
 RUN wget -q --retry-connrefused --tries=5 --waitretry=5 -O libtorch.zip https://download.pytorch.org/libtorch/cu117/libtorch-shared-with-deps-1.13.1%2Bcu117.zip
