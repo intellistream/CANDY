@@ -42,7 +42,8 @@ target_include_directories(CANDY PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
 find_package(Log4cxx REQUIRED)
 target_link_libraries(CANDY PUBLIC ${Log4cxx_LIBRARY})
 
-# Link Libtorch (if needed)
+# Find and Link Libtorch (Pytorch C++ API)
+list(APPEND CMAKE_PREFIX_PATH "/usr/local/libtorch")
 find_package(Torch REQUIRED)
 target_link_libraries(CANDY PUBLIC "${TORCH_LIBRARIES}")
 
