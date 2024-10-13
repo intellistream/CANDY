@@ -2,7 +2,12 @@
 FROM nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.04
 
 # Install essential packages and dependencies
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --allow-change-held-packages \
+ENV DEBIAN_FRONTEND=noninteractive \
+    TZ=Etc/UTC \
+    LANGUAGE=en_US.UTF-8
+
+# Install essential packages and dependencies
+RUN apt-get update -q && apt-get install -y -q --allow-change-held-packages \
     sudo \
     build-essential \
     cmake \
@@ -24,8 +29,11 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --allow-
     libcudnn8 \
     libcudnn8-dev \
     nvidia-cuda-toolkit \
+    locales \
+    && echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
+    && locale-gen \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
 
 # Install Libtorch (example of installation process)
 RUN wget https://download.pytorch.org/libtorch/cu117/libtorch-shared-with-deps-2.0.1%2Bcu117.zip && \
