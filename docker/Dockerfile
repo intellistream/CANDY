@@ -28,8 +28,8 @@ RUN apt-get update -q && apt-get install -y -q --no-install-recommends \
     gdb \
     liblog4cxx-dev \
     git \
-    libcudnn8=8.4.1.* \
-    libcudnn8-dev=8.4.1.* \
+    libcudnn8 \
+    libcudnn8-dev \
     libcublas-dev \
     libnvrtc-dev \
     locales && \
