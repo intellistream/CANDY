@@ -18,6 +18,11 @@ $ cd <repository-directory>
 ```
 
 ### Step 2: Update the Dockerfile
+
+```bash
+cd docker
+```
+
 Ensure the Dockerfile is configured to allow SSH access. A root password should be securely set to prevent unauthorized access.
 
 You can modify the password in the Dockerfile:
@@ -25,6 +30,8 @@ You can modify the password in the Dockerfile:
 RUN echo 'root:YourStrongPasswordHere' | chpasswd
 ```
 Replace `YourStrongPasswordHere` with a strong, secure password.
+
+> it is set to root:root by default, i.e., username: root; password: root.
 
 ### Step 3: Update the Docker Compose File
 Ensure the `docker-compose.yml` is correctly set to build and run the Docker image, exposing the SSH port (default is `2222` in the example).

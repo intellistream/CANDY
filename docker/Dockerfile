@@ -16,13 +16,20 @@ RUN apt-get update && apt-get install -y --allow-change-held-packages \
     python3-pip \
     openssh-server \
     gdb \
-    liblog4cxx-dev \
-    git \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    wget \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies
-RUN pip3 install matplotlib pandas==2.0.0
+# Install Libtorch (example of installation process)
+RUN wget https://download.pytorch.org/libtorch/cu117/libtorch-shared-with-deps-2.0.1%2Bcu117.zip && \
+    unzip libtorch-shared-with-deps-2.0.1+cu117.zip -d /usr/local/ && \
+    mv /usr/local/libtorch /usr/local/libtorch && \
+    rm libtorch-shared-with-deps-2.0.1+cu117.zip
+
+# Verify that Libtorch has been correctly installed (Debugging)
+RUN if [ ! -d "/usr/local/libtorch" ]; then echo "Libtorch installation failed"; exit 1; fi
+
+# Set Libtorch environment variables
+ENV CMAKE_PREFIX_PATH="/usr/local/libtorch/share/cmake/Torch"
 
 # Set up CUDA environment variables
 ENV CUDACXX=/usr/local/cuda/bin/nvcc
