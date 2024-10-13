@@ -36,11 +36,6 @@ RUN mkdir /var/run/sshd && \
     mkdir -p /home/developer/.ssh && \
     chmod 700 /home/developer/.ssh
 
-# Copy SSH key into the container (replace with your public key file path)
-COPY id_rsa.pub /home/developer/.ssh/authorized_keys
-RUN chmod 600 /home/developer/.ssh/authorized_keys && \
-    chown -R developer:developer /home/developer/.ssh
-
 # Expose SSH port for remote connection
 EXPOSE 22
 
