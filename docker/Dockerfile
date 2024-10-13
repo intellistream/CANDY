@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y --allow-change-held-packages \
     python3 \
     python3-pip \
     openssh-server \
+    gdb \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
