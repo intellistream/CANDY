@@ -1,7 +1,7 @@
 # CMakeLists.txt (root)
 
-cmake_minimum_required(VERSION 3.15)
-project(CANDY CXX)
+cmake_minimum_required(VERSION 3.26)
+project(CANDY CXX CUDA)
 
 # Add the cmake/ directory to CMAKE_MODULE_PATH
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
