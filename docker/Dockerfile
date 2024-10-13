@@ -11,6 +11,8 @@ RUN apt-get update && apt-get install -y --allow-change-held-packages \
     liblapack-dev \
     libblas-dev \
     libboost-dev \
+    libboost-all-dev \
+    swig \
     graphviz \
     python3 \
     python3-pip \
@@ -18,6 +20,10 @@ RUN apt-get update && apt-get install -y --allow-change-held-packages \
     gdb \
     liblog4cxx-dev \
     git \
+    cuda \
+    libcudnn8 \
+    libcudnn8-dev \
+    nvidia-cuda-toolkit \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -27,7 +33,6 @@ RUN wget https://download.pytorch.org/libtorch/cu117/libtorch-shared-with-deps-2
     ls /usr/local && \
     ls /usr/local/libtorch && \
     rm libtorch-shared-with-deps-2.0.1+cu117.zip
-
 
 # Verify that Libtorch has been correctly installed (Debugging)
 RUN if [ ! -d "/usr/local/libtorch" ]; then echo "Extraction of Libtorch failed"; exit 1; fi
