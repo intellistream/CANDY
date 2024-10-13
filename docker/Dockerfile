@@ -42,10 +42,10 @@ RUN apt-get update -q && apt-get install -y -q --no-install-recommends \
 
 # Install a recent version of CMake
 RUN apt-get remove -y cmake && \
-    curl -L https://github.com/Kitware/CMake/releases/download/v3.23.0/cmake-3.23.0-linux-x86_64.tar.gz | tar --strip-components=1 -xz -C /usr/local
+    curl -L https://github.com/Kitware/CMake/releases/download/v3.26.0/cmake-3.26.0-linux-x86_64.tar.gz | tar --strip-components=1 -xz -C /usr/local
 
-# Install Libtorch (example of installation process)
-RUN wget -q --retry-connrefused --tries=5 --waitretry=5 -O libtorch.zip https://download.pytorch.org/libtorch/cu117/libtorch-shared-with-deps-2.0.1%2Bcu117.zip && \
+# Install Libtorch compatible with CUDA 11.6 or earlier
+RUN wget -q --retry-connrefused --tries=5 --waitretry=5 -O libtorch.zip https://download.pytorch.org/libtorch/cu116/libtorch-shared-with-deps-1.13.1%2Bcu116.zip && \
     if [ -f libtorch.zip ]; then \
         unzip libtorch.zip -d /usr/local/ && \
         rm libtorch.zip; \
@@ -61,11 +61,11 @@ RUN wget -q --retry-connrefused --tries=5 --waitretry=5 -O libtorch.zip https://
 # Set environment variables for CUDA and cuDNN
 ENV PATH=/usr/local/cuda/bin:$PATH
 ENV CUDACXX=/usr/local/cuda/bin/nvcc
-ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64:/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64:/usr/local/cuda/lib64:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
 ENV CUDNN_INCLUDE_DIR=/usr/include
 ENV CUDNN_LIB_DIR=/usr/lib/x86_64-linux-gnu
+ENV CUDNN_LIBRARY=/usr/lib/x86_64-linux-gnu/libcudnn.so
 ENV CMAKE_PREFIX_PATH="/usr/local/libtorch/share/cmake/Torch"
-# Replace 7.5 with the appropriate compute capability
 ENV TORCH_CUDA_ARCH_LIST="7.5+PTX"
 
 # Configure SSH (For Development Only, avoid in production)
