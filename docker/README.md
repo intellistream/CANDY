@@ -1,5 +1,4 @@
-1. Replace `id_rsa.pub` to your own public key.
-2. Start the container with Docker Compose: `docker-compose up -d`
+1. Start the container with Docker Compose: `bash start.sh`
 2. Open CLion and navigate to `File > Settings > Build, Execution, Deployment > Toolchains`.
 3. Add a Remote Host toolchain:
    - Host: `localhost`
