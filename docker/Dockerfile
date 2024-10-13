@@ -30,8 +30,6 @@ RUN apt-get update -q && apt-get install -y -q --no-install-recommends \
     git \
     libcudnn8 \
     libcudnn8-dev \
-    libcublas-dev \
-    libnvrtc-dev \
     locales && \
     echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
     locale-gen && \
