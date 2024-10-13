@@ -16,8 +16,10 @@ RUN apt-get update && apt-get install -y --allow-change-held-packages \
     python3-pip \
     openssh-server \
     gdb \
-    wget \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    liblog4cxx-dev \
+    git \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install Libtorch (example of installation process)
 RUN wget https://download.pytorch.org/libtorch/cu117/libtorch-shared-with-deps-2.0.1%2Bcu117.zip && \
