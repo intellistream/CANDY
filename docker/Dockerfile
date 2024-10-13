@@ -7,7 +7,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     LANG=en_US.UTF-8 \
     LC_ALL=en_US.UTF-8
 
-RUN apt-get update -q && apt-get install -y -q --no-install-recommends \
+RUN apt-get update -q && apt-get install -y -q \
     --allow-downgrades \
     --allow-remove-essential \
     --allow-change-held-packages \
