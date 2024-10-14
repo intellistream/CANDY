@@ -55,6 +55,10 @@ RUN if [ -f libtorch.zip ]; then \
        exit 1; \
     fi
 
+# Mark specific Git directories as safe to prevent 'dubious ownership' errors
+RUN git config --global --add safe.directory /workspace/build/_deps/catch2-src \
+    && git config --global --add safe.directory /workspace
+
 # Set environment variables for CUDA and cuDNN
 ENV PATH=/usr/local/cuda/bin:$PATH
 ENV CUDACXX=/usr/local/cuda/bin/nvcc

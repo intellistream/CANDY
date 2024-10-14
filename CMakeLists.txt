@@ -49,10 +49,13 @@ target_link_libraries(CANDY PUBLIC "${TORCH_LIBRARIES}")
 
 ## --- Add CUDA specific configuration ---
 ## Manually add CUDA flags to resolve CUDA20 dialect issue
-set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-extended-lambda --expt-relaxed-constexpr")
+set(CMAKE_CUDA_COMPILER "/usr/local/cuda/bin/nvcc")
+set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-extended-lambda --expt-relaxed-constexpr -std=c++17")  # Or replace with c++17 if supported
 set(CMAKE_CUDA_STANDARD 17)  # Explicitly set CUDA standard to C++17
 set(CMAKE_CUDA_STANDARD_REQUIRED ON)
-#set(CMAKE_CUDA_ARCHITECTURES 75)  # Replace with your GPU's compute capability
+set(CMAKE_CUDA_ARCHITECTURES 60 70 75) # Example for Pascal, Volta, Turing architectures
+set(CMAKE_CUDA_EXTENSIONS OFF)
+set(CUDA_SELECT_NVCC_ARCH_FLAGS OFF)
 
 # Make sure to use cuDNN
 set(USE_CUDNN ON CACHE BOOL "Enable cuDNN")

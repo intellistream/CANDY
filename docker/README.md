@@ -5,6 +5,7 @@ This guide will help developers set up a Docker container on a remote server to 
 ## Prerequisites
 
 - Remote server with Docker and Docker Compose installed.
+   > sudo apt-get install -y docker-ce containerd.io docker-compose
 - Local machine with CLion installed.
 - SSH access to the remote server.
 - Basic knowledge of Docker and SSH commands.
