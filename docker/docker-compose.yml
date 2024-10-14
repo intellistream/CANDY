@@ -5,6 +5,7 @@ services:
     build: ./
     environment:
       - CUDACXX=/usr/local/cuda/bin/nvcc
+      - NVIDIA_VISIBLE_DEVICES=all  # Expose all GPUs (optional)
     volumes:
       - "..:/workspace"
     working_dir: /workspace
@@ -13,3 +14,7 @@ services:
     tty: true
     ports:
       - "2222:22"  # Expose SSH port for remote connection
+    devices:
+      - /dev/nvidia0:/dev/nvidia0  # Expose GPU devices to the container
+      - /dev/nvidiactl:/dev/nvidiactl
+      - /dev/nvidia-uvm:/dev/nvidia-uvm

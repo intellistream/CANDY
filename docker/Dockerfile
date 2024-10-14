@@ -38,9 +38,22 @@ RUN apt-get update -q && apt-get install -y -q \
     ln -s /usr/bin/python3 /usr/bin/python && \
     rm -f /usr/bin/pip && ln -s /usr/bin/pip3 /usr/bin/pip
 
+# Install NVIDIA Container Toolkit for GPU support in Docker
+RUN distribution=$(. /etc/os-release;echo $ID$VERSION_ID) && \
+    curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add - && \
+    curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list && \
+    apt-get update && \
+    apt-get install -y nvidia-docker2 && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Set the NVIDIA runtime as the default for Docker
+RUN mkdir -p /etc/systemd/system/docker.service.d && \
+    echo '[Service]' > /etc/systemd/system/docker.service.d/override.conf && \
+    echo 'ExecStart=' >> /etc/systemd/system/docker.service.d/override.conf && \
+    echo 'ExecStart=/usr/bin/dockerd --add-runtime=nvidia=/usr/bin/nvidia-container-runtime' >> /etc/systemd/system/docker.service.d/override.conf
+
 # Install Libtorch compatible with CUDA 11.7 or earlier
-# Download libtorch.zip separately
-#RUN wget -q --retry-connrefused --tries=5 --waitretry=5 -O libtorch.zip https://download.pytorch.org/libtorch/cu117/libtorch-shared-with-deps-1.13.1%2Bcu117.zip
 RUN pip3 install torch torchvision torchaudio
 
 # Mark specific Git directories as safe to prevent 'dubious ownership' errors
