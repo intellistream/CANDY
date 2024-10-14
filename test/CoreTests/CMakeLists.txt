@@ -1,11 +1,10 @@
 # Define the executable for testing
-add_executable(core_tests core_tests.cpp)
-
-# Link the executable with the CANDY library
-target_link_libraries(core_tests PRIVATE CANDY Catch2::Catch2WithMain)
-
-# Include directories for headers
-target_include_directories(core_tests PRIVATE ${PROJECT_SOURCE_DIR}/include  ${Catch2_SOURCE_DIR}/src)
-
-# Register the test with Catch2
-catch_discover_tests(core_tests)
+macro(add_catch_test appName SOURCE_FILES)
+    add_executable(${appName} ${SOURCE_FILES})
+    # Link the executable with the CANDY library
+    target_link_libraries(${appName} PRIVATE CANDY Catch2::Catch2WithMain)
+    target_include_directories(${appName} PRIVATE ${PROJECT_SOURCE_DIR}/include ${Catch2_SOURCE_DIR}/src)
+    catch_discover_tests(${appName})
+endmacro()
+add_catch_test(core_tests core_tests.cpp)
+add_catch_test(torch_tests torch_tests.cpp)

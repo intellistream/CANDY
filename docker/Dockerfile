@@ -40,20 +40,8 @@ RUN apt-get update -q && apt-get install -y -q \
 
 # Install Libtorch compatible with CUDA 11.7 or earlier
 # Download libtorch.zip separately
-RUN wget -q --retry-connrefused --tries=5 --waitretry=5 -O libtorch.zip https://download.pytorch.org/libtorch/cu117/libtorch-shared-with-deps-1.13.1%2Bcu117.zip
-
-# Extract Libtorch if the download was successful
-RUN if [ -f libtorch.zip ]; then \
-       unzip libtorch.zip -d /usr/local/ && \
-       rm libtorch.zip; \
-    else \
-       echo "Libtorch download failed."; \
-       exit 1; \
-    fi && \
-    if [ ! -d "/usr/local/libtorch" ]; then \
-       echo "Extraction of Libtorch failed"; \
-       exit 1; \
-    fi
+#RUN wget -q --retry-connrefused --tries=5 --waitretry=5 -O libtorch.zip https://download.pytorch.org/libtorch/cu117/libtorch-shared-with-deps-1.13.1%2Bcu117.zip
+RUN pip3 install torch torchvision torchaudio
 
 # Mark specific Git directories as safe to prevent 'dubious ownership' errors
 RUN git config --global --add safe.directory /workspace/build/_deps/catch2-src \

@@ -40,3 +40,5 @@
 *.cmake
 */CMakeFiles/
 ThirdParty/libtorch/
+commit.sh
+commit_info

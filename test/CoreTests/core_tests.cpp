@@ -19,23 +19,23 @@ class MockSearchAlgorithm : public SearchAlgorithm {
  public:
   MockSearchAlgorithm() = default;  // Default constructor
 
-  void insert(size_t id, const std::vector<float>& vec) override {
+  void insert(size_t id, const std::vector<float> &vec) override {
     index[id] = vec;
   }
 
-  std::vector<size_t> query(const std::vector<float>& query_vec, size_t k) const override {
+  std::vector<size_t> query(const std::vector<float> &query_vec, size_t k) const override {
     // Vector to store pairs of id and computed distance
     std::vector<std::pair<size_t, float>> id_distance_pairs;
 
     // Compute the distance between the query vector and each vector in the index
-    for (const auto& entry : index) {
+    for (const auto &entry : index) {
       float distance = computeDistance(query_vec, entry.second);
       id_distance_pairs.emplace_back(entry.first, distance);
     }
 
     // Sort the pairs based on distance (ascending order)
     std::sort(id_distance_pairs.begin(), id_distance_pairs.end(),
-              [](const auto& a, const auto& b) { return a.second < b.second; });
+              [](const auto &a, const auto &b) { return a.second < b.second; });
 
     // Collect the IDs of the k nearest vectors
     std::vector<size_t> result_ids;
@@ -54,7 +54,7 @@ class MockSearchAlgorithm : public SearchAlgorithm {
   std::map<size_t, std::vector<float>> index;  // Use std::map for ordered iteration
 
   // Helper function to compute Euclidean distance between two vectors
-  float computeDistance(const std::vector<float>& vec1, const std::vector<float>& vec2) const {
+  float computeDistance(const std::vector<float> &vec1, const std::vector<float> &vec2) const {
     if (vec1.size() != vec2.size()) {
       // Handle dimension mismatch if necessary
       return std::numeric_limits<float>::max();
