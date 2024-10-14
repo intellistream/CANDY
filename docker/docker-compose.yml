@@ -14,7 +14,3 @@ services:
     tty: true
     ports:
       - "2222:22"  # Expose SSH port for remote connection
-    devices:
-      - /dev/nvidia0:/dev/nvidia0  # Expose GPU devices to the container
-      - /dev/nvidiactl:/dev/nvidiactl
-      - /dev/nvidia-uvm:/dev/nvidia-uvm
