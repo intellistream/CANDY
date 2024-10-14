@@ -1,4 +1,6 @@
 add_sources(benchmark_tool
+        scenarios.cpp
+        benchmark_config.cpp   
         benchmark_tool.cpp
 )
 

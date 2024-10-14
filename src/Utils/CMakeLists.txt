@@ -3,4 +3,5 @@ add_sources(CANDY
         error_handling.cpp
         logging.cpp
         timing.cpp
+        thread_pool.cpp
 )

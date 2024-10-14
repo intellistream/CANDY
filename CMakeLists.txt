@@ -38,6 +38,9 @@ add_library(CANDY SHARED ${CANDY_SOURCE_FILES} ${CANDY_HEADER_FILES})
 target_include_directories(CANDY PUBLIC ${PROJECT_SOURCE_DIR}/include) # Include the "include/" directory as a system path
 target_include_directories(CANDY PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
 
+# No need to link, as it's a header-only library
+target_include_directories(CANDY PUBLIC ${PROJECT_SOURCE_DIR}/ThirdParty/toml11/include)
+
 # Link with external libraries (e.g., Log4cxx)
 find_package(Log4cxx REQUIRED)
 target_link_libraries(CANDY PUBLIC ${Log4cxx_LIBRARY})
