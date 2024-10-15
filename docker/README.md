@@ -13,7 +13,8 @@ or
 cd docker
 ./DockeronWSL.sh # for wsl
 ```
-
+### A quick start glance
+Go to Setup.pdf
 ### Step 1: Clone the Repository
 Start by cloning the repository that contains the `docker-compose.yml`, `Dockerfile`, and the start script.
 ```bash
