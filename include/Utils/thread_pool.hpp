@@ -62,21 +62,14 @@ public:
     // crete a function with bounded parameters ready to execute
     std::function<decltype(f(args...))()> func = std::bind(std::forward<F>(f), std::forward<Args>(args)...);
 
-    // encapsulate it into a shared ptr in order to be able to copy construct / assign 
     auto task_ptr = std::make_shared<std::packaged_task<decltype(f(args...))()>>(func);
-
-    // wrap packaged task into void function
     std::function<void()> wrapper_func = [task_ptr]() {
         (*task_ptr)(); 
     };
 
-    // enqueue generic wrapper function
     m_queue.enqueue(wrapper_func);
-
-    // wake up one thread if its waiting
     m_conditional_lock.notify_one();
 
-    // return future from promise
     return task_ptr->get_future();     
   }
 };

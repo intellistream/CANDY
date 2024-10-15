@@ -1,19 +1,40 @@
 /*
  *  Copyright (C):  2024 by the INTELLI team
  *  Created by: Junyao Dong
- *  Created on: 2024/10/14 18:59:06
+ *  Created on: 2024/10/15 15:52:52
  *  Description:
  */
+
+#pragma once
+
 #include <Core/vector_db.hpp>
 
 #include <map>
 
 using namespace std;
 
-void insertScenario(VectorDB &db);
+class ScenarioConfig { 
+public:
+	ScenarioConfig(const string& conf);
 
-void queryScenario(VectorDB &db);
+	void load(const string& conf);
 
-void multiQueryInsertScenario(VectorDB &db);
+	int get_read_thread_count() const;
+	int get_write_thread_count() const;
 
-extern map<string, function<void(VectorDB &db)>> scenarios;
+	int query_thread_count;
+	int insert_thread_count;
+	int timeout_in_sec;
+	string index_type;
+	string scenario_name;
+};
+
+void insertScenario(VectorDB &db, ScenarioConfig &conf);
+
+void queryScenario(VectorDB &db, ScenarioConfig &conf);
+
+void multiQueryInsertScenario(VectorDB &db, ScenarioConfig &conf);
+
+extern const map<string, function<void(VectorDB &db, ScenarioConfig &conf)>> scenarios;
+
+extern const map<std::string, std::string> supported_index;

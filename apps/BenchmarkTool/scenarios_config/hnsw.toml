@@ -1,0 +1,5 @@
+scenrio = "multi_query_insert"
+index_type = "hnsw"
+query_thread_count = 10
+insert_thread_count = 10
+timeout_in_sec = 10
