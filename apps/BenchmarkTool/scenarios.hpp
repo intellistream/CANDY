@@ -1,7 +1,7 @@
 /*
  *  Copyright (C):  2024 by the INTELLI team
  *  Created by: Junyao Dong
- *  Created on: 2024/10/15 18:41:51
+ *  Created on: 2024/10/15 21:22:41
  *  Description:
  */
 
@@ -22,8 +22,11 @@ public:
 	int query_thread_count;
 	int insert_thread_count;
 	int timeout_in_sec;
+	int k_nearest;
 	string index_type;
 	string scenario_name;
+	string vector_source;
+	string dataset_path;
 };
 
 void insert_scenario(VectorDB &db, ScenarioConfig &conf);

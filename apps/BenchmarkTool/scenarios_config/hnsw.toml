@@ -1,5 +1,8 @@
-scenrio = "multi_query_insert"
+scenrio_name = "multi_query_insert"
 index_type = "hnsw"
 query_thread_count = 10
 insert_thread_count = 10
 timeout_in_sec = 10
+
+vector_source = "fvecs"
+dataset_path = "dataset/siftsmall/fvecs/siftsmall_base.fvecs"
