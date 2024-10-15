@@ -8,8 +8,8 @@ function(find_valid_cuda MIN_CUDA_VERSION MAX_CUDA_VERSION)
     # Loop over each candidate CUDA path
     foreach(CUDA_PATH ${CUDA_PATHS})
         # Search for nvcc in the current CUDA path
-        find_program(CUDA_COMPILER_PATH NAMES nvcc PATHS ${CUDA_PATH} NO_DEFAULT_PATH)
-
+        #find_program(CUDA_COMPILER_PATH NAMES nvcc PATHS ${CUDA_PATH} NO_DEFAULT_PATH)
+        set(CUDA_COMPILER_PATH ${CUDA_PATH}/nvcc)
         if (CUDA_COMPILER_PATH)
             # Run nvcc --version to get the version output
             execute_process(
@@ -42,6 +42,7 @@ function(find_valid_cuda MIN_CUDA_VERSION MAX_CUDA_VERSION)
         message(FATAL_ERROR "No valid CUDA compiler found in the range ${MIN_CUDA_VERSION} - ${MAX_CUDA_VERSION}.")
     endif()
     set(ENV{CUDACXX} ${CUDA_COMPILER_PATH})
+    message(STATUS "Finally use cuda at " $ENV{CUDACXX})
 endfunction()
 
 # Call the function to find valid CUDA compilers with a specific version range

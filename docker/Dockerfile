@@ -1,84 +1,49 @@
 # Base image with CUDA 11.7 and Python 3.10
 FROM nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.04
-
+ENV USER=candy
+ENV PASSWD=candy
 # Install essential packages and dependencies
-ENV DEBIAN_FRONTEND=noninteractive \
-    TZ=Etc/UTC \
-    LANG=en_US.UTF-8 \
-    LC_ALL=en_US.UTF-8
-
-RUN apt-get update -q && apt-get install -y -q \
-    --allow-change-held-packages \
+RUN apt-get update && apt-get install -y --allow-change-held-packages \
     sudo \
     build-essential \
     cmake \
     curl \
-    wget \
     unzip \
+    sudo \
+    liblapack-dev \
+    libblas-dev \
+    libboost-dev \
+    rsync \
+    nano \
+    libcudnn8 \
+    libcudnn8-dev \
+    graphviz \
     python3 \
     python3-pip \
     openssh-server \
     gdb \
     liblog4cxx-dev \
     git \
-    cuda \
-    liblapack-dev \
-    libblas-dev \
-    graphviz \
-    libboost-dev \
-    libboost-all-dev \
-    swig \
-    libcudnn8 \
-    libcudnn8-dev \
-    locales && \
-    echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
-    locale-gen && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* && \
-    ln -s /usr/bin/python3 /usr/bin/python && \
-    rm -f /usr/bin/pip && ln -s /usr/bin/pip3 /usr/bin/pip
+    && apt-get clean 
 
-# Install NVIDIA Container Toolkit for GPU support in Docker
-RUN distribution=$(. /etc/os-release;echo $ID$VERSION_ID) && \
-    curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add - && \
-    curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list && \
-    apt-get update && \
-    apt-get install -y nvidia-docker2 && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
 
-# Set the NVIDIA runtime as the default for Docker
-RUN mkdir -p /etc/systemd/system/docker.service.d && \
-    echo '[Service]' > /etc/systemd/system/docker.service.d/override.conf && \
-    echo 'ExecStart=' >> /etc/systemd/system/docker.service.d/override.conf && \
-    echo 'ExecStart=/usr/bin/dockerd --add-runtime=nvidia=/usr/bin/nvidia-container-runtime' >> /etc/systemd/system/docker.service.d/override.conf
-
-# Install Libtorch compatible with CUDA 11.7 or earlier
-RUN pip3 install torch torchvision torchaudio
-
-# Mark specific Git directories as safe to prevent 'dubious ownership' errors
-RUN git config --global --add safe.directory /workspace/build/_deps/catch2-src \
-    && git config --global --add safe.directory /workspace
-
-# Set environment variables for CUDA and cuDNN
-ENV PATH=/usr/local/cuda/bin:$PATH
-ENV CUDACXX=/usr/local/cuda/bin/nvcc
-ENV LD_LIBRARY_PATH=/usr/local/libtorch/lib:/usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64:/usr/local/cuda/lib64:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
-ENV CUDNN_INCLUDE_DIR=/usr/include
-ENV CUDNN_LIB_DIR=/usr/lib/x86_64-linux-gnu
-ENV CUDNN_LIBRARY=/usr/lib/x86_64-linux-gnu/libcudnn.so
-ENV CMAKE_PREFIX_PATH="/usr/local/libtorch/share/cmake/Torch"
-ENV TORCH_CUDA_ARCH_LIST="7.5+PTX"
-
-# Configure SSH (For Development Only, avoid in production)
+# Install Python dependencies
+RUN pip3 install torch matplotlib pandas==2.0.0
+# 添加用户并配置密码/Add user and config passwd
+RUN useradd -m ${USER} && yes ${PASSWD} | passwd ${USER}
+RUN usermod -G sudo ${USER}
+# Please use this folder for your clion project
+RUN mkdir /home/${USER}/candy
+RUN chown -R ${USER} /home/${USER}/candy
+# Configure SSH
 RUN mkdir /var/run/sshd && \
     echo 'root:root' | chpasswd && \
     sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
-    sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config && \
-    sed -i 's/#PermitEmptyPasswords no/PermitEmptyPasswords no/' /etc/ssh/sshd_config
+    sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config
 
-# Set up workspace directory
+# Set up workspace directory, only for root purpose of debuging
 WORKDIR /workspace
 
 # Default command to run SSH server
 CMD ["/usr/sbin/sshd", "-D"]
+

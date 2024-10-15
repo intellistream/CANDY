@@ -3,12 +3,16 @@
 This guide will help developers set up a Docker container on a remote server to allow CLion to connect and work seamlessly with the containerized environment. The setup involves running a Docker container with SSH capabilities so that the CLion IDE, running locally, can connect to the container for remote development. The remote container is CUDA-enabled to support GPU-accelerated development.
 
 ## Prerequisites
-
-- Remote server with Docker and Docker Compose installed.
-   > sudo apt-get install -y docker-ce containerd.io docker-compose
-- Local machine with CLion installed.
-- SSH access to the remote server.
-- Basic knowledge of Docker and SSH commands.
+You need to have docker installed, if not, try either the following
+```bash
+cd docker
+./DockerOnNativeUbuntu.sh # for native ubuntu, the docker installed in this way requires sudo to run
+```
+or
+```bash
+cd docker
+./DockeronWSL.sh # for wsl
+```
 
 ### Step 1: Clone the Repository
 Start by cloning the repository that contains the `docker-compose.yml`, `Dockerfile`, and the start script.
@@ -27,13 +31,19 @@ cd docker
 Ensure the Dockerfile is configured to allow SSH access. A root password should be securely set to prevent unauthorized access.
 
 You can modify the password in the Dockerfile:
+#### For the root user
 ```dockerfile
 RUN echo 'root:YourStrongPasswordHere' | chpasswd
 ```
 Replace `YourStrongPasswordHere` with a strong, secure password.
 
 > it is set to root:root by default, i.e., username: root; password: root.
-
+#### For the sudo user
+```dockerfile
+ENV USER=candy
+ENV PASSWD=candy
+```
+You can just change these marcos for user name and password
 ### Step 3: Update the Docker Compose File
 Ensure the `docker-compose.yml` is correctly set to build and run the Docker image, exposing the SSH port (default is `2222` in the example).
 
@@ -69,7 +79,7 @@ This script will:
 1. Stop and remove any previous instances of the Docker container.
 2. Build a new container without using the cache.
 3. Start the container in detached mode.
-
+If throw some errors of denney access, use ` sudo ./start.sh ` instead.
 ### Step 5: Configure SSH for Remote Development
 Once the container is up, it will have SSH enabled and listening on port `2222`. You can connect to it from your local IDE.
 
@@ -81,7 +91,11 @@ Once the container is up, it will have SSH enabled and listening on port `2222`.
    ```bash
    ssh root@<remote_server_ip> -p 2222
    ```
-   Replace `<remote_server_ip>` with the IP address of the remote server. Use the root password set in the Dockerfile.
+   or
+   ```bash
+   ssh candy@<remote_server_ip> -p 2222
+   ```
+   Replace `<remote_server_ip>` with the IP address of the remote server. Use the root password set in the Dockerfile, it should be 127.0.0.1 if everything is local
 
 ### Step 6: Set Up CLion for Remote Development
 
@@ -93,8 +107,9 @@ Once the container is up, it will have SSH enabled and listening on port `2222`.
     - Fill in the SSH connection details:
         - **Host**: `<remote_server_ip>`
         - **Port**: `2222`
-        - **Username**: `root`
+        - **Username**: `candy`
         - **Password**: Use the password set in Dockerfile.
+    Please just use this sudo user rather than root user, as no root is required by candy
 
 3. **Configure CMake**:
     - Go to `File > Settings > Build, Execution, Deployment > CMake`.
@@ -102,8 +117,9 @@ Once the container is up, it will have SSH enabled and listening on port `2222`.
     - Set **CMake options** if needed for CUDA or specific build configurations.
 
 4. **Sync Project**:
-    - When you open your project in CLion, it will automatically synchronize with the remote container.
-    - The `/workspace` directory in the container should mirror your project directory on the host machine.
+    - There is an automatic mapping of tmp folder, but it is ram-like and only valid when your docker is on.
+    - If you want make it consistently work, go to the ` Settings >Deployment `, chose the current machine, and change the mappings into /home/candy/candy.
+    - The `/home/candy/candy` directory in the container should mirror your project directory on the host machine.
 
 ### Step 7: Verify Configuration
 After the setup is complete, verify that CLion is able to:
