@@ -1,7 +1,7 @@
 /*
  *  Copyright (C):  2024 by the INTELLI team
  *  Created by: Junyao Dong
- *  Created on: 2024/10/15 15:52:52
+ *  Created on: 2024/10/15 18:41:51
  *  Description:
  */
 
@@ -19,9 +19,6 @@ public:
 
 	void load(const string& conf);
 
-	int get_read_thread_count() const;
-	int get_write_thread_count() const;
-
 	int query_thread_count;
 	int insert_thread_count;
 	int timeout_in_sec;
@@ -29,11 +26,11 @@ public:
 	string scenario_name;
 };
 
-void insertScenario(VectorDB &db, ScenarioConfig &conf);
+void insert_scenario(VectorDB &db, ScenarioConfig &conf);
 
-void queryScenario(VectorDB &db, ScenarioConfig &conf);
+void query_scenario(VectorDB &db, ScenarioConfig &conf);
 
-void multiQueryInsertScenario(VectorDB &db, ScenarioConfig &conf);
+void multi_query_insert_scenario(VectorDB &db, ScenarioConfig &conf);
 
 extern const map<string, function<void(VectorDB &db, ScenarioConfig &conf)>> scenarios;
 

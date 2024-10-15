@@ -6,7 +6,6 @@
  */
 #include <Performance/monitoring.hpp> // Performance utilities
 #include "scenarios.hpp"
-#include "benchmark_config.hpp"
 #include <Utils/logging.hpp>
 
 #include <iostream>
@@ -18,30 +17,30 @@ using namespace std;
 using namespace chrono;
 
 // Function to run a specific benchmark scenario
-void benchmarkScenario(VectorDB &db, const string &scenario_name) {
+void benchmarkScenario(VectorDB &db, ScenarioConfig &conf) {
 
-  auto it = scenarios.find(scenario_name);
+  auto it = scenarios.find(conf.scenario_name);
   if (it == scenarios.end()) { 
-    cout << "Scenario not found: " << scenario_name <<endl;
+    cout << "Scenario not found: " << conf.scenario_name <<endl;
   }
 
-  INTELLI_INFO("Running benchmark for: " + scenario_name);
+  INTELLI_INFO("Running benchmark for: " + conf.scenario_name);
   auto start = high_resolution_clock::now();
 
-  it->second(db);
+  it->second(db, conf);
 
   auto stop = high_resolution_clock::now();
   auto duration = duration_cast<milliseconds>(stop - start);
-  INTELLI_INFO(string("Time taken for ") + scenario_name + ": " + to_string(duration.count()) + " ms");
+  INTELLI_INFO(string("Time taken for ") + conf.scenario_name + 
+    ": " + to_string(duration.count()) + " ms");
 }
 
 // Function to run a series of benchmarks
-void runBenchmarks(VectorDB &db) {
+void runBenchmarks(VectorDB &db, ScenarioConfig &conf) {
   INTELLI_INFO("Starting benchmark tests...");  
 
   // Benchmark different scenarios
-  benchmarkScenario(db, "insert");
-  benchmarkScenario(db, "query");
+  benchmarkScenario(db, conf);
 
   INTELLI_INFO("Benchmark tests completed.");
 }
@@ -56,7 +55,7 @@ int main(int argc, char* argv[]) {
     INTELLI_ERROR(string("Usage: ") + argv[0] + " <config_file_path>");
     return 1;
   }
-  BenchmarkConfig conf(argv[1]);
+  ScenarioConfig conf(argv[1]);
 
   // Initialize the Vector Database with 3 dimensions and default search algorithm
   VectorDB db(3);
@@ -66,7 +65,7 @@ int main(int argc, char* argv[]) {
   monitor.start();
 
   // Run the benchmarks
-  runBenchmarks(db);
+  runBenchmarks(db, conf);
 
   // Stop performance monitoring and show results
   monitor.stop();

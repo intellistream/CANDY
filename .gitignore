@@ -1,7 +1,7 @@
 # Prerequisites
 *.d
 .idea/
-# Compiled Object files
+ *  Created on: 2024/10/15 18:39:41
 *.slo
 *.lo
 *.o
@@ -30,6 +30,9 @@
 *.exe
 *.out
 *.app
+
+# Log
+*.log
 
 /build
 /cmake-build-debug/

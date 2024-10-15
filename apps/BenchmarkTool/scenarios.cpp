@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2024 by the INTELLI team
  * Created by: Junyao Dong
- * Created on: 2024/10/14
+ *  Created on: 2024/10/15 18:45:36
  * Description: [Provide description here]
  */
 #include "scenarios.hpp"
@@ -86,11 +86,11 @@ void multi_query_insert_scenario(VectorDB &db, ScenarioConfig &conf) {
 
   
   for (int i = 0; i < conf.insert_thread_count; i++) { 
-    insert_futures.push_back(pool.submit(insert_vector_task, db, conf));
+    insert_futures.emplace_back(pool.submit(insert_vector_task, ref(db), ref(conf)));
   } 
 
   for (int i = 0; i < conf.query_thread_count; i++) { 
-    query_futures.push_back(pool.submit(query_vector_task, db, conf));
+    query_futures.emplace_back(pool.submit(query_vector_task, ref(db), ref(conf)));
   }
 
   // auto res = insert_futures[0].get();
