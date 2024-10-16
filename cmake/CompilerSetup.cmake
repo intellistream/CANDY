@@ -18,7 +18,7 @@ else ()
 endif ()
 
 # Set Compilation Flags
-set(CMAKE_CXX_FLAGS "-Wall -Werror=return-type -Wno-error=unused-variable -Wno-error=unused-parameter")
+set(CMAKE_CXX_FLAGS "-std=c++20 -Wall -Werror=return-type -Wno-error=unused-variable -Wno-error=unused-parameter")
 set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -DNO_RACE_CHECK -DIntelliStream_DEBUG_MODE=1")
 set(CMAKE_CXX_FLAGS_RELEASE "-Wno-ignored-qualifiers -Wno-sign-compare -O3")
 

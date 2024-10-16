@@ -36,7 +36,7 @@
 /cmake-build-debug/_deps/
 /cmake-build-release/
 /cmake-build-release/_deps/
-/.cmake/
-*.cmake
 */CMakeFiles/
 ThirdParty/libtorch/
+commit.sh
+commit_info

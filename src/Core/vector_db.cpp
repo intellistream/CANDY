@@ -24,7 +24,7 @@ size_t VectorDB::generate_id() {
 }
 
 // Insert a vector directly into the vector database (exclusive write access)
-bool VectorDB::insert_vector(const std::vector<float>& vec) {
+bool VectorDB::insert_vector(const std::vector<float> &vec) {
   if (vec.size() != dimensions) {
     std::cerr << "Error: Vector dimensions do not match the expected size (" << dimensions << ")." << std::endl;
     return false;
@@ -43,7 +43,7 @@ bool VectorDB::insert_vector(const std::vector<float>& vec) {
 }
 
 // Query the nearest vectors using the search algorithm (shared read access)
-std::vector<std::vector<float>> VectorDB::query_nearest_vectors(const std::vector<float>& query_vec, size_t k) const {
+std::vector<std::vector<float>> VectorDB::query_nearest_vectors(const std::vector<float> &query_vec, size_t k) const {
   if (query_vec.size() != dimensions) {
     std::cerr << "Error: Query vector dimensions do not match the expected size (" << dimensions << ")." << std::endl;
     return {};
@@ -80,7 +80,7 @@ void VectorDB::stop_streaming() {
 }
 
 // Insert a vector into the streaming queue (exclusive write access)
-void VectorDB::insert_streaming_vector(const std::vector<float>& vec) {
+void VectorDB::insert_streaming_vector(const std::vector<float> &vec) {
   if (vec.size() != dimensions) {
     std::cerr << "Error: Vector dimensions do not match the expected size (" << dimensions << ")." << std::endl;
     return;
@@ -119,7 +119,7 @@ void VectorDB::start_workers() {
 
 // Stop the worker threads
 void VectorDB::stop_workers() {
-  for (auto& worker : workers) {
+  for (auto &worker : workers) {
     if (worker.joinable()) {
       worker.join();  // Ensure all threads are properly joined
     }

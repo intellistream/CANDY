@@ -29,7 +29,7 @@ void benchmarkScenario(VectorDB &db, const string &scenario_name) {
       vector<float> query_vector = {static_cast<float>(i), static_cast<float>(i + 1), static_cast<float>(i + 2)};
       auto result = db.query_nearest_vectors(query_vector, 5);
       // Simulate some usage of the result
-      (void)result;
+      (void) result;
     }
   }
 

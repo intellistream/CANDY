@@ -12,7 +12,7 @@
 #include <memory>  // For shared_ptr
 
 // Function to display a vector result
-void display_result(const std::vector<float>& result) {
+void display_result(const std::vector<float> &result) {
   std::cout << "[";
   for (size_t i = 0; i < result.size(); ++i) {
     std::cout << result[i];
@@ -24,7 +24,7 @@ void display_result(const std::vector<float>& result) {
 }
 
 // Function to process k-Nearest Neighbor search query
-void process_knn_query(VectorDB& db) {
+void process_knn_query(VectorDB &db) {
   std::cout << "Enter query vector (comma separated values): ";
   std::string input;
   std::getline(std::cin, input);
@@ -47,13 +47,13 @@ void process_knn_query(VectorDB& db) {
   std::vector<std::vector<float>> results = db.query_nearest_vectors(query_vector, k);
 
   std::cout << "Top-" << k << " results (IDs): " << std::endl;
-  for (const auto& result : results) {
+  for (const auto &result : results) {
     display_result(result);
   }
 }
 
 // Function to process Approximate Nearest Neighbor search query
-void process_ann_query(VectorDB& db) {
+void process_ann_query(VectorDB &db) {
   std::cout << "Enter query vector (comma separated values): ";
   std::string input;
   std::getline(std::cin, input);
@@ -76,7 +76,7 @@ void process_ann_query(VectorDB& db) {
   std::vector<std::vector<float>> results = db.query_nearest_vectors(query_vector, k);
 
   std::cout << "Top-" << k << " approximate results (IDs): " << std::endl;
-  for (const auto& result : results) {
+  for (const auto &result : results) {
     display_result(result);
   }
 }
@@ -105,17 +105,13 @@ int main() {
     std::cin.ignore();  // Ignore newline character left in buffer
 
     switch (choice) {
-      case 1:
-        process_knn_query(db);
+      case 1:process_knn_query(db);
         break;
-      case 2:
-        process_ann_query(db);
+      case 2:process_ann_query(db);
         break;
-      case 3:
-        running = false;
+      case 3:running = false;
         break;
-      default:
-        std::cout << "Invalid choice. Please try again." << std::endl;
+      default:std::cout << "Invalid choice. Please try again." << std::endl;
         break;
     }
   }

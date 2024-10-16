@@ -21,17 +21,17 @@ int main() {
 
   // Flink-style API for vector streaming, transformation, and storage
   VectorDBStream::from(input_vectors)
-      .map([](const std::vector<float>& vec) {
+      .map([](const std::vector<float> &vec) {
         // Example map transformation: multiply each element by 2
         std::vector<float> transformed_vec(vec.size());
         std::transform(vec.begin(), vec.end(), transformed_vec.begin(), [](float v) { return v * 2; });
         return transformed_vec;
       })
-      .filter([](const std::vector<float>& vec) {
+      .filter([](const std::vector<float> &vec) {
         // Example filter: keep vectors with a sum of elements greater than 10
         return std::accumulate(vec.begin(), vec.end(), 0.0) > 10.0;
       })
-      .map_to_embedding([](const std::string& text) {
+      .map_to_embedding([](const std::string &text) {
         // Example LLM embedding generation (placeholder logic)
         std::vector<float> embedding = {1.0, 2.0, 3.0};  // Replace with real embedding from LLM
         return embedding;
@@ -43,7 +43,7 @@ int main() {
   std::vector<std::vector<float>> results = VectorDBStream::from({}).query_nearest(query_vec, 3);
 
   // Print the results
-  for (const auto& result_vec : results) {
+  for (const auto &result_vec : results) {
     for (float val : result_vec) {
       std::cout << val << " ";
     }

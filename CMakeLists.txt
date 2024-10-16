@@ -1,7 +1,12 @@
-# CMakeLists.txt (root)
-
 cmake_minimum_required(VERSION 3.15)
 project(CANDY CXX)
+# Logging setup (if needed)
+#include(cmake/LoggingSetup.cmake)
+include (cmake/FindCuda.cmake)
+include (cmake/FindTorch.cmake)
+find_package(Torch REQUIRED)
+# Add the cmake/ directory to CMAKE_MODULE_PATH
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 # Add the cmake/ directory to CMAKE_MODULE_PATH
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
@@ -9,19 +14,15 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 # Include necessary modules and options
 include(cmake/macros.cmake)
 include(cmake/DefaultOptions.cmake)
-
 # Set C++ Standard
-include(cmake/SetCXXStandard.cmake)
-
 # Determine OS and enable Log4cxx
-include(cmake/EnableLog4cxx.cmake)
-
+#include(cmake/EnableLog4cxx.cmake)
+#find_package(Log4cxx REQUIRED)
 # Compiler and build flag settings
 include(cmake/CompilerSetup.cmake)
-
-# Logging setup (if needed)
-include(cmake/LoggingSetup.cmake)
-
+# Link with external libraries (e.g., Log4cxx)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
+set(LIBRARIES ${LIBRARIES} ${TORCH_LIBRARIES})
 # Collect Source Files
 add_subdirectory(src)
 
@@ -38,9 +39,8 @@ add_library(CANDY SHARED ${CANDY_SOURCE_FILES} ${CANDY_HEADER_FILES})
 target_include_directories(CANDY PUBLIC ${PROJECT_SOURCE_DIR}/include) # Include the "include/" directory as a system path
 target_include_directories(CANDY PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
 
-# Link with external libraries (e.g., Log4cxx)
-find_package(Log4cxx REQUIRED)
-target_link_libraries(CANDY PUBLIC ${Log4cxx_LIBRARY})
+message(STATUS "Linked libs: ${LIBRARIES}")
+target_link_libraries(CANDY PUBLIC ${Log4cxx_LIBRARY} ${TORCH_LIBRARIES})
 
 # Set rpath for libCANDY.so to make it available to dependent libraries
 set_target_properties(CANDY PROPERTIES INSTALL_RPATH "$ORIGIN")
