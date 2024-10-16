@@ -39,7 +39,7 @@ function(find_valid_cuda MIN_CUDA_VERSION MAX_CUDA_VERSION)
 
     # If no valid CUDA was found, print a warning
     if (NOT VALID_CUDA_FOUND)
-        message(FATAL_ERROR "No valid CUDA compiler found in the range ${MIN_CUDA_VERSION} - ${MAX_CUDA_VERSION}.")
+        message(WARNING "No valid CUDA compiler found in the range ${MIN_CUDA_VERSION} - ${MAX_CUDA_VERSION}. I don't think you can use CUDA...")
     endif()
     set(ENV{CUDACXX} ${CUDA_COMPILER_PATH})
     message(STATUS "Finally use cuda at " $ENV{CUDACXX})
