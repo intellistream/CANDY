@@ -9,12 +9,17 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <filesystem>
 
 using namespace std;
 
 int load_fvecs_data(string filename, float*& data, unsigned& num, unsigned& dim) { 
+  std::cout << "Current working directory: " << std::filesystem::current_path() << std::endl;
+    
   ifstream in(filename, ios::binary);
   if (!in.is_open()) {
+
+    cout << std::filesystem::exists(filename) << "ss";
     return -1;
   }
 

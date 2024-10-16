@@ -22,13 +22,16 @@ void benchmarkScenario(VectorDB &db, ScenarioConfig &conf) {
   auto it = scenarios.find(conf.scenario_name);
   if (it == scenarios.end()) { 
     cout << "Scenario not found: " << conf.scenario_name <<endl;
+    exit(EXIT_FAILURE);
   }
+
+  cout << "Scenario found: " << conf.scenario_name <<endl;
 
   INTELLI_INFO("Running benchmark for: " + conf.scenario_name);
   auto start = high_resolution_clock::now();
-
-  it->second(db, conf);
-
+  
+  it->second(db, conf); 
+  std::cout << "yyssy\n ";
   auto stop = high_resolution_clock::now();
   auto duration = duration_cast<milliseconds>(stop - start);
   INTELLI_INFO(string("Time taken for ") + conf.scenario_name + 
