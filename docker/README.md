@@ -3,15 +3,10 @@
 This guide will help developers set up a Docker container on a remote server to allow CLion to connect and work seamlessly with the containerized environment. The setup involves running a Docker container with SSH capabilities so that the CLion IDE, running locally, can connect to the container for remote development. The remote container is CUDA-enabled to support GPU-accelerated development.
 
 ## Prerequisites
-You need to have docker installed, if not, try either the following
+You need to have docker installed, if not, try the following
 ```bash
 cd docker
 ./DockerOnNativeUbuntu.sh # for native ubuntu, the docker installed in this way requires sudo to run
-```
-or
-```bash
-cd docker
-./DockeronWSL.sh # for wsl
 ```
 ### A quick start glance
 Go to Setup.pdf
@@ -71,16 +66,14 @@ Use the provided `start.sh` script to build and run the Docker container.
 **Run the following commands**:
 ```bash
 # Make the start script executable
-$ chmod +x start.sh
-
 # Run the start script
-$ ./start.sh
+$ bash start.sh
 ```
 This script will:
 1. Stop and remove any previous instances of the Docker container.
 2. Build a new container without using the cache.
 3. Start the container in detached mode.
-If throw some errors of denney access, use ` sudo ./start.sh ` instead.
+If throw some errors of denney access, use ` sudo bash start.sh ` instead.
 ### Step 5: Configure SSH for Remote Development
 Once the container is up, it will have SSH enabled and listening on port `2222`. You can connect to it from your local IDE.
 
