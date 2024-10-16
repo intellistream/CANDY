@@ -145,3 +145,15 @@ string ConfigParser::get_config(const string & sec, const string & key) {
   }
   return "";
 }
+
+string ConfigParser::get_def_config(const string & sec, const string & key, const string & def)
+{
+  const map<string, string> * psec = get_section_config(sec);
+  if (psec) {
+    auto it = psec->find(key);
+    if (it != psec->end()) {
+      return it->second;
+    }
+  }
+  return def;
+}
