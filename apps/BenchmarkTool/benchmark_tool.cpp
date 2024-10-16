@@ -4,52 +4,59 @@
  * Created on: 2024/10/9
  * Description: [Provide description here]
  */
-#include <Core/vector_db.hpp>
 #include <Performance/monitoring.hpp> // Performance utilities
+#include "scenarios.hpp"
+#include <Utils/logging.hpp>
 
 #include <iostream>
 #include <chrono>
+#include <map>
+#include <string>
 
 using namespace std;
 using namespace chrono;
 
 // Function to run a specific benchmark scenario
-void benchmarkScenario(VectorDB &db, const string &scenario_name) {
-  cout << "Running benchmark for: " << scenario_name << endl;
+void benchmarkScenario(VectorDB &db, ScenarioConfig &conf) {
+
+  auto it = scenarios.find(conf.scenario_name);
+  if (it == scenarios.end()) { 
+    cout << "Scenario not found: " << conf.scenario_name <<endl;
+    exit(EXIT_FAILURE);
+
+  INTELLI_INFO("Running benchmark for: " + conf.scenario_name);
   auto start = high_resolution_clock::now();
-
-  // Run the benchmark scenario (e.g., Insert, Query, Delete)
-  if (scenario_name == "insert") {
-    for (int i = 0; i < 10000; ++i) {
-      vector<float> new_vector = {static_cast<float>(i), static_cast<float>(i + 1), static_cast<float>(i + 2)};
-      db.insert_vector(new_vector);
-    }
-  } else if (scenario_name == "query") {
-    for (int i = 0; i < 1000; ++i) {
-      vector<float> query_vector = {static_cast<float>(i), static_cast<float>(i + 1), static_cast<float>(i + 2)};
-      auto result = db.query_nearest_vectors(query_vector, 5);
-      // Simulate some usage of the result
-      (void) result;
-    }
-  }
-
+  
+  it->second(db, conf); 
+  
   auto stop = high_resolution_clock::now();
   auto duration = duration_cast<milliseconds>(stop - start);
-  cout << "Time taken for " << scenario_name << ": " << duration.count() << " ms" << endl;
+  INTELLI_INFO(string("Time taken for ") + conf.scenario_name + 
+    ": " + to_string(duration.count()) + " ms");
 }
 
 // Function to run a series of benchmarks
-void runBenchmarks(VectorDB &db) {
-  cout << "Starting benchmark tests..." << endl;
+void runBenchmarks(VectorDB &db, ScenarioConfig &conf) {
+  INTELLI_INFO("Starting benchmark tests...");  
 
   // Benchmark different scenarios
-  benchmarkScenario(db, "insert");
-  benchmarkScenario(db, "query");
+  benchmarkScenario(db, conf);
 
-  cout << "Benchmark tests completed." << endl;
+  INTELLI_INFO("Benchmark tests completed.");
 }
 
-int main() {
+int main(int argc, char* argv[]) {
+
+  // Init logging
+  setupLogging("benchmark.log", LOG_INFO);
+
+  // Parse the benchmark file
+  if (argc < 2) { 
+    INTELLI_ERROR(string("Usage: ") + argv[0] + " <config_file_path>");
+    return 1;
+  }
+  ScenarioConfig conf(argv[1]);
+
   // Initialize the Vector Database with 3 dimensions and default search algorithm
   VectorDB db(3);
 
@@ -58,7 +65,7 @@ int main() {
   monitor.start();
 
   // Run the benchmarks
-  runBenchmarks(db);
+  runBenchmarks(db, conf);
 
   // Stop performance monitoring and show results
   monitor.stop();

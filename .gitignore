@@ -1,6 +1,7 @@
 # Prerequisites
 *.d
 .idea/
+
 # Compiled Object files
 *.slo
 *.lo
@@ -31,6 +32,9 @@
 *.out
 *.app
 
+# Log
+*.log
+
 /build
 /cmake-build-debug/
 /cmake-build-debug/_deps/
@@ -38,5 +42,12 @@
 /cmake-build-release/_deps/
 */CMakeFiles/
 ThirdParty/libtorch/
+
+*/__pycache__/
+
+*/hdf5/
+*/fvecs/
+
 commit.sh
 commit_info
+
