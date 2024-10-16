@@ -1,5 +1,5 @@
 # Notes
-   - Please just run start.sh
+   - Please just run `./start.sh`
    - If your computer is reboot, run this again
 ## What does this do?
    - If you have cuda, then install the cuda-based packages
