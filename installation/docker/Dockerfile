@@ -24,6 +24,7 @@ RUN apt-get update && apt-get install -y --allow-change-held-packages \
     gdb \
     liblog4cxx-dev \
     git \
+    libcupti-dev \
     && apt-get clean 
 
 
