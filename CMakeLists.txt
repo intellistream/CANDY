@@ -39,7 +39,6 @@ add_library(CANDY SHARED ${CANDY_SOURCE_FILES} ${CANDY_HEADER_FILES})
 target_include_directories(CANDY PUBLIC ${PROJECT_SOURCE_DIR}/include) # Include the "include/" directory as a system path
 target_include_directories(CANDY PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
 
-find_package(Log4cxx REQUIRED)
 message(STATUS "Linked libs: ${LIBRARIES}")
 target_link_libraries(CANDY PUBLIC ${Log4cxx_LIBRARY} ${TORCH_LIBRARIES})
 
