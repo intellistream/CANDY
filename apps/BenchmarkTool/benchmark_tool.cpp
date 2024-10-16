@@ -31,7 +31,7 @@ void benchmarkScenario(VectorDB &db, ScenarioConfig &conf) {
   auto start = high_resolution_clock::now();
   
   it->second(db, conf); 
-  std::cout << "yyssy\n ";
+  
   auto stop = high_resolution_clock::now();
   auto duration = duration_cast<milliseconds>(stop - start);
   INTELLI_INFO(string("Time taken for ") + conf.scenario_name + 
