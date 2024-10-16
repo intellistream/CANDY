@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2024 by the INTELLI team
  * Created by: Junyao Dong
- *  Created on: 2024/10/16 13:23:29
+ *  Created on: 2024/10/16 14:12:04
  * Description: [Provide description here]
  */
 #include "scenarios.hpp"
@@ -33,20 +33,19 @@ ScenarioConfig::ScenarioConfig(const string& conf_path) {
 }
 
 void ScenarioConfig::load(const string& conf_path) { 
-  ConfigParser *cp = new ConfigParser();
-  bool res = cp->parser(conf_path);
-  if (res) { 
-    // base section 
-    scenario_name = cp->get_config("base", "scenario_name");
-    index_type = cp->get_config("base", "index_type");
-    vector_source = cp->get_config("base", "vector_source");
-    k_nearest = stoi(cp->get_config("base", "k_nearest"));
-    query_thread_count = stoi(cp->get_def_config("base", "query_thread_count", "1"));
-    insert_thread_count = stoi(cp->get_def_config("base", "insert_thread_count", "0"));
-    timeout_in_sec = stoi(cp->get_def_config("base", "timeout_in_sec", "10"));
+  ConfigParser cp{conf_path};
 
-    // advanced section
-  }
+  // base section 
+  scenario_name = cp.Get("base", "scenario_name");
+  index_type = cp.Get("base", "index_type");
+  vector_source = cp.Get("base", "vector_source");
+  dataset_path =cp.Get("base", "dataset_path");
+  k_nearest = cp.Get<int>("base", "k_nearest");
+  query_thread_count = cp.Get<int>("base", "query_thread_count", 1);
+  insert_thread_count = cp.Get<int>("base", "insert_thread_count", 0);
+  timeout_in_sec = cp.Get<int>("base", "timeout_in_sec", 10);
+
+  // advanced section
 }
 
 void insert_scenario(VectorDB &db, ScenarioConfig &conf) { 
@@ -64,7 +63,6 @@ void query_scenario(VectorDB &db, ScenarioConfig &conf) {
 }
 
 void multi_query_insert_scenario(VectorDB &db, ScenarioConfig &conf) { 
-  std::cout << "yyssy\n ";
   float* data_load = NULL;
   unsigned points_num, dim;
   
@@ -78,7 +76,6 @@ void multi_query_insert_scenario(VectorDB &db, ScenarioConfig &conf) {
   ThreadPool pool(conf.query_thread_count + conf.insert_thread_count);
   pool.init();
 
-  std::cout << "yyy\n ";
   if (conf.vector_source == "fvecs") {
     // load data from fvecs
     if (load_fvecs_data(conf.dataset_path, data_load, points_num, dim) != 0) { 
@@ -93,7 +90,6 @@ void multi_query_insert_scenario(VectorDB &db, ScenarioConfig &conf) {
     exit(EXIT_FAILURE);
   }
   
-  std::cout << "yyy\n ";
   for (int i = 0; i < conf.insert_thread_count; i++) { 
     int n = dis(gen);
     vector<float> vec(data_load + n * dim, data_load + (n + 1) * dim);

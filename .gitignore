@@ -1,7 +1,8 @@
 # Prerequisites
 *.d
 .idea/
- *  Created on: 2024/10/15 18:39:41
+
+# Compiled Object files
 *.slo
 *.lo
 *.o
@@ -43,3 +44,7 @@
 *.cmake
 */CMakeFiles/
 ThirdParty/libtorch/
+*/__pycache__/
+
+*/hdf5/
+*/fvecs/
