@@ -11,32 +11,28 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@v2
-
-      - name: Install liblog4cxx
-        run: sudo apt-get install -y liblog4cxx-dev
-
-      - name: Install g++-11
+      - name: Install toolchains
         run: |
           sudo apt-get update
           sudo apt install gcc-11 g++-11
           sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 11
           sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 11
-
-      - name: Initialize and update submodules
-        run: git submodule update --init --recursive
-
+          sudo apt install gcc g++ cmake python3 pip libboost-dev libboost-all-dev
+      - name: Install torch
+        run: |
+          sudo pip3 install torch==2.4.0 torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu
       - name: Configure CMake
         run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
       - name: Build
         run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
         env:
-          CC: gcc-11
-          CXX: g++-11
+          CC: gcc
+          CXX: g++
 
       - name: List Build Directory Contents
         run: ls -la ${{github.workspace}}/build

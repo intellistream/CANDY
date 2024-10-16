@@ -14,6 +14,7 @@ db = VectorDB(128, search_algorithm)
 # Initialize the vector database and embedding models
 text_preprocessor = TextPreprocessor()
 
+
 # Function to allow data ingestion by a user until they decide to stop
 def data_ingestion():
     user_inputs = []
@@ -32,6 +33,7 @@ def data_ingestion():
         db.insert_vector(embedding)
         print(f"\n[Data Ingestion] Successfully stored: '{user_input}'")
 
+
 # Function to allow interactive querying by a user
 def interactive_query():
     while True:
@@ -46,6 +48,7 @@ def interactive_query():
         results = db.query_nearest_vectors(query_embedding, k=3)
         print(f"\n[Interactive Query Results] Retrieved Nearest Vectors for '{user_query}':\n{results}\n")
 
+
 # Main function to start data ingestion and querying
 def main():
     # First, allow the user to input all data for ingestion
@@ -53,6 +56,7 @@ def main():
 
     # Then, start interactive querying
     interactive_query()
+
 
 if __name__ == "__main__":
     main()

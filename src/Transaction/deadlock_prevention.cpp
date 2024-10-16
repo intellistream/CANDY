@@ -7,7 +7,7 @@
 #include <Transaction/deadlock_prevention.hpp>
 DeadlockPrevention::DeadlockPrevention() {}
 
-bool DeadlockPrevention::acquire_lock(const std::string& transaction_id, const std::string& resource_id) {
+bool DeadlockPrevention::acquire_lock(const std::string &transaction_id, const std::string &resource_id) {
   std::lock_guard<std::mutex> lock(graph_mutex);
 
   // Add an edge in the wait-for graph
@@ -25,11 +25,11 @@ bool DeadlockPrevention::acquire_lock(const std::string& transaction_id, const s
   return true;
 }
 
-void DeadlockPrevention::release_lock(const std::string& transaction_id, const std::string& resource_id) {
+void DeadlockPrevention::release_lock(const std::string &transaction_id, const std::string &resource_id) {
   std::lock_guard<std::mutex> lock(graph_mutex);
 
   // Remove the resource from the wait-for graph
-  auto& resources = wait_for_graph[transaction_id];
+  auto &resources = wait_for_graph[transaction_id];
   resources.erase(std::remove(resources.begin(), resources.end(), resource_id), resources.end());
 
   // If no more resources are held by the transaction, remove it from the graph
@@ -38,7 +38,8 @@ void DeadlockPrevention::release_lock(const std::string& transaction_id, const s
   }
 }
 
-std::optional<std::vector<std::string>> DeadlockPrevention::detect_deadlock(const std::string& transaction_id, const std::string& resource_id) {
+std::optional<std::vector<std::string>> DeadlockPrevention::detect_deadlock(const std::string &transaction_id,
+                                                                            const std::string &resource_id) {
   std::lock_guard<std::mutex> lock(graph_mutex);
 
   // Add the edge temporarily to check for deadlock
@@ -49,7 +50,7 @@ std::optional<std::vector<std::string>> DeadlockPrevention::detect_deadlock(cons
   if (has_cycle(transaction_id, visited, recursion_stack)) {
     // If a cycle is detected, return the list of transactions involved in the deadlock
     std::vector<std::string> deadlock_cycle;
-    for (const auto& entry : recursion_stack) {
+    for (const auto &entry : recursion_stack) {
       if (entry.second) {
         deadlock_cycle.push_back(entry.first);
       }
@@ -64,14 +65,16 @@ std::optional<std::vector<std::string>> DeadlockPrevention::detect_deadlock(cons
   return std::nullopt;
 }
 
-bool DeadlockPrevention::has_cycle(const std::string& transaction_id, std::unordered_map<std::string, bool>& visited, std::unordered_map<std::string, bool>& recursion_stack) {
+bool DeadlockPrevention::has_cycle(const std::string &transaction_id,
+                                   std::unordered_map<std::string, bool> &visited,
+                                   std::unordered_map<std::string, bool> &recursion_stack) {
   if (!visited[transaction_id]) {
     // Mark the current node as visited and add to recursion stack
     visited[transaction_id] = true;
     recursion_stack[transaction_id] = true;
 
     // Recur for all the vertices adjacent to this vertex
-    for (const auto& neighbor : wait_for_graph[transaction_id]) {
+    for (const auto &neighbor : wait_for_graph[transaction_id]) {
       if (!visited[neighbor] && has_cycle(neighbor, visited, recursion_stack)) {
         return true;
       } else if (recursion_stack[neighbor]) {

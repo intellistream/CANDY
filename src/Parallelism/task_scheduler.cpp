@@ -17,7 +17,7 @@ class ThreadPoolTaskScheduler : public TaskScheduler {
       : num_threads_(num_threads) {}
 
   // Implementation of parallel_for using multiple threads
-  void parallel_for(size_t start, size_t end, const std::function<void(size_t)>& func) const override {
+  void parallel_for(size_t start, size_t end, const std::function<void(size_t)> &func) const override {
     size_t range = end - start;
     size_t chunk_size = (range + num_threads_ - 1) / num_threads_;
 
@@ -37,7 +37,7 @@ class ThreadPoolTaskScheduler : public TaskScheduler {
       });
     }
 
-    for (auto& thread : threads) {
+    for (auto &thread : threads) {
       if (thread.joinable()) {
         thread.join();
       }
