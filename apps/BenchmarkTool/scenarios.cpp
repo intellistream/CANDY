@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2024 by the INTELLI team
  * Created by: Junyao Dong
- *  Created on: 2024/10/16 14:12:04
+ * Created on: 2024/10/16 14:12:04
  * Description: [Provide description here]
  */
 #include "scenarios.hpp"
@@ -22,6 +22,7 @@ const map<string, function<void(VectorDB &db, ScenarioConfig &conf)>> scenarios 
   {"multi_query_insert", multi_query_insert_scenario}
 };
 
+// TODO
 const map<std::string, std::string> supported_index = {
 	{"hnsw", "xxx"}, 
 	{"concurrent_hnsw", "xxx"}, 
@@ -33,19 +34,16 @@ ScenarioConfig::ScenarioConfig(const string& conf_path) {
 }
 
 void ScenarioConfig::load(const string& conf_path) { 
-  ConfigParser cp{conf_path};
+  ConfigParser parser;
 
-  // base section 
-  scenario_name = cp.Get("base", "scenario_name");
-  index_type = cp.Get("base", "index_type");
-  vector_source = cp.Get("base", "vector_source");
-  dataset_path =cp.Get("base", "dataset_path");
-  k_nearest = cp.Get<int>("base", "k_nearest");
-  query_thread_count = cp.Get<int>("base", "query_thread_count", 1);
-  insert_thread_count = cp.Get<int>("base", "insert_thread_count", 0);
-  timeout_in_sec = cp.Get<int>("base", "timeout_in_sec", 10);
-
-  // advanced section
+  scenario_name = parser.get_string("scenario_name");
+  index_type = parser.get_string("base", "index_type");
+  vector_source = parser.get_string("base", "vector_source");
+  dataset_path = parser.get_string("base", "dataset_path");
+  k_nearest =  parser.get_int("k_nearest");
+  query_thread_count = parser.get_int("query_thread_count", 1);
+  insert_thread_count = parser.get_int("insert_thread_count", 0);
+  timeout_in_sec = parser.get_int("timeout_in_sec", 10);
 }
 
 void insert_scenario(VectorDB &db, ScenarioConfig &conf) { 
