@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2024 by the INTELLI team
  * Created by: Junyao Dong
- *  Created on: 2024/10/16 21:03:30
+ *  Created on: 2024/10/17 17:12:10
  * Description: [Provide description here]
  */
 #include "scenarios.hpp"
@@ -22,6 +22,7 @@ const map<string, function<void(VectorDB &db, ScenarioConfig &conf)>> scenarios 
   {"multi_query_insert", multi_query_insert_scenario}
 };
 
+// TODO
 const map<std::string, std::string> supported_index = {
 	{"hnsw", "xxx"}, 
 	{"concurrent_hnsw", "xxx"}, 
