@@ -1,4 +1,5 @@
 # Notes
+   - Ubuntu 22.04 is required. Ubuntu 22.04 WSL also tested.
    - Please just run `./start.sh`
    - If your computer is reboot, run this again
 ## What does this do?
