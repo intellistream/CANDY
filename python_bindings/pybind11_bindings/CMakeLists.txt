@@ -25,6 +25,7 @@ execute_process(
         OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
+
 # Link the VectorDBCore library to the pycandy module
 target_link_libraries(pycandy PRIVATE CANDY)
 
@@ -35,8 +36,22 @@ target_include_directories(pycandy PRIVATE
         ${PYTHON_SITE_PACKAGES}/include
 )
 
-# Set rpath to include the directory of libCANDY.so
-set_target_properties(pycandy PROPERTIES INSTALL_RPATH "$ORIGIN")
+
+# Set rpath for libCANDY.so to make it available to dependent libraries
+# Use Python to get the torch library path dynamically
+execute_process(
+        COMMAND python3 -c "import torch; import os; print(os.path.join(os.path.dirname(torch.__file__), 'lib'))"
+        OUTPUT_VARIABLE TORCH_LIB_PATH
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+# Print the torch library path for debugging
+message(STATUS "PyTorch library path: ${TORCH_LIB_PATH}")
+
+# Set RPATH to use $ORIGIN and the dynamic PyTorch library path
+set_target_properties(pycandy PROPERTIES
+        INSTALL_RPATH "$ORIGIN:${TORCH_LIB_PATH}"
+)
 
 # Ensure the Python user site-packages directory exists
 file(MAKE_DIRECTORY ${PYTHON_SITE_PACKAGES})

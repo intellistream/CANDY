@@ -14,12 +14,8 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 # Include necessary modules and options
 include(cmake/macros.cmake)
 include(cmake/DefaultOptions.cmake)
-# Set C++ Standard
-# Determine OS and enable Log4cxx
-#include(cmake/EnableLog4cxx.cmake)
-#find_package(Log4cxx REQUIRED)
-# Compiler and build flag settings
 include(cmake/CompilerSetup.cmake)
+
 # Link with external libraries (e.g., Log4cxx)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
 set(LIBRARIES ${LIBRARIES} ${TORCH_LIBRARIES})
@@ -40,10 +36,23 @@ target_include_directories(CANDY PUBLIC ${PROJECT_SOURCE_DIR}/include) # Include
 target_include_directories(CANDY PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
 
 message(STATUS "Linked libs: ${LIBRARIES}")
-target_link_libraries(CANDY PUBLIC ${Log4cxx_LIBRARY} ${TORCH_LIBRARIES})
+target_link_libraries(CANDY PUBLIC ${TORCH_LIBRARIES})
 
 # Set rpath for libCANDY.so to make it available to dependent libraries
-set_target_properties(CANDY PROPERTIES INSTALL_RPATH "$ORIGIN")
+# Use Python to get the torch library path dynamically
+execute_process(
+        COMMAND python3 -c "import torch; import os; print(os.path.join(os.path.dirname(torch.__file__), 'lib'))"
+        OUTPUT_VARIABLE TORCH_LIB_PATH
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+# Print the torch library path for debugging
+message(STATUS "PyTorch library path: ${TORCH_LIB_PATH}")
+
+# Set RPATH to use $ORIGIN and the dynamic PyTorch library path
+set_target_properties(CANDY PROPERTIES
+        INSTALL_RPATH "$ORIGIN:${TORCH_LIB_PATH}"
+)
 
 # Add applications that depend on the CANDY library
 add_subdirectory(apps)
