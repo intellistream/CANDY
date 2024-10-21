@@ -13,7 +13,6 @@
 #include <vector>
 #include <fstream>
 #include <random>
-#include <iterator>
 
 using namespace std;
 
@@ -36,17 +35,15 @@ ScenarioConfig::ScenarioConfig(const string& conf_path) {
 
 void ScenarioConfig::load(const string& conf_path) { 
   ConfigParser parser;
-  parser.parse(conf_path);
 
   scenario_name = parser.get_string("scenario_name");
-  index_type = parser.get_string("index_type");
-  vector_source = parser.get_string("vector_source");
-  dataset_path = parser.get_string("dataset_path");
+  index_type = parser.get_string("base", "index_type");
+  vector_source = parser.get_string("base", "vector_source");
+  dataset_path = parser.get_string("base", "dataset_path");
   k_nearest =  parser.get_int("k_nearest");
   query_thread_count = parser.get_int("query_thread_count", 1);
   insert_thread_count = parser.get_int("insert_thread_count", 0);
   timeout_in_sec = parser.get_int("timeout_in_sec", 10);
-  dimension = parser.get_int("dimension");
 }
 
 void insert_scenario(VectorDB &db, ScenarioConfig &conf) { 
@@ -85,7 +82,7 @@ void multi_query_insert_scenario(VectorDB &db, ScenarioConfig &conf) {
     }
     dis = std::uniform_int_distribution<>(0, points_num - 1);
   } else if (conf.vector_source == "hdf5") {
-    // TODO
+
   } else { 
     INTELLI_ERROR(string("Invalid vector source: ") + conf.dataset_path);
     exit(EXIT_FAILURE);
@@ -100,33 +97,17 @@ void multi_query_insert_scenario(VectorDB &db, ScenarioConfig &conf) {
     }));
   } 
 
-  for (int i = 0; i < conf.query_thread_count; i++) { 
-    int n = dis(gen);
-    int k = conf.k_nearest;
-    vector<float> vec(data_load + n * dim, data_load + (n + 1) * dim);
+  // for (int i = 0; i < conf.query_thread_count; i++) { 
+  //   int n = dis(gen);
+  //   int k = conf.k_nearest;
+  //   vector<float> vec(data_load + n * dim, data_load + (n + 1) * dim);
 
-    query_futures.emplace_back(pool.submit([&db, &vec, k]() {
-      return db.query_nearest_vectors(vec, k);
-    }));
-  }
+  //   query_futures.emplace_back(pool.submit([&db, &vec, k]() {
+  //     return db.query_nearest_vectors(vec, k);
+  //   }));
+  // }
 
-  // TODO 
-  // Simple return just for test
-  for (int i = 0; i < conf.insert_thread_count; i++) {
-    auto res = insert_futures[i].get();
-    std::cout << "test insert result: " << res << std::endl;
-  }
-
-  for (int i = 0; i < conf.query_thread_count; i++) {
-    auto res = query_futures[i].get();
-    std::cout << "test query result: ";
-    for (auto r : res) 
-      for (auto rr : r)
-        std::cout << rr << " ";
-    
-    std::cout << std::endl;
-  }
-
-  pool.shutdown();
+  auto res = insert_futures[0].get();
+  std::cout << "xxx " << res;
 }
 
