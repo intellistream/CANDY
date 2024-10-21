@@ -27,8 +27,8 @@ const map<string, function<void(VectorDB &db, ScenarioConfig &conf)> > scenarios
 
 // Supported index types
 const map<string, string> supported_index = {
-  {"hnsw", "Hierarchical Navigable Small World Graph"},
-  {"concurrent_hnsw", "Concurrent HNSW for multi-threaded environments"}
+  {"hnsw", "[Algorithm-Class-Name]"},
+  {"concurrent_hnsw", "[Algorithm-Class-Name]"}
   // Additional index types can be added here
 };
 
@@ -56,9 +56,9 @@ void ScenarioConfig::load(const string &conf_path) {
   query_thread_count = parser.get_int("query_thread_count", 1);
   insert_thread_count = parser.get_int("insert_thread_count", 0);
   timeout_in_sec = parser.get_int("timeout_in_sec", 10);
+  dimension = parser.get_int("dimension");
 }
 
-// Validation check for the configuration
 // Validation check for the configuration
 bool ScenarioConfig::isValid() {
   if (scenario_name.empty()) {
@@ -83,7 +83,6 @@ bool ScenarioConfig::isValid() {
   }
   return true;
 }
-
 
 // Insert scenario: inserting a set of vectors into the VectorDB
 void insert_scenario(VectorDB &db, ScenarioConfig &conf) {
@@ -170,4 +169,6 @@ void multi_query_insert_scenario(VectorDB &db, ScenarioConfig &conf) {
       INTELLI_ERROR("Query operation returned empty results.");
     }
   }
+
+  pool.shutdown();
 }

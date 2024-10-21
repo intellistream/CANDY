@@ -69,7 +69,7 @@ int main(int argc, char* argv[]) {
   }
 
   // Initialize the Vector Database with 3 dimensions and default search algorithm
-  VectorDB db(3);
+  VectorDB db(conf.dimension);
 
   // Set up performance monitoring (e.g., CPU, memory)
   PerformanceMonitor monitor;

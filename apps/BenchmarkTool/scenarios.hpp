@@ -29,6 +29,7 @@ public:
 	string scenario_name;
 	string vector_source;
 	string dataset_path;
+	int  dimension;
 };
 
 void insert_scenario(VectorDB &db, ScenarioConfig &conf);
