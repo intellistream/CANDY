@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
+import errno
 import os
 import requests
 import tarfile
-import errno
 from tqdm import tqdm
+
 
 def download_tar_gz_file(url, target_path, fname, max_retries=10):
     file_path = os.path.join(target_path, fname)
@@ -36,6 +37,7 @@ def download_tar_gz_file(url, target_path, fname, max_retries=10):
     print(f"Failed to download {url} after {max_retries} attempts.")
     return False
 
+
 def extract_tar_gz(file_path, target_path):
     try:
         with tarfile.open(file_path, 'r:gz') as tar:
@@ -43,6 +45,7 @@ def extract_tar_gz(file_path, target_path):
         print(f"Extracted {file_path} to {target_path}")
     except tarfile.TarError as e:
         print(f"Error extracting {file_path}: {e}")
+
 
 def create_directories(paths):
     for path in paths:
@@ -53,12 +56,14 @@ def create_directories(paths):
             if e.errno != errno.EEXIST:
                 print(f"Error creating directory {path}: {e}")
 
+
 def process_datasets(datasets):
     for key, data in datasets.items():
         print(f"Processing {data['url']}")
         if download_tar_gz_file(data['url'], data['target_path'], data['fname']):
             file_path = os.path.join(data['target_path'], data['fname'])
             extract_tar_gz(file_path, data['target_path'])
+
 
 def main():
     current_path = os.getcwd()
@@ -82,6 +87,7 @@ def main():
     create_directories([data['target_path'] for data in datasets.values()])
 
     process_datasets(datasets)
+
 
 if __name__ == "__main__":
     main()

@@ -1,6 +1,5 @@
 import ctypes
 import os
-import sys
 import sysconfig
 
 # Automatically add the shared library path to the system path for easier imports

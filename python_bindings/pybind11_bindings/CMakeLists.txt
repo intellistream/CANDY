@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.15)
 
 # Policy to suppress deprecated warnings
-if(POLICY CMP0148)
+if (POLICY CMP0148)
     cmake_policy(SET CMP0148 NEW)
-endif()
+endif ()
 
 # Download and add pybind11
 include(FetchContent)
