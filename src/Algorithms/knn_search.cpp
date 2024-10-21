@@ -8,6 +8,8 @@
 #include <algorithm>
 #include <stdexcept>
 
+#include "Utils/logging.hpp"
+
 // Constructor
 KnnSearch::KnnSearch(size_t dimensions) : dimensions(dimensions) {}
 
@@ -47,6 +49,11 @@ std::vector<size_t> KnnSearch::query(const std::vector<float> &query_vec, size_t
 // Remove a vector from the k-NN index
 void KnnSearch::remove(size_t id) {
   index.erase(id);
+}
+
+void KnnSearch::update(size_t id, const std::vector<float> &vector) {
+  //TO Be Supported.
+  INTELLI_ERROR("not implemented");
 }
 
 // Calculate Euclidean distance between two vectors

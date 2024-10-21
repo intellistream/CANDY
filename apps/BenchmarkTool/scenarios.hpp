@@ -19,6 +19,8 @@ public:
 
 	void load(const string& conf);
 
+	bool isValid();
+
 	int query_thread_count;
 	int insert_thread_count;
 	int timeout_in_sec;
