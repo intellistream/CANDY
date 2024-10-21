@@ -1,7 +1,6 @@
-import site
-import sys
-import os
 import json
+import os
+import sys
 
 # Add the project root directory to sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../Python')))
@@ -13,6 +12,7 @@ from Embedding.TextPreprocessor import TextPreprocessor
 search_algorithm = 'knnsearch'
 db = VectorDB(128, search_algorithm)
 text_preprocessor = TextPreprocessor()
+
 
 class DBClient:
     def __init__(self):
@@ -59,6 +59,7 @@ class DBClient:
         else:
             print(f"Error finding vector to delete for data: '{vector_data}'")
 
+
 def main():
     client = DBClient()
     while True:
@@ -95,6 +96,7 @@ def main():
 
         else:
             print("Invalid choice. Please try again.")
+
 
 if __name__ == "__main__":
     main()

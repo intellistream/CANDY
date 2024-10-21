@@ -9,9 +9,9 @@ execute_process(
 message(STATUS "PyTorch CMake path from Python: ${PYTHON_OUTPUT}")
 
 # Check if PYTHON_OUTPUT is valid
-if(NOT PYTHON_OUTPUT)
+if (NOT PYTHON_OUTPUT)
     message(FATAL_ERROR "Could not find PyTorch CMake path. Make sure PyTorch is installed.")
-endif()
+endif ()
 
 # Append the Python command output to CMAKE_PREFIX_PATH
 set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${PYTHON_OUTPUT}")

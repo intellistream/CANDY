@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
+import errno
 import os
 import requests
-import errno
 from tqdm import tqdm
+
 
 def download_hd5_file(url, target_path, fname, max_retries=10):
     file_path = os.path.join(target_path, fname)
@@ -36,6 +37,7 @@ def download_hd5_file(url, target_path, fname, max_retries=10):
     print(f"Failed to download {url} after {max_retries} attempts.")
     return False
 
+
 def create_directories(paths):
     for path in paths:
         try:
@@ -44,6 +46,7 @@ def create_directories(paths):
         except OSError as e:
             if e.errno != errno.EEXIST:
                 print(f"Error creating directory {path}: {e}")
+
 
 def main():
     current_path = os.getcwd()
@@ -65,6 +68,7 @@ def main():
 
     for key, url in datasets.items():
         download_hd5_file(url, target_paths[key], f"{key}.hdf5")
+
 
 if __name__ == "__main__":
     main()
