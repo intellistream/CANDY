@@ -1,4 +1,5 @@
 add_sources(CANDY
+        computation.cpp
         config_parser.cpp
         error_handling.cpp
         logging.cpp

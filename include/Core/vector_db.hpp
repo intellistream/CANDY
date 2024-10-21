@@ -29,6 +29,10 @@ class VectorDB {
   // Insert a vector into the database (either from streaming or directly)
   bool insert_vector(const std::vector<float>& vec);
 
+  bool update_vector(size_t id, const std::vector<float> &new_vec);
+
+  bool remove_vector(size_t id);
+
   // Query the nearest vectors using a k-NN search or other search algorithms
   std::vector<std::vector<float>> query_nearest_vectors(const std::vector<float>& query_vec, size_t k) const;
 
@@ -40,6 +44,7 @@ class VectorDB {
 
   // Streaming helper functions
   void process_streaming_queue();  // Process tuples from the streaming queue
+  int get_dimensions();
 
  private:
   // Internal storage for vectors (indexed by ID)

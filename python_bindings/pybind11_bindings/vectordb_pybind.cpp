@@ -29,6 +29,8 @@ PYBIND11_MODULE(pycandy, m) {
       .def("query_nearest_vectors", [](const VectorDB &self, const std::vector<float> &query_vec, size_t k) {
         return self.query_nearest_vectors(query_vec, k);
       }, py::arg("query_vec"), py::arg("k"))
+      .def("remove_vector", &VectorDB::remove_vector, py::arg("id"))
+      .def("update_vector", &VectorDB::update_vector, py::arg("id"), py::arg("vector"))
       .def("start_streaming", &VectorDB::start_streaming)
       .def("stop_streaming", &VectorDB::stop_streaming)
       .def("insert_streaming_vector", &VectorDB::insert_streaming_vector)

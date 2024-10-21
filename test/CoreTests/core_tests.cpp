@@ -15,62 +15,11 @@
 #include <algorithm>   // For std::sort
 #include <map>         // For std::map
 
-class MockSearchAlgorithm : public SearchAlgorithm {
- public:
-  MockSearchAlgorithm() = default;  // Default constructor
 
-  void insert(size_t id, const std::vector<float> &vec) override {
-    index[id] = vec;
-  }
-
-  std::vector<size_t> query(const std::vector<float> &query_vec, size_t k) const override {
-    // Vector to store pairs of id and computed distance
-    std::vector<std::pair<size_t, float>> id_distance_pairs;
-
-    // Compute the distance between the query vector and each vector in the index
-    for (const auto &entry : index) {
-      float distance = computeDistance(query_vec, entry.second);
-      id_distance_pairs.emplace_back(entry.first, distance);
-    }
-
-    // Sort the pairs based on distance (ascending order)
-    std::sort(id_distance_pairs.begin(), id_distance_pairs.end(),
-              [](const auto &a, const auto &b) { return a.second < b.second; });
-
-    // Collect the IDs of the k nearest vectors
-    std::vector<size_t> result_ids;
-    for (size_t i = 0; i < std::min(k, id_distance_pairs.size()); ++i) {
-      result_ids.push_back(id_distance_pairs[i].first);
-    }
-
-    return result_ids;
-  }
-
-  void remove(size_t id) override {
-    index.erase(id);
-  }
-
- private:
-  std::map<size_t, std::vector<float>> index;  // Use std::map for ordered iteration
-
-  // Helper function to compute Euclidean distance between two vectors
-  float computeDistance(const std::vector<float> &vec1, const std::vector<float> &vec2) const {
-    if (vec1.size() != vec2.size()) {
-      // Handle dimension mismatch if necessary
-      return std::numeric_limits<float>::max();
-    }
-    float sum = 0.0f;
-    for (size_t i = 0; i < vec1.size(); ++i) {
-      float diff = vec1[i] - vec2[i];
-      sum += diff * diff;
-    }
-    return std::sqrt(sum);
-  }
-};
 
 TEST_CASE("VectorDB: Insert and Query Operations") {
   size_t dimensions = 3;
-  auto search_algorithm = std::make_shared<MockSearchAlgorithm>();
+  auto search_algorithm = std::make_shared<KnnSearch>(dimensions);
   VectorDB db(dimensions, search_algorithm);
 
   SECTION("Insert a vector with correct dimensions") {
@@ -97,7 +46,7 @@ TEST_CASE("VectorDB: Insert and Query Operations") {
 
 TEST_CASE("VectorDB: Streaming Operations") {
   size_t dimensions = 3;
-  auto search_algorithm = std::make_shared<MockSearchAlgorithm>();
+  auto search_algorithm = std::make_shared<KnnSearch>(dimensions);
   VectorDB db(dimensions, search_algorithm);
 
   SECTION("Start and stop streaming engine") {
@@ -126,7 +75,7 @@ TEST_CASE("VectorDB: Streaming Operations") {
 
 TEST_CASE("VectorDB: Thread Safety") {
   size_t dimensions = 3;
-  auto search_algorithm = std::make_shared<MockSearchAlgorithm>();
+  auto search_algorithm = std::make_shared<KnnSearch>(dimensions);
   VectorDB db(dimensions, search_algorithm);
 
   SECTION("Concurrent insertion into the database") {
@@ -159,7 +108,7 @@ TEST_CASE("VectorDB: Thread Safety") {
 
 TEST_CASE("VectorDB: Querying Edge Cases") {
   size_t dimensions = 3;
-  auto search_algorithm = std::make_shared<MockSearchAlgorithm>();
+  auto search_algorithm = std::make_shared<KnnSearch>(dimensions);
   VectorDB db(dimensions, search_algorithm);
 
   SECTION("Query nearest vectors when database is empty") {

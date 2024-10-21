@@ -14,23 +14,28 @@
 
 class KnnSearch : public SearchAlgorithm {
  public:
-  // Constructor with vector dimensions
-  KnnSearch(size_t dimensions);
+ // Destructor
+ ~KnnSearch() override = default;
 
-  // Insert a vector into the k-NN index
-  void insert(size_t id, const std::vector<float> &vec) override;
+ // Constructor with vector dimensions
+ KnnSearch(size_t dimensions);
 
-  // Query k nearest neighbors (returns vector of IDs)
-  std::vector<size_t> query(const std::vector<float> &query_vec, size_t k) const override;
+ // Insert a vector into the k-NN index
+ void insert(size_t id, const std::vector<float> &vec) override;
 
-  // Remove a vector from the k-NN index
-  void remove(size_t id) override;
+ // Query k nearest neighbors (returns vector of IDs)
+ std::vector<size_t> query(const std::vector<float> &query_vec, size_t k) const override;
 
- private:
-  size_t dimensions;
-  std::unordered_map<size_t, std::vector<float>> index;
+ // Remove a vector from the k-NN index
+ void remove(size_t id) override;
 
-  // Helper function to calculate Euclidean distance
+ void update(size_t id, const std::vector<float> &vector) override;
+
+private:
+ size_t dimensions;
+ std::unordered_map<size_t, std::vector<float> > index;
+
+ // Helper function to calculate Euclidean distance
   float calculate_distance(const std::vector<float> &vec1, const std::vector<float> &vec2) const;
 };
 

@@ -22,5 +22,7 @@ class SearchAlgorithm {
 
   // Remove a vector from the search algorithm's index
   virtual void remove(size_t id) = 0;
+
+  virtual void update(size_t id, const std::vector<float> & vector) = 0;
 };
 #endif //CANDY_INCLUDE_ALGORITHMS_SEARCH_ALGORITHM_HPP_
