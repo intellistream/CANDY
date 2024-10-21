@@ -23,6 +23,7 @@ public:
 	int insert_thread_count;
 	int timeout_in_sec;
 	int k_nearest;
+	int dimension;
 	string index_type;
 	string scenario_name;
 	string vector_source;

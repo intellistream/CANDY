@@ -8,6 +8,8 @@
 #include "scenarios.hpp"
 #include <Utils/logging.hpp>
 
+#include <Algorithms/hnsw.hpp>
+
 #include <iostream>
 #include <chrono>
 #include <map>
@@ -58,7 +60,8 @@ int main(int argc, char* argv[]) {
   ScenarioConfig conf(argv[1]);
 
   // Initialize the Vector Database with 3 dimensions and default search algorithm
-  VectorDB db(3);
+  std::shared_ptr<SearchAlgorithm> hnsw_algorithm = std::make_shared<HNSWAlgorithm>();
+  VectorDB db(conf.dimension, hnsw_algorithm);
 
   // Set up performance monitoring (e.g., CPU, memory)
   PerformanceMonitor monitor;
