@@ -7,11 +7,15 @@
 #include <Core/vector_db.hpp>
 #include <iostream>
 #include <thread>
-#include <algorithm>
+#include <Algorithms/knn_search.hpp>
 
 // Constructor: Initialize the vector database with a number of dimensions and a search algorithm
 VectorDB::VectorDB(size_t dimensions, std::shared_ptr<SearchAlgorithm> search_algorithm)
-    : dimensions(dimensions), search_algorithm(search_algorithm), is_running(false) {}
+  : dimensions(dimensions), search_algorithm(search_algorithm), is_running(false) {
+  if (!this->search_algorithm) {
+    this->search_algorithm = std::make_shared<KnnSearch>(dimensions);
+  }
+}
 
 // Destructor
 VectorDB::~VectorDB() {
@@ -41,6 +45,44 @@ bool VectorDB::insert_vector(const std::vector<float> &vec) {
 
   return true;
 }
+
+// Update an existing vector (exclusive write access)
+bool VectorDB::update_vector(size_t id, const std::vector<float> &new_vec) {
+  if (new_vec.size() != dimensions) {
+    std::cerr << "Error: Vector dimensions do not match the expected size (" << dimensions << ")." << std::endl;
+    return false;
+  } {
+    std::unique_lock<std::shared_mutex> lock(db_mutex); // Exclusive write lock
+    if (vector_store.find(id) == vector_store.end()) {
+      std::cerr << "Error: Vector with ID " << id << " not found." << std::endl;
+      return false;
+    }
+    vector_store[id] = new_vec; // Update the vector in the database
+    if (search_algorithm) {
+      // search_algorithm->update(id, new_vec); // Update the vector in the search algorithm's index
+    }
+  }
+
+  return true;
+}
+
+// Delete a vector by its ID (exclusive write access)
+bool VectorDB::remove_vector(size_t id) { {
+    std::unique_lock<std::shared_mutex> lock(db_mutex); // Exclusive write lock
+    auto it = vector_store.find(id);
+    if (it == vector_store.end()) {
+      std::cerr << "Error: Vector with ID " << id << " not found." << std::endl;
+      return false;
+    }
+    vector_store.erase(it); // Remove the vector from the database
+    if (search_algorithm) {
+      search_algorithm->remove(id); // Remove the vector from the search algorithm's index
+    }
+  }
+
+  return true;
+}
+
 
 // Query the nearest vectors using the search algorithm (shared read access)
 std::vector<std::vector<float>> VectorDB::query_nearest_vectors(const std::vector<float> &query_vec, size_t k) const {
@@ -108,6 +150,10 @@ void VectorDB::process_streaming_queue() {
       insert_vector(vec);  // Insert the vector into the database
     }
   }
+}
+
+int VectorDB::get_dimensions() {
+  return dimensions;
 }
 
 // Start the worker threads to process the streaming queue

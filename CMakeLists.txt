@@ -29,7 +29,9 @@ message(STATUS "CANDY_SOURCE_FILES: ${CANDY_SOURCE_FILES}")
 get_headers(CANDY_HEADER_FILES)
 
 # Create the CANDY library from all the source files
-add_library(CANDY SHARED ${CANDY_SOURCE_FILES} ${CANDY_HEADER_FILES})
+add_library(CANDY SHARED ${CANDY_SOURCE_FILES} ${CANDY_HEADER_FILES}
+        src/Utils/computation.cpp
+        include/Utils/computation.hpp)
 
 # Add the include directory with absolute path
 target_include_directories(CANDY PUBLIC ${PROJECT_SOURCE_DIR}/include) # Include the "include/" directory as a system path
@@ -56,6 +58,9 @@ set_target_properties(CANDY PROPERTIES
 
 # Add applications that depend on the CANDY library
 add_subdirectory(apps)
+
+# Copy the config directory to the build output directory
+file(COPY ${CMAKE_SOURCE_DIR}/config DESTINATION ${CMAKE_BINARY_DIR})
 
 # Option to enable/disable building tests
 option(ENABLE_TESTS "Enable unit tests" ON)

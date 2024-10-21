@@ -1,4 +1,3 @@
 add_subdirectory(BenchmarkTool)
-add_subdirectory(DBClient)
 add_subdirectory(OptimizerTool)
 add_subdirectory(QueryTool)

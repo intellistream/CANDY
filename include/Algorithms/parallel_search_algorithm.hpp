@@ -13,7 +13,7 @@
 #include <memory>
 #include <vector>
 #include <memory>
-#include <cmath>  // Added for std::sqrt
+
 
 class ParallelSearchAlgorithm : public SearchAlgorithm {
  public:
@@ -21,28 +21,20 @@ class ParallelSearchAlgorithm : public SearchAlgorithm {
   ParallelSearchAlgorithm(TaskScheduler* scheduler, int ef_search = 10)
       : scheduler_(scheduler), ef_search_(ef_search) {}
 
-  // Destructor
-  virtual ~ParallelSearchAlgorithm() = default;
+  ~ParallelSearchAlgorithm() override = default;
 
   // Insert a vector into the index
-  virtual void insert(size_t id, const std::vector<float>& vec) override = 0;
+  void insert(size_t id, const std::vector<float> &vec) override = 0;
 
   // Query the nearest neighbors (returns vector of IDs)
-  virtual std::vector<size_t> query(const std::vector<float>& query_vec, size_t k) const override = 0;
+  std::vector<size_t> query(const std::vector<float> &query_vec, size_t k) const override = 0;
 
   // Remove a vector from the index
-  virtual void remove(size_t id) override = 0;
+  void remove(size_t id) override = 0;
 
- protected:
-  // Utility function to calculate Euclidean distance between two vectors
-  float euclidean_distance(const std::vector<float>& a, const std::vector<float>& b) const {
-    float sum = 0.0;
-    for (size_t i = 0; i < a.size(); ++i) {
-      float diff = a[i] - b[i];
-      sum += diff * diff;
-    }
-    return std::sqrt(sum);
-  }
+  void update(size_t id, const std::vector<float> &vector) override = 0;
+
+protected:
 
   // Pure virtual method for searching neighbors (to be implemented by derived classes)
   virtual void search_layer(const std::vector<float>& query_vec, size_t k) const = 0;
@@ -50,5 +42,6 @@ class ParallelSearchAlgorithm : public SearchAlgorithm {
   int ef_search_;
   TaskScheduler* scheduler_;  // Scheduler to manage parallel tasks
 };
+
 
 #endif //CANDY_INCLUDE_ALGORITHMS_PARALLEL_SEARCH_ALGORITHM_HPP_
