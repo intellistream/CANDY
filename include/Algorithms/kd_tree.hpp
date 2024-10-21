@@ -184,13 +184,6 @@ private:
     size_t size;
 };
 
-struct TreeParam{
-  int num_trees;
-  float eps;
-  int checks;
-  int branching;
-  int iterations;
-};
 class KDTree : public SearchAlgorithm{
 public:
     typedef Node* NodePtr;
@@ -233,12 +226,6 @@ public:
     void remove(size_t id);
 
   float fvec_L2sqr(const float* vec1, const float* vec2, int d);
-  /**
-  * @brief set the index-specific config related to one index
-  * @param cfg the config of this class
-  * @return bool whether the configuration is successful
-  */
- // bool setConfig(INTELLI::ConfigMapPtr cfg);
 
 
 
@@ -267,13 +254,6 @@ public:
    */
   int knnSearch(torch::Tensor &q, int64_t *idx, float *distances, int64_t aknn) ;
 
-
-  /**
-   * @brief set the params from auto-tuning
-   * @param param best param
-   * @return true if success
-   */
-  bool setParams(TreeParam param) ;
 
 
   /**

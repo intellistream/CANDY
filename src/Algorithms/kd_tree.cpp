@@ -35,27 +35,8 @@ std::vector<size_t> KDTree::query(const std::vector<float> &query_vec, size_t k)
 void KDTree::remove(size_t id){
     //  TODO: prepare a remove function for deleting
 }
-/*
-bool KDTree::setConfig(INTELLI::ConfigMapPtr cfg) {
 
-  vecDim = cfg->tryI64("vecDim", 768, true);
-  num_trees = cfg->tryI64("numTrees", 4, true);
-  tree_roots = std::vector<KDTree::NodePtr>(num_trees, nullptr);
 
-  assert(cfg);
-  dbTensor = torch::zeros({0, (int64_t) vecDim});
-  lastNNZ = -1;
-  expandStep = 100;
-  return true;
-}
-*/
-/*
-bool KdTree::setParams(TreeParam param) {
-  num_trees = param.num_trees;
-  printf("Best param for KdTree\n num_trees: %ld\n", num_trees);
-  return true;
-}
-*/
 int KDTree::knnSearch(torch::Tensor &q, int64_t *idx, float *distances, int64_t aknn){
   int count = 0;
 
