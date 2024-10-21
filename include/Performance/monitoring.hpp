@@ -12,6 +12,8 @@
 #include <thread>
 #include <atomic>
 
+#include "Utils/logging.hpp"
+
 class PerformanceMonitor {
  public:
   // Constructor
@@ -33,9 +35,9 @@ class PerformanceMonitor {
 
   // Report the gathered metrics
   void report() const {
-    std::cout << "Performance Report:" << std::endl;
-    std::cout << "CPU Usage (approximate): " << cpu_usage << "%" << std::endl;
-    std::cout << "Memory Usage (approximate): " << memory_usage << " MB" << std::endl;
+    INTELLI_INFO("Performance Report:")
+    INTELLI_INFO("CPU Usage (approximate): " << cpu_usage << "%")
+    INTELLI_INFO("Memory Usage (approximate): " << memory_usage << " MB")
   }
 
  private:

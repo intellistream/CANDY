@@ -24,7 +24,7 @@ void benchmarkScenario(VectorDB &db, ScenarioConfig &conf) {
   auto it = scenarios.find(conf.scenario_name);
 
   if (it == scenarios.end()) {
-    cout << "Scenario not found: " << conf.scenario_name << endl;
+    INTELLI_DEBUG("Scenario not found: " << conf.scenario_name);
     exit(EXIT_FAILURE);
   }
   INTELLI_INFO("Running benchmark for: " + conf.scenario_name);
