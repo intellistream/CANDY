@@ -2,9 +2,7 @@ import os
 import sys
 
 sys.path.append( os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from Embedding.MultimodalPreprocessor import TextPreprocessor
-from Embedding.MultimodalPreprocessor import ImagePreprocessor
-from Embedding.MultimodalPreprocessor import MultimodalPreprocessor
+from Embedding.MultimodalPreprocessor import TextPreprocessor, ImagePreprocessor, MultimodalPreprocessor
 from pycandy import VectorDB
 
 # Initialize the vector database and embedding models
