@@ -16,9 +16,10 @@ text_preprocessor = TextPreprocessor()
 image_preprocessor=ImagePreprocessor()
 multimodalpreprocessor=MultimodalPreprocessor()
 
+
 def data_ingestion():
     user_inputs = []
-    multimodal_inputs=[]
+
     while True:
         user_input = input("\n[Data Ingestion] Enter information to store 'text' or 'image' or 'multimodal' to upload (or type 'done' to finish):\n> ")
 
@@ -28,7 +29,7 @@ def data_ingestion():
         elif user_input.lower() == "text":
             text = input("\n[Data Ingestion] Enter text to store:\n> ")
             user_inputs.append({"type": "text", "data": text})
-        elif user_input.lower() == "image":
+        elif user_input.lower() == "image": # absolute path
             image_path = input("\n[Data Ingestion] Enter the path of the image to store:\n> ")
             if os.path.exists(image_path):
                 user_inputs.append({"type": "image", "data": image_path})

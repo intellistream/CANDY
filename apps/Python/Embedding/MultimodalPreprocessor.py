@@ -25,8 +25,8 @@ class TextPreprocessor:
         return embedding.numpy().astype(np.float32)  # Convert to float32
 
 
-class ImagePreprocessor: #openai/clip-vit-base-patch32
-    def __init__(self, model_name='google/vit-base-patch16-224-in21k'):
+class ImagePreprocessor:
+    def __init__(self, model_name='google/vit-base-patch16-224-in21k'): #or openai/clip-vit-base-patch32
         self.feature_extractor = AutoFeatureExtractor.from_pretrained(model_name)
         self.model = AutoModel.from_pretrained(model_name)
         self.fixed_dimension = 128
@@ -67,15 +67,15 @@ class MultimodalPreprocessor:
 
 
 
-if __name__ == "__main__":
-
-    multimodal_processor = MultimodalPreprocessor()
-
-    text_input = "This is an example sentence."
-    image_path = "/home/kuang/Image/D77.jpg"
-
-    multimodal_embedding = multimodal_processor.generate_multimodal_embedding(text_input, image_path)
-    print("shape: ",multimodal_embedding.shape)
+# if __name__ == "__main__":
+#
+#     multimodal_processor = MultimodalPreprocessor()
+#
+#     text_input = "This is an example sentence."
+#     image_path = "/home/kuang/Image/D77.jpg"
+#
+#     multimodal_embedding = multimodal_processor.generate_multimodal_embedding(text_input, image_path)
+#     print("shape: ",multimodal_embedding.shape)
 
 
 
