@@ -35,6 +35,8 @@
 # Log
 *.log
 
+*.pyc
+
 /build
 /cmake-build-debug/
 /cmake-build-debug/_deps/
