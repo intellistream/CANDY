@@ -29,7 +29,7 @@ RUN apt-get update && apt-get install -y --allow-change-held-packages \
 
 
 # Install Python dependencies
-RUN pip3 install torch matplotlib pandas==2.0.0
+RUN pip3 install matplotlib pandas==2.0.0
 RUN pip3 install torch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2
 # 添加用户并配置密码/Add user and config passwd
 RUN useradd -m ${USER} && yes ${PASSWD} | passwd ${USER}
