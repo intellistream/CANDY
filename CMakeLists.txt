@@ -26,6 +26,10 @@ add_subdirectory(src)
 get_sources(CANDY CANDY_SOURCE_FILES)
 message(STATUS "CANDY_SOURCE_FILES: ${CANDY_SOURCE_FILES}")
 
+# Find python development files
+find_package(Python3 REQUIRED COMPONENTS Development) 
+include_directories(${Python3_INCLUDE_DIRS})
+
 get_headers(CANDY_HEADER_FILES)
 
 # Create the CANDY library from all the source files
