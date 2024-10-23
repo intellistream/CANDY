@@ -8,7 +8,7 @@
 #define CANDY_INCLUDE_ALGORITHMS_ABSTRACT_INDEX_HPP_
 
 #include <Utils/config_parser.hpp>
-#include <Algorithms/Utils/metric_type.h>
+#include <Algorithms/Utils/metric_type.hpp>
 
 #include <torch/torch.h>
 #include <memory>
@@ -246,6 +246,6 @@ typedef std::shared_ptr<class AbstractIndex> AbstractIndexPtr;
  * @def newAbstractIndex
  * @brief (Macro) To creat a new @ref  AbstractIndex shared pointer.
  */
-#define newAbstractIndex std::make_shared<CANDY::AbstractIndex>
+#define newAbstractIndex std::make_shared<AbstractIndex>
 
 #endif //CANDY_INCLUDE_ALGORITHMS_ABSTRACT_INDEX_HPP_
