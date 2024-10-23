@@ -43,7 +43,7 @@ jobs:
           sudo apt install gcc-11 g++-11
           sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 11
           sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 11
-          sudo apt install gcc g++ cmake python3 pip libboost-dev libboost-all-dev
+          sudo apt install gcc g++ cmake python3 pip libboost-dev libboost-all-dev python3-dev
       - name: Install torch
         run: |
           sudo pip3 install torch==2.4.0 torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu

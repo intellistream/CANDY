@@ -16,8 +16,6 @@ using namespace std;
 int load_fvecs_data(string filename, float*& data, unsigned& num, unsigned& dim) {  
   ifstream in(filename, ios::binary);
   if (!in.is_open()) {
-
-    cout << std::filesystem::exists(filename) << "ss";
     return -1;
   }
 
@@ -41,8 +39,6 @@ int load_fvecs_data(string filename, float*& data, unsigned& num, unsigned& dim)
 int load_ivecs_data(string filename, int*& data, unsigned& num, unsigned& dim) {    
   ifstream in(filename, ios::binary);
   if (!in.is_open()) {
-
-    cout << std::filesystem::exists(filename) << "ss";
     return -1;
   }
 
