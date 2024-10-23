@@ -17,8 +17,8 @@ include(cmake/DefaultOptions.cmake)
 include(cmake/CompilerSetup.cmake)
 
 # # Find python development files
-# find_package(Python3 REQUIRED COMPONENTS Development) 
-# include_directories(${Python3_INCLUDE_DIRS})
+find_package(Python3 REQUIRED COMPONENTS Development) 
+include_directories(${Python3_INCLUDE_DIRS})
 
 # Link with external libraries (e.g., Log4cxx)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
