@@ -18,10 +18,6 @@ FetchContent_MakeAvailable(pybind11)
 add_library(pycandy MODULE vectordb_pybind.cpp)
 set_target_properties(pycandy PROPERTIES PREFIX "")
 
-# test
-find_package(Python3 REQUIRED COMPONENTS Development) 
-include_directories(${Python3_INCLUDE_DIRS})
-
 # Get the Python user site-packages directory using sysconfig
 execute_process(
         COMMAND python3 -c "import site; print(site.getusersitepackages())"

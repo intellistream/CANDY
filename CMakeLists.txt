@@ -17,7 +17,7 @@ include(cmake/DefaultOptions.cmake)
 include(cmake/CompilerSetup.cmake)
 
 # # Find python development files
-find_package(Python3 REQUIRED COMPONENTS Development) 
+find_package(Python3 REQUIRED COMPONENTS Interpreter Development) 
 include_directories(${Python3_INCLUDE_DIRS})
 
 # Link with external libraries (e.g., Log4cxx)
