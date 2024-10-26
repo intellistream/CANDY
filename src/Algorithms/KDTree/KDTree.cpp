@@ -14,6 +14,8 @@
 #include <random>
 #include <Utils/TensorOP.hpp>
 
+#include "Utils/Param.hpp"
+
 bool KDTree::setConfig(INTELLI::ConfigMapPtr cfg) {
 
     vecDim = cfg->tryI64("vecDim", 768, true);
@@ -23,7 +25,7 @@ bool KDTree::setConfig(INTELLI::ConfigMapPtr cfg) {
     return true;
 }
 
-bool KDTree::setParams(INTELLI::ParamPtr param) {
+bool KDTree::setParams(CANDY::ParamPtr param) {
     num_trees = param.num_trees;
     printf("Best param for KdTree\n num_trees: %ld\n", num_trees);
     return true;

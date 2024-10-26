@@ -6,14 +6,18 @@
 
 #ifndef PARAM_HPP
 #define PARAM_HPP
+#include <cstdint>
+#include <memory>
 
+namespace CANDY {
+ class Param;
+ typedef std::shared_ptr<Param> ParamPtr;
 
-
-class Param {
- // for kdtree
- int64_t num_trees;
-};
-
+ class Param {
+  // for kdtree
+  int64_t num_trees;
+ };
+}
 
 
 #endif //PARAM_HPP
