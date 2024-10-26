@@ -46,7 +46,7 @@ void ScenarioConfig::load(const string &conf_path) {
   }
 
   ConfigParser parser;
-  parser.parse(conf_path);
+  parser.parse_ini(conf_path);
 
   scenario_name = parser.get_string("scenario_name");
   index_type = parser.get_string("index_type", "hnsw");

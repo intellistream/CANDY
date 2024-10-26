@@ -6,7 +6,9 @@
  */
 
 #include <Utils/config_parser.hpp>
+#include <Utils/logging.hpp>
 
+#include <vector>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -26,7 +28,7 @@ void trim(string& s) {
   }
 }
 
-int ConfigParser::parse(const string& fname) { 
+int ConfigParser::parse_ini(const string& fname) {
   ifstream file(fname);
   if (!file.is_open()) {
     throw runtime_error("Unable to open file: " + fname);
@@ -48,7 +50,50 @@ int ConfigParser::parse(const string& fname) {
       trim(key);
       trim(value);
 
-      conf[key] = value;
+      try {
+        if (value.find('.') != string::npos) {
+          conf[key] = stof(value);
+        } else {
+          conf[key] = stoi(value);
+        }
+      } catch (...) {
+        conf[key] = value;
+      }
+    }
+  }
+  return 0;
+}
+
+int ConfigParser::parse_csv(const string& fname) {
+  ifstream file(fname);
+  if (!file.is_open()) {
+    throw runtime_error("Unable to open file: " + fname);
+    return -1;
+  }
+
+  string line;
+  while (getline(file, line)) {
+    vector<string> cols;
+    spilt(line, ",", cols);
+    if (cols.size() >= 3) {
+      istringstream iss(cols[1]);
+      if (cols[2] == "U64" || cols[2] == "U64\r" ||
+          cols[2] == "I64" || cols[2] == "I64\r" ||
+          cols[2] == "Int" || cols[2] == "Int\r") {
+        int value;
+        iss >> value;
+        conf[cols[0]] = value;
+      } else if (cols[2] == "Double" || cols[2] == "Double\r") {
+        double value;
+        iss >> value;
+        conf[cols[0]] = static_cast<float>(value);
+      } else if(cols[2] == "Float" || cols[2] == "Float\r") {
+        float value;
+        iss >> value;
+        conf[cols[0]] = value;
+      } else if (cols[2] == "String" || cols[2] == "String\r") {
+        conf[cols[0]] = cols[1];
+      }
     }
   }
   return 0;
@@ -56,29 +101,39 @@ int ConfigParser::parse(const string& fname) {
 
 string ConfigParser::get_string(const string& key, const string& default_value) const {
   auto it = conf.find(key);
-  return it != conf.end() ? it->second : default_value;
+  if (it != conf.end()) {
+    if (holds_alternative<string>(it->second)) {
+      return get<string>(it->second);
+    }
+  }
+  INTELLI_ERROR("Invalid string value for key: " + key);
+  return default_value;
 }
 
 int ConfigParser::get_int(const string& key, int default_value) const {
   auto it = conf.find(key);
   if (it != conf.end()) {
-    try {
-      return stoi(it->second);
-    } catch (...) {
-      throw invalid_argument("Invalid int value for key: " + key);
+    if (holds_alternative<int>(it->second)) {
+      return get<int>(it->second);
     }
   }
+  INTELLI_ERROR("Invalid int value for key: " + key);
   return default_value;
 }
 
 float ConfigParser::get_float(const string& key, float default_value) const {
   auto it = conf.find(key);
   if (it != conf.end()) {
-    try {
-      return stof(it->second);
-    } catch (...) {
-      throw invalid_argument("Invalid float value for key: " + key);
+    if (holds_alternative<float>(it->second)) {
+      return get<float>(it->second);
     }
   }
+  INTELLI_ERROR("Invalid float value for key: " + key);
   return default_value;
 }
+
+template void ConfigParser::edit<int>(const string &key, const int &value);
+
+template void ConfigParser::edit<float>(const string &key, const float &value);
+
+template void ConfigParser::edit<string>(const string &key, const string &value);
