@@ -1,6 +1,6 @@
 add_sources(CANDY
         computation.cpp
-        config_parser.cpp
+        ConfigMap.cpp
         error_handling.cpp
         logging.cpp
         timing.cpp

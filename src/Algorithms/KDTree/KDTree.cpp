@@ -6,13 +6,11 @@
  * Modified on: 2024/10/25
  * Description: [Provide description here]
  */
-#include <Algorithms/KDTree/kd_tree.hpp>
+#include <Algorithms/KDTree/KDTree.hpp>
 #include <torch/torch.h>
 #include <vector>
 #include <algorithm>
 #include <random>
-#include <limits>
-#include <queue>
 
 KDTree::KDTree(size_t dimensions) : vecDim(dimensions), mean(nullptr), var(nullptr), lastNNZ(-1), expandStep(100), eps(0.0), checks(32), ntotal(0) {
     vecDim = 768; // default
@@ -28,22 +26,6 @@ KDTree::~KDTree() {
     }
     delete[] mean;
     delete[] var;
-}
-
-bool KDTree::setConfigClass(const ConfigParser& cfg) {
-    // Implementation for setting configuration from ConfigParser object
-    return true;
-}
-
-bool KDTree::setConfig(const ConfigParserPtr& cfg) {
-    // Implementation for setting configuration from ConfigParser pointer
-    return true;
-}
-
-bool KDTree::startHPC() {
-    isHPCStarted = true;
-    // Additional setup for HPC
-    return true;
 }
 
 bool KDTree::insertTensor(const torch::Tensor& t) {
@@ -76,13 +58,6 @@ std::vector<idx_t> KDTree::searchIndex(const torch::Tensor& q, int64_t k) {
     return results;
 }
 
-std::vector<torch::Tensor> KDTree::getTensorByIndex(const std::vector<idx_t>& idx, int64_t k) {
-    std::vector<torch::Tensor> results;
-    for (auto i : idx) {
-        results.push_back(dbTensor[i]);
-    }
-    return results;
-}
 
 torch::Tensor KDTree::rawData() {
     return dbTensor;
@@ -103,90 +78,8 @@ std::vector<torch::Tensor> KDTree::searchTensor(const torch::Tensor& q, int64_t 
     return results;
 }
 
-bool KDTree::endHPC() {
-    isHPCStarted = false;
-    // Additional cleanup for HPC
-    return true;
-}
 
-bool KDTree::setFrozenLevel(int64_t frozenLv) {
-    // Implementation for setting frozen level
-    return true;
-}
-
-bool KDTree::offlineBuild(const torch::Tensor& t) {
-    dbTensor = t;
-    buildTree();
-    return true;
-}
-
-bool KDTree::waitPendingOperations() {
-    // Implementation for waiting pending operations
-    return true;
-}
-
-bool KDTree::loadInitialStringObject(const torch::Tensor& t, const std::vector<std::string>& strs) {
-    // Implementation for loading initial strings
-    return true;
-}
-
-bool KDTree::loadInitialU64Object(const torch::Tensor& t, const std::vector<uint64_t>& u64s) {
-    // Implementation for loading initial uint64_t objects
-    return true;
-}
-
-bool KDTree::insertStringObject(const torch::Tensor& t, const std::vector<std::string>& strs) {
-    // Implementation for inserting strings
-    return true;
-}
-
-bool KDTree::insertU64Object(const torch::Tensor& t, const std::vector<uint64_t>& u64s) {
-    // Implementation for inserting uint64_t objects
-    return true;
-}
-
-bool KDTree::deleteStringObject(const torch::Tensor& t, int64_t k) {
-    // Implementation for deleting strings
-    return true;
-}
-
-bool KDTree::deleteU64Object(const torch::Tensor& t, int64_t k) {
-    // Implementation for deleting uint64_t objects
-    return true;
-}
-
-std::vector<std::vector<std::string>> KDTree::searchStringObject(const torch::Tensor& q, int64_t k) {
-    // Implementation for searching strings
-    return {};
-}
-
-std::vector<std::vector<uint64_t>> KDTree::searchU64Object(const torch::Tensor& q, int64_t k) {
-    // Implementation for searching uint64_t objects
-    return {};
-}
-
-std::tuple<std::vector<torch::Tensor>, std::vector<std::vector<std::string>>> KDTree::searchTensorAndStringObject(
-    const torch::Tensor& q, int64_t k) {
-    // Implementation for searching tensor and linked strings
-    return {};
-}
-
-bool KDTree::loadInitialTensorAndQueryDistribution(const torch::Tensor& t, const torch::Tensor& query) {
-    // Implementation for loading initial tensor and query distribution
-    return true;
-}
-
-bool KDTree::resetIndexStatistics() {
-    // Implementation for resetting index statistics
-    return true;
-}
-
-ConfigParserPtr KDTree::getIndexStatistics() {
-    // Implementation for getting index statistics
-    return nullptr;
-}
-
-void KDTree::addPoints(torch::Tensor &t) {
+void KDTree::addPoints(torch::Tensor& t) {
     dbTensor = torch::cat({dbTensor, t}, 0);
     ntotal += t.size(0);
     if ((ntotal - t.size(0)) * 2 < ntotal) {
@@ -200,12 +93,12 @@ void KDTree::addPoints(torch::Tensor &t) {
     }
 }
 
-int KDTree::knnSearch(torch::Tensor &q, int64_t *idx, float *distances, int64_t aknn) {
+int KDTree::knnSearch(torch::Tensor& q, int64_t* idx, float* distances, int64_t aknn) {
     int count = 0;
     for (int64_t i = 0; i < q.size(0); i++) {
         ResultSet resultSet = ResultSet(aknn);
         auto query_data = q.slice(0, i, i + 1).contiguous().data_ptr<float>();
-        getNeighbors(resultSet, query_data, checks, eps + 1);
+        get_neighbors(resultSet, query_data, checks, eps + 1);
         int64_t n = std::min(resultSet.size(), static_cast<size_t>(aknn));
         resultSet.copy(idx, distances, i, n);
         count += n;
@@ -280,6 +173,17 @@ void KDTree::addPointToTree(NodePtr node, int64_t idx) {
     }
 }
 
+void get_neighbors(ResultSet &result, const float *vec, int maxCheck, float epsError) {
+    BranchSt branch;
+    int checkCount = 0;
+    auto heap = Heap<BranchSt>(ntotal);
+  VisitBitset checked;
+    checked.resize(ntotal);
+    for (uint64_t i = 0; i < num_trees; i++) {
+        searchLevel(result, vec, tree_roots[i], 0, checkCount, maxCheck, epsError, &heap, checked);
+    }
 
-
-
+    while (heap.popMin(branch) && (checkCount < maxCheck) || !result.isFull()) {
+        searchLevel(result, vec, branch.node, 0, checkCount, maxCheck, epsError, &heap, checked);
+    }
+}

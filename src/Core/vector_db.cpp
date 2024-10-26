@@ -7,7 +7,7 @@
 #include <Core/vector_db.hpp>
 #include <iostream>
 #include <thread>
-#include <Algorithms/knn_search.hpp>
+#include <Algorithms/KNN/KNNSearch.hpp>
 
 // Constructor: Initialize the vector database with a number of dimensions and a search algorithm
 VectorDB::VectorDB(size_t dimensions, std::shared_ptr<SearchAlgorithm> search_algorithm)

@@ -8,7 +8,7 @@
 #include <Utils/logging.hpp>
 #include <Utils/thread_pool.hpp>
 #include <Utils/file_loader.hpp>
-#include <Utils/config_parser.hpp>
+#include <Utils/ConfigMap.hpp>
 
 #include <vector>
 #include <fstream>
@@ -33,8 +33,8 @@ const map<string, string> supported_index = {
 };
 
 // ScenarioConfig constructor implementation
-ScenarioConfig::ScenarioConfig(const string& conf_path) {
-    load(conf_path);
+ScenarioConfig::ScenarioConfig(const string &conf_path) {
+  load(conf_path);
 }
 
 // Loading configuration from the configuration file
@@ -45,18 +45,18 @@ void ScenarioConfig::load(const string &conf_path) {
     throw runtime_error("Configuration file not found: " + conf_path);
   }
 
-  ConfigParser parser;
-  parser.parse_ini(conf_path);
+  INTELLI::ConfigMapPtr parser = std::make_shared<INTELLI::ConfigMap>();
+  parser->parseIni(conf_path);
 
-  scenario_name = parser.get_string("scenario_name");
-  index_type = parser.get_string("index_type", "hnsw");
-  vector_source = parser.get_string("vector_source", "fvecs");
-  dataset_path = parser.get_string("dataset_path");
-  k_nearest =  parser.get_int("k_nearest");
-  query_thread_count = parser.get_int("query_thread_count", 1);
-  insert_thread_count = parser.get_int("insert_thread_count", 0);
-  timeout_in_sec = parser.get_int("timeout_in_sec", 10);
-  dimension = parser.get_int("dimension");
+  scenario_name = parser->getString("scenario_name");
+  dataset_path = parser->getString("dataset_path");
+  index_type = parser->getString("index_type", "hnsw");
+  vector_source = parser->getString("vector_source", "fvecs");
+  k_nearest = parser->getInt("k_nearest");
+  query_thread_count = parser->getInt("query_thread_count", 1);
+  insert_thread_count = parser->getInt("insert_thread_count", 0);
+  timeout_in_sec = parser->getInt("timeout_in_sec", 10);
+  dimension = parser->getInt("dimension");
 }
 
 // Validation check for the configuration

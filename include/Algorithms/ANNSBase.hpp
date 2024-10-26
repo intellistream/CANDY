@@ -11,32 +11,31 @@
 #include <vector>
 #include <string>
 #include <Algorithms/AbstractANNSAlgorithm.hpp>
+#include <Utils/ConfigMap.hpp>
 
 class ANNSBase : public CANDY::AbstractANNS {
 public:
     virtual ~ANNSBase() = default;
 
-    virtual void reset() override;
+    void reset() override;
 
-    virtual bool setConfig(ConfigParserPtr cfg) override;
+    bool startHPC() override;
 
-    virtual bool startHPC() override;
+    bool endHPC() override;
 
-    virtual bool endHPC() override;
+    bool setConfig(INTELLI::ConfigMapPtr cfg) override = 0;
 
-    virtual bool insertTensor(torch::Tensor &t) override;
+    bool insertTensor(torch::Tensor &t) override = 0;
 
-    virtual bool loadInitialTensor(torch::Tensor &t) override;
+    bool loadInitialTensor(torch::Tensor &t) override = 0;
 
-    virtual bool deleteTensor(torch::Tensor &t, int64_t k = 1) override;
+    bool deleteTensor(torch::Tensor &t, int64_t k) override = 0;
 
-    virtual bool reviseTensor(torch::Tensor &t, torch::Tensor &w) override;
+    bool reviseTensor(torch::Tensor &t, torch::Tensor &w) override = 0;
 
-    virtual bool resetIndexStatistics() override;
+    bool resetIndexStatistics() override;
 
-    virtual ConfigParserPtr getIndexStatistics() override;
+    INTELLI::ConfigMapPtr getIndexStatistics() override;
 };
-
-std::vector<std::string> u64ObjectToStringObject(std::vector<uint64_t> &u64s);
 
 #endif // ANNS_ALGORITHM_BASE_HPP

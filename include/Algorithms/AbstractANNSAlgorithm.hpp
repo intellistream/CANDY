@@ -5,12 +5,13 @@
  */
 #ifndef CANDY_INCLUDE_ALGORITHMS_ABSTRACT_INDEX_HPP_
 #define CANDY_INCLUDE_ALGORITHMS_ABSTRACT_INDEX_HPP_
-#include <Utils/config_parser.hpp>
 #include <Algorithms/Utils/metric_type.hpp>
 
 #include <torch/torch.h>
 #include <memory>
 #include <vector>
+
+#include "Utils/ConfigMap.hpp"
 
 namespace CANDY {
  /**
@@ -43,7 +44,7 @@ namespace CANDY {
    * @param cfg the config of this class, using raw class
    * @return bool whether the configuration is successful
    */
-  virtual bool setConfig(ConfigParserPtr cfg) = 0;
+  virtual bool setConfig(INTELLI::ConfigMapPtr cfg) = 0;
 
   /**
    * @brief Some extra set-ups if the index has HPC features
@@ -99,7 +100,7 @@ namespace CANDY {
    * @brief To get the internal statistics of this index
    * @return the statistics results in ConfigMapPtr
    */
-  virtual ConfigParserPtr getIndexStatistics() = 0;
+  virtual INTELLI::ConfigMapPtr getIndexStatistics() = 0;
  };
 } // namespace CANDY
 
