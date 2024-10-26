@@ -1,6 +1,7 @@
 add_sources(CANDY
         Computation.cpp
         ConfigMap.cpp
+        Param.cpp
         error_handling.cpp
         file_loader.cpp
         TensorOP.cpp

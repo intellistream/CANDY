@@ -8,6 +8,7 @@
 
 #include <Algorithms/ANNSBase.hpp>
 #include <Algorithms/KDTree/KDTreeUtils.hpp>
+
 class KDTree : public ANNSBase {
 public:
     typedef Node *NodePtr;
@@ -32,6 +33,8 @@ private:
     std::vector<NodePtr> tree_roots;
 
 public:
+    bool setConfig(INTELLI::ConfigMapPtr cfg);
+
     KDTree(size_t dimensions);
 
     ~KDTree();

@@ -39,6 +39,36 @@ namespace INTELLI {
         }
     }
 
+    /**
+    * @brief Try to get an I64 from config map, if not exist, use default value instead
+    * @param key The key
+    * @param defaultValue The default
+    * @param showWarning Whether show warning logs if not found
+    * @return The returned value
+    */
+    int64_t ConfigMap::tryI64(const std::string &key, int64_t defaultValue = 0, bool showWarning = false) {
+        int64_t ru = defaultValue;
+        if (this->existI64(key)) {
+            ru = this->getI64(key);
+            // INTELLI_INFO(key + " = " + to_string(ru));
+        } else {
+            if (showWarning) {
+                //INTELLI_WARNING("Leaving " + key + " as blank, will use " + to_string(defaultValue) + " instead");
+            }
+            //  WM_WARNNING("Leaving " + key + " as blank, will use " + to_string(defaultValue) + " instead");
+        }
+        return ru;
+    }
+
+    /**
+   * @brief To detect whether the key exists and related to a I64
+   * @param key
+   * @return bool for the result
+     */
+    bool ConfigMap::existI64(const std::string &key) const {
+        return (i64Map.count(key) == 1);
+    }
+
     void ConfigMap::trim(std::string &s) {
         size_t start = s.find_first_not_of(" \t\n\r");
         if (start != std::string::npos) {

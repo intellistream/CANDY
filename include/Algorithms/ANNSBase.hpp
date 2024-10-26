@@ -23,7 +23,7 @@ public:
 
     bool endHPC() override;
 
-    bool setConfig(INTELLI::ConfigMapPtr cfg) override = 0;
+    bool setConfig(INTELLI::ConfigMapPtr cfg) override;
 
     bool insertTensor(torch::Tensor &t) override = 0;
 

@@ -2,7 +2,6 @@
 
 #include <Utils/TensorOP.hpp>
 #include <algorithm>
-#include <iostream>
 #include <fstream>
 
 namespace INTELLI {
@@ -173,5 +172,6 @@ namespace INTELLI {
   torch::Tensor TensorOP::l2Normalize(torch::Tensor &tensor) {
     torch::Tensor norm = torch::norm(tensor, 2, 0, true);
     return tensor / norm;
-  }u'9'
+  }
+
 } // namespace INTELLI

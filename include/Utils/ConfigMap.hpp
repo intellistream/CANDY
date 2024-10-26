@@ -19,6 +19,11 @@ namespace INTELLI {
   * @brief The unified map structure to store configurations in a key-value style
   */
  class ConfigMap {
+
+ public:
+  int64_t tryI64(const std::string &key, int64_t defaultValue, bool showWarning);
+  bool existI64(const std::string &key) const;
+
  protected:
   std::map<std::string, uint64_t> u64Map;
   std::map<std::string, int64_t> i64Map;
@@ -28,7 +33,8 @@ namespace INTELLI {
 
   static void split(const std::string &s, const std::string &delimiter, std::vector<std::string> &v);
 
-  static void trim(std::string &s);
+
+  void trim(std::string &s);
 
   void smartParse(const std::string &key, const std::string &value);
 

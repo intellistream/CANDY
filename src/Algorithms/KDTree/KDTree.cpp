@@ -12,6 +12,22 @@
 #include <vector>
 #include <algorithm>
 #include <random>
+#include <Utils/TensorOP.hpp>
+
+bool KDTree::setConfig(INTELLI::ConfigMapPtr cfg) {
+
+    vecDim = cfg->tryI64("vecDim", 768, true);
+    num_trees = cfg->tryI64("numTrees", 4, true);
+    tree_roots = std::vector<NodePtr>(num_trees, nullptr);
+    ANNSBase::setConfig(cfg);
+    return true;
+}
+
+bool KDTree::setParams(INTELLI::ParamPtr param) {
+    num_trees = param.num_trees;
+    printf("Best param for KdTree\n num_trees: %ld\n", num_trees);
+    return true;
+}
 
 KDTree::KDTree(size_t dimensions) : vecDim(dimensions), mean(nullptr), var(nullptr), lastNNZ(-1), expandStep(100),
                                     eps(0.0), checks(32), ntotal(0) {
@@ -82,7 +98,7 @@ std::vector<torch::Tensor> KDTree::searchTensor(const torch::Tensor &q, int64_t 
 
 
 void KDTree::addPoints(torch::Tensor &t) {
-    bool success = INTELLI::IntelliTensorOP::appendRowsBufferMode(&dbTensor, &t, &lastNNZ, expandStep);
+    bool success = INTELLI::TensorOP::appendRowsBufferMode(&dbTensor, &t, &lastNNZ, expandStep);
     assert(success);
     ntotal += t.size(0);
     if ((ntotal - t.size(0)) * 2 < ntotal) {
