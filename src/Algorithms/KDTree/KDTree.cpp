@@ -7,12 +7,14 @@
  * Description: [Provide description here]
  */
 #include <Algorithms/KDTree/KDTree.hpp>
+#include <Utils/Computation.hpp>
 #include <torch/torch.h>
 #include <vector>
 #include <algorithm>
 #include <random>
 
-KDTree::KDTree(size_t dimensions) : vecDim(dimensions), mean(nullptr), var(nullptr), lastNNZ(-1), expandStep(100), eps(0.0), checks(32), ntotal(0) {
+KDTree::KDTree(size_t dimensions) : vecDim(dimensions), mean(nullptr), var(nullptr), lastNNZ(-1), expandStep(100),
+                                    eps(0.0), checks(32), ntotal(0) {
     vecDim = 768; // default
     num_trees = 4; // default
     dbTensor = torch::zeros({0, static_cast<int64_t>(vecDim)});
@@ -21,39 +23,39 @@ KDTree::KDTree(size_t dimensions) : vecDim(dimensions), mean(nullptr), var(nullp
 
 KDTree::~KDTree() {
     // Clean up tree roots
-    for (NodePtr root : tree_roots) {
+    for (NodePtr root: tree_roots) {
         delete root;
     }
     delete[] mean;
     delete[] var;
 }
 
-bool KDTree::insertTensor(const torch::Tensor& t) {
-    addPoints(const_cast<torch::Tensor&>(t));
+bool KDTree::insertTensor(const torch::Tensor &t) {
+    addPoints(const_cast<torch::Tensor &>(t));
     return true;
 }
 
-bool KDTree::loadInitialTensor(const torch::Tensor& t) {
+bool KDTree::loadInitialTensor(const torch::Tensor &t) {
     dbTensor = t;
     buildTree();
     return true;
 }
 
-bool KDTree::deleteTensor(const torch::Tensor& t, int64_t k) {
+bool KDTree::deleteTensor(const torch::Tensor &t, int64_t k) {
     // Implementation for deleting tensor
     return true;
 }
 
-bool KDTree::reviseTensor(const torch::Tensor& t, const torch::Tensor& w) {
+bool KDTree::reviseTensor(const torch::Tensor &t, const torch::Tensor &w) {
     // Implementation for revising tensor
     return true;
 }
 
-std::vector<idx_t> KDTree::searchIndex(const torch::Tensor& q, int64_t k) {
+std::vector<idx_t> KDTree::searchIndex(const torch::Tensor &q, int64_t k) {
     int64_t query_size = q.size(0);
     std::vector<idx_t> results(query_size * k);
-    float* distances = new float[query_size * k];
-    knnSearch(const_cast<torch::Tensor&>(q), results.data(), distances, k);
+    float *distances = new float[query_size * k];
+    knnSearch(const_cast<torch::Tensor &>(q), results.data(), distances, k);
     delete[] distances;
     return results;
 }
@@ -63,12 +65,12 @@ torch::Tensor KDTree::rawData() {
     return dbTensor;
 }
 
-std::vector<torch::Tensor> KDTree::searchTensor(const torch::Tensor& q, int64_t k) {
+std::vector<torch::Tensor> KDTree::searchTensor(const torch::Tensor &q, int64_t k) {
     int64_t query_size = q.size(0);
     std::vector<torch::Tensor> results(query_size);
-    int64_t* indices = new int64_t[query_size * k];
-    float* distances = new float[query_size * k];
-    knnSearch(const_cast<torch::Tensor&>(q), indices, distances, k);
+    int64_t *indices = new int64_t[query_size * k];
+    float *distances = new float[query_size * k];
+    knnSearch(const_cast<torch::Tensor &>(q), indices, distances, k);
 
     for (int64_t i = 0; i < query_size; ++i) {
         results[i] = torch::from_blob(indices + i * k, {k}, torch::kInt64).clone();
@@ -79,8 +81,9 @@ std::vector<torch::Tensor> KDTree::searchTensor(const torch::Tensor& q, int64_t 
 }
 
 
-void KDTree::addPoints(torch::Tensor& t) {
-    dbTensor = torch::cat({dbTensor, t}, 0);
+void KDTree::addPoints(torch::Tensor &t) {
+    bool success = INTELLI::IntelliTensorOP::appendRowsBufferMode(&dbTensor, &t, &lastNNZ, expandStep);
+    assert(success);
     ntotal += t.size(0);
     if ((ntotal - t.size(0)) * 2 < ntotal) {
         buildTree();
@@ -93,7 +96,7 @@ void KDTree::addPoints(torch::Tensor& t) {
     }
 }
 
-int KDTree::knnSearch(torch::Tensor& q, int64_t* idx, float* distances, int64_t aknn) {
+int KDTree::knnSearch(torch::Tensor &q, int64_t *idx, float *distances, int64_t aknn) {
     int count = 0;
     for (int64_t i = 0; i < q.size(0); i++) {
         ResultSet resultSet = ResultSet(aknn);
@@ -108,7 +111,7 @@ int KDTree::knnSearch(torch::Tensor& q, int64_t* idx, float* distances, int64_t 
 
 void KDTree::buildTree() {
     // Free existing trees
-    for (auto& root : tree_roots) {
+    for (auto &root: tree_roots) {
         if (root != nullptr) {
             delete root;
             root = nullptr;
@@ -173,17 +176,49 @@ void KDTree::addPointToTree(NodePtr node, int64_t idx) {
     }
 }
 
-void get_neighbors(ResultSet &result, const float *vec, int maxCheck, float epsError) {
+void KDTree::searchLevel(ResultSet &result, const float *vec, NodePtr node, float mindist, int &checkCount,
+                         int maxCheck, float epsError, Heap<BranchSt> *heap, VisitBitset &checked) {
+    if (result.worstDist() < mindist) {
+        return;
+    }
+    // if leaf node, do check and return
+    if (node->child1 == nullptr && node->child2 == nullptr) {
+        auto index = node->divfeat;
+        if (checked.test(index) || ((checkCount >= maxCheck) && result.isFull())) {
+            return;
+        }
+        checked.set(index);
+        checkCount++;
+        auto node_data = node->data.contiguous().data_ptr<float>();
+        auto dist = Computation::computeL2Distance(node_data, vec, vecDim);
+        result.add(dist, index);
+        return;
+    }
+
+    auto val = vec[node->divfeat];
+    auto diff = val - node->divval;
+    auto bestChild = (diff < 0) ? node->child1 : node->child2;
+    auto otherChild = (diff < 0) ? node->child2 : node->child1;
+
+    auto new_dist = mindist + (val - node->divval) * (val - node->divval);
+    if ((new_dist * epsError < result.worstDist()) || !result.isFull()) {
+        heap->push(BranchSt(otherChild, new_dist));
+    }
+
+    // recursively search to next level down
+    searchLevel(result, vec, bestChild, mindist, checkCount, maxCheck, epsError, heap, checked);
+}
+
+void KDTree::get_neighbors(ResultSet &result, const float *vec, int maxCheck, float epsError) {
     BranchSt branch;
     int checkCount = 0;
-    auto heap = Heap<BranchSt>(ntotal);
-  VisitBitset checked;
-    checked.resize(ntotal);
+    Heap<BranchSt> heap;
+    VisitBitset checked(ntotal);
     for (uint64_t i = 0; i < num_trees; i++) {
         searchLevel(result, vec, tree_roots[i], 0, checkCount, maxCheck, epsError, &heap, checked);
     }
 
-    while (heap.popMin(branch) && (checkCount < maxCheck) || !result.isFull()) {
+    while (heap.pop(branch) && (checkCount < maxCheck || !result.isFull())) {
         searchLevel(result, vec, branch.node, 0, checkCount, maxCheck, epsError, &heap, checked);
     }
 }

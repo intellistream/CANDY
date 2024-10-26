@@ -1,9 +1,6 @@
 /*
 * Copyright (C) 2024 by the INTELLI team
- * Created by: ZYT
  * Created on: 2024/10/14
- * Modified by: Shuhao Zhang
- * Modified on: 2024/10/25
  * Description: [Provide description here]
  */
 #ifndef KD_TREE_HPP
@@ -11,7 +8,6 @@
 
 #include <Algorithms/ANNSBase.hpp>
 #include <Algorithms/KDTree/KDTreeUtils.hpp>
-
 class KDTree : public ANNSBase {
 public:
     typedef Node *NodePtr;
@@ -66,6 +62,9 @@ private:
     void addPointToTree(NodePtr node, int64_t idx);
 
     void get_neighbors(ResultSet &result, const float *vec, int maxCheck, float epsError);
+
+    void searchLevel(ResultSet &result, const float *vec, NodePtr node, float mindist, int &checkCount, int maxCheck,
+                     float epsError, Heap<BranchSt> *heap, VisitBitset &checked);
 };
 
 #endif // KD_TREE_HPP
