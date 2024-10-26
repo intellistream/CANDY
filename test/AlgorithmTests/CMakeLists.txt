@@ -1,0 +1,1 @@
+add_catch_test(kdtree_tests kdtree_tests.cpp)
