@@ -10,10 +10,10 @@
 #define INTELLISTREAM_SRC_ALGORITHMS_KD_TREE_HPP_
 
 
-#include <Algorithms/AbstractANNSAlgorithm.hpp>
+#include <Algorithms/ANNSBase.hpp>
 #include <Algorithms/KDTree/kd_tree_utils.hpp>
 
-class KDTree : public AbstractANNSAlgorithm {
+class KDTree : public ANNSBase {
 public:
     typedef Node* NodePtr;
     typedef BranchStruct<NodePtr> BranchSt;
@@ -124,28 +124,9 @@ public:
         return true;
     }
 
-    bool loadInitialU64Object(const torch::Tensor& t, const std::vector<uint64_t>& u64s) override {
-        // Implementation for loading initial uint64_t objects
-        return true;
-    }
 
     bool insertStringObject(const torch::Tensor& t, const std::vector<std::string>& strs) override {
         // Implementation for inserting strings
-        return true;
-    }
-
-    bool insertU64Object(const torch::Tensor& t, const std::vector<uint64_t>& u64s) override {
-        // Implementation for inserting uint64_t objects
-        return true;
-    }
-
-    bool deleteStringObject(const torch::Tensor& t, int64_t k = 1) override {
-        // Implementation for deleting strings
-        return true;
-    }
-
-    bool deleteU64Object(const torch::Tensor& t, int64_t k = 1) override {
-        // Implementation for deleting uint64_t objects
         return true;
     }
 

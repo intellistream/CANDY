@@ -3,5 +3,5 @@ add_subdirectory(KDTree)
 add_subdirectory(KNN)
 add_subdirectory(Utils)
 add_sources(CANDY
-        ANNSAlgorithmBase.cpp
+        ANNSBase.cpp
 )
