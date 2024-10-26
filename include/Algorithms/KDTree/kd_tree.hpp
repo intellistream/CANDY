@@ -10,10 +10,10 @@
 #define INTELLISTREAM_SRC_ALGORITHMS_KD_TREE_HPP_
 
 
-#include <Algorithms/abstract_index.hpp>
+#include <Algorithms/AbstractANNSAlgorithm.hpp>
 #include <Algorithms/KDTree/kd_tree_utils.hpp>
 
-class KDTree : public AbstractIndex {
+class KDTree : public AbstractANNSAlgorithm {
 public:
     typedef Node* NodePtr;
     typedef BranchStruct<NodePtr> BranchSt;

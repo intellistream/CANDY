@@ -1,7 +1,7 @@
+add_subdirectory(HNSW)
+add_subdirectory(KDTree)
+add_subdirectory(KNN)
+add_subdirectory(Utils)
 add_sources(CANDY
-        abstract_index.cpp
-        hnsw.cpp
-        knn_search.cpp
-        parallelhnsw.cpp
-        kd_tree.cpp
+        ANNSAlgorithmBase.cpp
 )
