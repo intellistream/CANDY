@@ -2,8 +2,9 @@
 // Created by zyt on 24-10-14.
 //
 #include <Algorithms/kd_tree.hpp>
+#include "Utils/logging.hpp"
+
 KDTree::KDTree(size_t dimensions): vecDim(dimensions), mean(0), var(0), lastNNZ(-1), expandStep(100), eps(0.0), checks(32),ntotal(0){
-  vecDim = 768;//default
   num_trees = 4;//default
   dbTensor = torch::zeros({0, (int64_t) vecDim});
   tree_roots = std::vector<KDTree::NodePtr>(num_trees, nullptr);
@@ -13,10 +14,11 @@ KDTree::KDTree(size_t dimensions): vecDim(dimensions), mean(0), var(0), lastNNZ(
 void KDTree::insert(size_t id, const std::vector<float> &vec){
     // transform vector to tensor then insert
     torch::Tensor tensor_vec = torch::from_blob((float*)vec.data(), {1, (long)vec.size()}, torch::kFloat32).clone();
+  dbTensor = torch::cat({dbTensor, tensor_vec}, 0);
     addPoints(tensor_vec);
 }
 
-std::vector<size_t> KDTree::query(const std::vector<float> &query_vec, size_t k){
+std::vector<size_t> KDTree::query(const std::vector<float> &query_vec, size_t k)const{
     // transform the query vector to tensor
     torch::Tensor tensor_query = torch::from_blob((float*)query_vec.data(), {1, (long)query_vec.size()}, torch::kFloat32).clone();
 
@@ -34,10 +36,15 @@ std::vector<size_t> KDTree::query(const std::vector<float> &query_vec, size_t k)
 
 void KDTree::remove(size_t id){
     //  TODO: prepare a remove function for deleting
+  //TO Be Supported.
+  INTELLI_ERROR("not implemented");
 }
 
-
-int KDTree::knnSearch(torch::Tensor &q, int64_t *idx, float *distances, int64_t aknn){
+void KDTree::update(size_t id, const std::vector<float> & vector) {
+  //TO Be Supported.
+  INTELLI_ERROR("not implemented");
+}
+int KDTree::knnSearch(torch::Tensor &q, int64_t *idx, float *distances, int64_t aknn)const{
   int count = 0;
 
   for (int64_t i = 0; i < q.size(0); i++) {
@@ -54,7 +61,7 @@ int KDTree::knnSearch(torch::Tensor &q, int64_t *idx, float *distances, int64_t 
   return count;
 }
 
-void KDTree::getNeighbors(ResultSet &result, const float *vec, int maxCheck, float epsError) {
+void KDTree::getNeighbors(ResultSet &result, const float *vec, int maxCheck, float epsError)const {
   BranchSt branch;
   int checkCount = 0;
   auto heap = Heap<BranchSt>();
@@ -69,7 +76,7 @@ void KDTree::getNeighbors(ResultSet &result, const float *vec, int maxCheck, flo
   }
 }
 
-float KDTree::fvec_L2sqr(const float* vec1, const float* vec2, int d) {
+float KDTree::fvec_L2sqr(const float* vec1, const float* vec2, int d)const {
     float dist = 0.0f;
     for (int i = 0; i < d; ++i) {
         float diff = vec1[i] - vec2[i];
@@ -86,7 +93,7 @@ void KDTree::searchLevel(ResultSet &result,
                                 int maxCheck,
                                 float epsError,
                                 Heap<BranchSt> *heap,
-                                VisitBitset &checked) {
+                                VisitBitset &checked) const{
   if (result.worstDist() < mindist) {
     return;
   }

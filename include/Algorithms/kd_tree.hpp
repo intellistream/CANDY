@@ -215,17 +215,19 @@ public:
 
 
     KDTree(size_t dimensions);
-
+    ~KDTree()=default;
     // Insert a vector into the k-NN index
     void insert(size_t id, const std::vector<float> &vec);
 
     // Query k nearest neighbors (returns vector of IDs)
-    std::vector<size_t> query(const std::vector<float> &query_vec, size_t k);
+    std::vector<size_t> query(const std::vector<float> &query_vec, size_t k)const;
 
     // Remove a vector from the k-NN index
     void remove(size_t id);
 
-  float fvec_L2sqr(const float* vec1, const float* vec2, int d);
+    void update(size_t id, const std::vector<float> & vector);
+
+  float fvec_L2sqr(const float* vec1, const float* vec2, int d)const;
 
 
 
@@ -252,7 +254,7 @@ public:
    * @param aknn number of approximate neighbors
    * @return number of results obtained
    */
-  int knnSearch(torch::Tensor &q, int64_t *idx, float *distances, int64_t aknn) ;
+  int knnSearch(torch::Tensor &q, int64_t *idx, float *distances, int64_t aknn)const ;
 
 
 
@@ -263,7 +265,7 @@ public:
    * @param maxCheck
    * @param epsError
    */
-  void getNeighbors(ResultSet &result, const float *vec, int maxCheck, float epsError);
+  void getNeighbors(ResultSet &result, const float *vec, int maxCheck, float epsError)const;
 
 
   /**
@@ -286,7 +288,7 @@ public:
                    int maxCheck,
                    float epsError,
                    Heap<BranchSt> *heap,
-                   VisitBitset &checked);
+                   VisitBitset &checked)const;
 
 
   /**
