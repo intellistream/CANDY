@@ -11,8 +11,8 @@
 #include <memory>
 #include <vector>
 
-#include "Utils/ConfigMap.hpp"
-#include "Utils/Param.hpp"
+#include <Utils/ConfigMap.hpp>
+#include <Utils/Param.hpp>
 
 namespace CANDY {
  /**

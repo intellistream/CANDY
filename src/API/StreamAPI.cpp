@@ -1,11 +1,11 @@
 /*
  * Copyright (C) 2024 by the INTELLI team
- * Created by: Shuhao Zhang
  * Created on: 2024/10/10
  * Description: [Provide description here]
  */
-#include <API/vectordb_stream.hpp>
+#include <API/StreamAPI.hpp>
 #include <Core/vector_db.hpp>
+
 // Constructor
 VectorDBStream::VectorDBStream() {}
 
