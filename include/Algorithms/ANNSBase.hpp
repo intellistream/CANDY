@@ -9,33 +9,34 @@
 
 #include <torch/torch.h>
 #include <vector>
-#include <string>
 #include <Algorithms/AbstractANNSAlgorithm.hpp>
 #include <Utils/ConfigMap.hpp>
+#include <Utils/Param.hpp>
+
+class ANNSBase;
+typedef std::shared_ptr<ANNSBase> ANNSBasePtr;
 
 class ANNSBase : public CANDY::AbstractANNS {
 public:
     virtual ~ANNSBase() = default;
+    // Methods with default implementations
+    // Methods with default implementations
+    void reset() override;                       // Logs if no specific reset
+    bool startHPC() override;                    // Logs if no HPC setup
+    bool endHPC() override;                      // Logs if no HPC termination
+    bool setConfig(INTELLI::ConfigMapPtr cfg) override; // Logs if no config setup
+    bool setParams(CANDY::ParamPtr param) override; // Logs if no parameters set
+    bool resetIndexStatistics() override;        // Logs if no statistics reset
+    INTELLI::ConfigMapPtr getIndexStatistics() override; // Logs if no statistics retrieval
 
-    void reset() override;
+    virtual bool insertTensor(const torch::Tensor &t) override = 0;
 
-    bool startHPC() override;
+    virtual bool loadInitialTensor(torch::Tensor &t) override = 0;
 
-    bool endHPC() override;
+    virtual bool deleteTensor(torch::Tensor &t, int64_t k) override = 0;
 
-    bool setConfig(INTELLI::ConfigMapPtr cfg) override;
+    virtual bool reviseTensor(torch::Tensor &t, torch::Tensor &w) override = 0;
 
-    bool insertTensor(torch::Tensor &t) override = 0;
-
-    bool loadInitialTensor(torch::Tensor &t) override = 0;
-
-    bool deleteTensor(torch::Tensor &t, int64_t k) override = 0;
-
-    bool reviseTensor(torch::Tensor &t, torch::Tensor &w) override = 0;
-
-    bool resetIndexStatistics() override;
-
-    INTELLI::ConfigMapPtr getIndexStatistics() override;
+    virtual std::vector<torch::Tensor> searchTensor(const torch::Tensor &q, int64_t k) override = 0;
 };
-
 #endif // ANNS_ALGORITHM_BASE_HPP

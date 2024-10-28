@@ -8,6 +8,7 @@
 
 #include <Algorithms/ANNSBase.hpp>
 #include <Algorithms/KDTree/KDTreeUtils.hpp>
+#include <Utils/Param.hpp>
 
 class KDTree : public ANNSBase {
 public:
@@ -33,7 +34,9 @@ private:
     std::vector<NodePtr> tree_roots;
 
 public:
-    bool setConfig(INTELLI::ConfigMapPtr cfg);
+    bool setConfig(INTELLI::ConfigMapPtr cfg) override;
+
+    bool setParams(CANDY::ParamPtr param);
 
     KDTree(size_t dimensions);
 
@@ -59,6 +62,12 @@ private:
     int knnSearch(torch::Tensor &q, int64_t *idx, float *distances, int64_t aknn);
 
     NodePtr divideTree(int64_t *idx, int count);
+
+    void meanSplit(int64_t *ind, int count, int64_t &index, int64_t &cutfeat, float &cutval);
+
+    int selectDivision(float *v);
+
+    void planeSplit(int64_t *ind, int count, int64_t cutfeat, float cutval, int &lim1, int &lim2);
 
     void buildTree();
 

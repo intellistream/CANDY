@@ -14,6 +14,7 @@ namespace CANDY {
  typedef std::shared_ptr<Param> ParamPtr;
 
  class Param {
+ public:
   // for kdtree
   int64_t num_trees;
  };

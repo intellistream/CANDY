@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "Utils/ConfigMap.hpp"
+#include "Utils/Param.hpp"
 
 namespace CANDY {
  /**
@@ -47,6 +48,13 @@ namespace CANDY {
   virtual bool setConfig(INTELLI::ConfigMapPtr cfg) = 0;
 
   /**
+   * @brief set the params from auto-tuning
+   * @param param best param
+   * @return true if success
+   */
+  virtual bool setParams(CANDY::ParamPtr param) =0;
+
+  /**
    * @brief Some extra set-ups if the index has HPC features
    * @return bool whether the HPC set-up is successful
    */
@@ -64,7 +72,7 @@ namespace CANDY {
    * @param t the tensor, some index need to be single row
    * @return bool whether the insertion is successful
    */
-  virtual bool insertTensor(torch::Tensor &t) = 0;
+  virtual bool insertTensor(const torch::Tensor &t) = 0;
 
   /**
    * @brief Load the initial tensors of a data base, use this BEFORE insertTensor
@@ -89,6 +97,14 @@ namespace CANDY {
    * @return bool whether the revising is successful
    */
   virtual bool reviseTensor(torch::Tensor &t, torch::Tensor &w) = 0;
+
+  /**
+   * @brief search the k-NN of a query tensor, return the result tensors
+   * @param t the tensor, allow multiple rows
+   * @param k the returned neighbors
+   * @return std::vector<torch::Tensor> the result tensor for each row of query
+   */
+  virtual std::vector<torch::Tensor> searchTensor(const torch::Tensor &q, int64_t k) =0;
 
   /**
    * @brief To reset the internal statistics of this index

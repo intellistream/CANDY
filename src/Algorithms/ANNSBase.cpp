@@ -7,31 +7,43 @@
 #include <Algorithms/ANNSBase.hpp>
 #include <iostream>
 
+// Reset the index to an initialized state
 void ANNSBase::reset() {
-    // Default implementation for reset
-    std::cout << "Resetting index to initial state." << std::endl;
+    INTELLI_INFO("No specific reset implementation provided in ANNSBase.");
 }
 
+// Start the High-Performance Computation (HPC) setup
 bool ANNSBase::startHPC() {
-    isHPCStarted = true;
-    std::cout << "Starting HPC features." << std::endl;
-    return true;
+    INTELLI_INFO("No specific startHPC implementation provided in ANNSBase.");
+    return false;
 }
 
+// End the High-Performance Computation (HPC) process
 bool ANNSBase::endHPC() {
-    isHPCStarted = false;
-    std::cout << "Ending HPC features." << std::endl;
-    return true;
+    INTELLI_INFO("No specific endHPC implementation provided in ANNSBase.");
+    return false;
 }
 
+// Set configuration (with logging when no specific behavior is provided)
+bool ANNSBase::setConfig(INTELLI::ConfigMapPtr cfg) {
+    INTELLI_INFO("No specific setConfig implementation provided in ANNSBase.");
+    return false;
+}
+
+// Set parameters (with logging when no specific behavior is provided)
+bool ANNSBase::setParams(CANDY::ParamPtr param) {
+    INTELLI_INFO("No parameters to be set in ANNSBase.");
+    return false;
+}
+
+// Reset any collected index statistics
 bool ANNSBase::resetIndexStatistics() {
-    std::cout << "Resetting index statistics." << std::endl;
-    return true;
+    INTELLI_INFO("No specific resetIndexStatistics implementation provided in ANNSBase.");
+    return false;
 }
 
+// Retrieve index statistics
 INTELLI::ConfigMapPtr ANNSBase::getIndexStatistics() {
-    auto ru = std::make_shared<INTELLI::ConfigMap>();
-    ru->edit("hasExtraStatistics", 0);
-    std::cout << "Getting index statistics." << std::endl;
-    return ru;
+    INTELLI_INFO("No specific getIndexStatistics implementation provided in ANNSBase.");
+    return nullptr;
 }

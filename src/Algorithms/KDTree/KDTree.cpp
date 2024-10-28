@@ -1,9 +1,6 @@
 /*
 * Copyright (C) 2024 by the INTELLI team
- * Created by: ZYT
  * Created on: 2024/10/14
- * Modified by: Shuhao Zhang
- * Modified on: 2024/10/25
  * Description: [Provide description here]
  */
 #include <Algorithms/KDTree/KDTree.hpp>
@@ -17,7 +14,6 @@
 #include "Utils/Param.hpp"
 
 bool KDTree::setConfig(INTELLI::ConfigMapPtr cfg) {
-
     vecDim = cfg->tryI64("vecDim", 768, true);
     num_trees = cfg->tryI64("numTrees", 4, true);
     tree_roots = std::vector<NodePtr>(num_trees, nullptr);
@@ -26,7 +22,7 @@ bool KDTree::setConfig(INTELLI::ConfigMapPtr cfg) {
 }
 
 bool KDTree::setParams(CANDY::ParamPtr param) {
-    num_trees = param.num_trees;
+    num_trees = param->num_trees;
     printf("Best param for KdTree\n num_trees: %ld\n", num_trees);
     return true;
 }
@@ -127,6 +123,121 @@ int KDTree::knnSearch(torch::Tensor &q, int64_t *idx, float *distances, int64_t 
     return count;
 }
 
+KDTree::NodePtr KDTree::divideTree(int64_t *ind, int count) {
+    NodePtr node = new Node();
+
+    if (count == 1) {
+        node->child1 = nullptr;
+        node->child2 = nullptr;
+        node->divfeat = *ind;
+        node->data = dbTensor[*ind];
+    } else {
+        int64_t idx;
+        int64_t cutfeat;
+        float cutval;
+        meanSplit(ind, count, idx, cutfeat, cutval);
+        node->divfeat = cutfeat;
+        node->divval = cutval;
+        //printf("starting  left dividing points with count=%d idx=%d\n", count, idx);
+        node->child1 = divideTree(ind, idx);
+        //printf("starting  right dividing points with count=%d idx=%d\n", count, idx);
+        node->child2 = divideTree(ind + idx, count - idx);
+    }
+
+    return node;
+}
+
+void KDTree::meanSplit(int64_t *ind, int count, int64_t &index, int64_t &cutfeat, float &cutval) {
+    memset(mean, 0, vecDim * sizeof(float));
+    memset(var, 0, vecDim * sizeof(float));
+    int cnt = std::min(KDTree::SAMPLE_MEAN, count);
+    for (int j = 0; j < cnt; j++) {
+        float *v = dbTensor.slice(0, ind[j], ind[j + 1]).contiguous().data_ptr<float>();
+        for (int64_t k = 0; k < vecDim; k++) {
+            mean[k] += v[k];
+        }
+    }
+    float div_factor = 1.0 / cnt;
+    for (int64_t k = 0; k < vecDim; k++) {
+        mean[k] *= div_factor;
+    }
+    for (int j = 0; j < cnt; j++) {
+        float *v = dbTensor.slice(0, ind[j], ind[j + 1]).contiguous().data_ptr<float>();
+        for (int64_t k = 0; k < vecDim; k++) {
+            auto dist = v[k] - mean[k];
+            var[k] = dist * dist;
+        }
+    }
+    cutfeat = selectDivision(var);
+    //printf("cutfeat = %d  ", cutfeat);
+    cutval = mean[cutfeat];
+    //printf("cutval = %.2f", cutval);
+    int lim1, lim2;
+    planeSplit(ind, count, cutfeat, cutval, lim1, lim2);
+    if (lim1 > count / 2) {
+        index = lim1;
+    } else if (lim2 < count / 2) {
+        index = lim2;
+    } else {
+        index = count / 2;
+    }
+    if (lim1 == count || lim2 == 0) {
+        index = count / 2;
+    }
+}
+
+int KDTree::selectDivision(float *v) {
+    int num = 0;
+    size_t topind[KDTree::RAND_DIM];
+    for (int64_t i = 0; i < vecDim; i++) {
+        if (num < KDTree::RAND_DIM || v[i] > v[topind[num - 1]]) {
+            if (num < KDTree::RAND_DIM) {
+                topind[num++] = i;
+            } else {
+                topind[num - 1] = i;
+            }
+
+            int j = num - 1;
+            while (j > 0 && v[topind[j]] > v[topind[j - 1]]) {
+                std::swap(topind[j], topind[j - 1]);
+                --j;
+            }
+        }
+    }
+    int rand = std::rand() % (num);
+    return (int) (topind[rand]);
+}
+
+void KDTree::planeSplit(int64_t *ind, int count, int64_t cutfeat, float cutval, int &lim1, int &lim2) {
+    int left = 0;
+    int right = count - 1;
+    for (;;) {
+        auto left_data = dbTensor.slice(0, ind[left], ind[left] + 1).contiguous().data_ptr<float>();
+        auto right_data = dbTensor.slice(0, ind[right], ind[right] + 1).contiguous().data_ptr<float>();
+        while (left <= right && left_data[cutfeat] < cutval) ++left;
+        while (left <= right && right_data[cutfeat] >= cutval) --right;
+        if (left > right) break;
+        std::swap(ind[left], ind[right]);
+        ++left;
+        --right;
+    }
+    lim1 = left;
+    right = count - 1;
+    for (;;) {
+        auto left_data = dbTensor.slice(0, ind[left], ind[left] + 1).contiguous().data_ptr<float>();
+        auto right_data = dbTensor.slice(0, ind[right], ind[right] + 1).contiguous().data_ptr<float>();
+        while (left <= right && left_data[cutfeat] < cutval) ++left;
+        while (left <= right && right_data[cutfeat] >= cutval) --right;
+        if (left > right) break;
+        std::swap(ind[left], ind[right]);
+        ++left;
+        --right;
+    }
+
+    lim2 = left;
+}
+
+
 void KDTree::buildTree() {
     // Free existing trees
     for (auto &root: tree_roots) {
@@ -208,7 +319,7 @@ void KDTree::searchLevel(ResultSet &result, const float *vec, NodePtr node, floa
         checked.set(index);
         checkCount++;
         auto node_data = node->data.contiguous().data_ptr<float>();
-        auto dist = Computation::computeL2Distance(node_data, vec, vecDim);
+        auto dist = CANDY::computeL2Distance(node_data, vec, vecDim);
         result.add(dist, index);
         return;
     }

@@ -8,167 +8,156 @@
 #include <iostream>
 #include <thread>
 #include <Algorithms/KNN/KNNSearch.hpp>
-
-// Constructor: Initialize the vector database with a number of dimensions and a search algorithm
-VectorDB::VectorDB(size_t dimensions, std::shared_ptr<SearchAlgorithm> search_algorithm)
-  : dimensions(dimensions), search_algorithm(search_algorithm), is_running(false) {
-  if (!this->search_algorithm) {
-    this->search_algorithm = std::make_shared<KnnSearch>(dimensions);
-  }
+// Constructor: Initialize the tensor database with a number of dimensions and a search algorithm
+VectorDB::VectorDB(size_t dimensions, ANNSBasePtr ann_algorithm)
+    : dimensions(dimensions), ann_algorithm(ann_algorithm), is_running(false) {
+    if (!this->ann_algorithm) {
+        // Instantiate a default ANNS algorithm if none provided
+        this->ann_algorithm = std::make_shared<KnnSearch>(dimensions);
+    }
 }
 
 // Destructor
 VectorDB::~VectorDB() {
-  stop_streaming();
+    stop_streaming();
 }
 
-// Generate a new unique ID for each vector
+// Generate a new unique ID for each tensor
 size_t VectorDB::generate_id() {
-  return next_id++;
+    return next_id++;
 }
 
-// Insert a vector directly into the vector database (exclusive write access)
-bool VectorDB::insert_vector(const std::vector<float> &vec) {
-  if (vec.size() != dimensions) {
-    std::cerr << "Error: Vector dimensions do not match the expected size (" << dimensions << ")." << std::endl;
-    return false;
-  }
-
-  {
-    std::unique_lock<std::shared_mutex> lock(db_mutex);  // Exclusive write lock
-    size_t id = generate_id();
-    vector_store[id] = vec;  // Store the vector in the database
-    if (search_algorithm) {
-      search_algorithm->insert(id, vec);  // Insert into the search algorithm's index
+// Insert a tensor directly into the tensor database (exclusive write access)
+bool VectorDB::insert_tensor(const torch::Tensor &tensor) {
+    if (tensor.size(0) != dimensions) {
+        INTELLI_ERROR("Error: Tensor dimensions do not match the expected size (" << dimensions << ").");
+        return false;
+    } {
+        std::unique_lock<std::shared_mutex> lock(db_mutex); // Exclusive write lock
+        size_t id = generate_id();
+        tensor_store[id] = tensor; // Store the tensor in the database
+        if (ann_algorithm) {
+            ann_algorithm->insertTensor(tensor); // Insert into the ANNS algorithm's index
+        }
     }
-  }
 
-  return true;
+    return true;
 }
 
-// Update an existing vector (exclusive write access)
-bool VectorDB::update_vector(size_t id, const std::vector<float> &new_vec) {
-  if (new_vec.size() != dimensions) {
-    std::cerr << "Error: Vector dimensions do not match the expected size (" << dimensions << ")." << std::endl;
-    return false;
-  } {
-    std::unique_lock<std::shared_mutex> lock(db_mutex); // Exclusive write lock
-    if (vector_store.find(id) == vector_store.end()) {
-      std::cerr << "Error: Vector with ID " << id << " not found." << std::endl;
-      return false;
+// Update an existing tensor (exclusive write access)
+bool VectorDB::update_tensor(size_t id, torch::Tensor &new_tensor) {
+    if (new_tensor.size(0) != dimensions) {
+        INTELLI_ERROR("Error: Tensor dimensions do not match the expected size (" << dimensions << ").");
+        return false;
+    } {
+        std::unique_lock<std::shared_mutex> lock(db_mutex); // Exclusive write lock
+        if (tensor_store.find(id) == tensor_store.end()) {
+            INTELLI_ERROR("Error: Tensor with ID " << id << " not found.");
+            return false;
+        }
+        tensor_store[id] = new_tensor; // Update the tensor in the database
+        if (ann_algorithm) {
+            ann_algorithm->reviseTensor(new_tensor, tensor_store[id]); // Revise the tensor in the ANNS index
+        }
     }
-    vector_store[id] = new_vec; // Update the vector in the database
-    if (search_algorithm) {
-      // search_algorithm->update(id, new_vec); // Update the vector in the search algorithm's index
-    }
-  }
 
-  return true;
+    return true;
 }
 
-// Delete a vector by its ID (exclusive write access)
-bool VectorDB::remove_vector(size_t id) { {
-    std::unique_lock<std::shared_mutex> lock(db_mutex); // Exclusive write lock
-    auto it = vector_store.find(id);
-    if (it == vector_store.end()) {
-      std::cerr << "Error: Vector with ID " << id << " not found." << std::endl;
-      return false;
+// Delete a tensor by its ID (exclusive write access)
+bool VectorDB::remove_tensor(size_t id) { {
+        std::unique_lock<std::shared_mutex> lock(db_mutex); // Exclusive write lock
+        auto it = tensor_store.find(id);
+        if (it == tensor_store.end()) {
+            INTELLI_ERROR("Error: Tensor with ID " << id << " not found.");
+            return false;
+        }
+        tensor_store.erase(it); // Remove the tensor from the database
+        if (ann_algorithm) {
+            ann_algorithm->deleteTensor(it->second, id); // Remove from the ANNS index
+        }
     }
-    vector_store.erase(it); // Remove the vector from the database
-    if (search_algorithm) {
-      search_algorithm->remove(id); // Remove the vector from the search algorithm's index
-    }
-  }
 
-  return true;
+    return true;
 }
 
+// Query the nearest tensors using the ANNS algorithm (shared read access)
+std::vector<torch::Tensor> VectorDB::query_nearest_tensors(const torch::Tensor &query_tensor, size_t k) const {
+    if (query_tensor.size(0) != dimensions) {
+        INTELLI_ERROR("Error: Query tensor dimensions do not match the expected size (" << dimensions << ").")
+        return {};
+    }
 
-// Query the nearest vectors using the search algorithm (shared read access)
-std::vector<std::vector<float>> VectorDB::query_nearest_vectors(const std::vector<float> &query_vec, size_t k) const {
-  if (query_vec.size() != dimensions) {
-    std::cerr << "Error: Query vector dimensions do not match the expected size (" << dimensions << ")." << std::endl;
-    return {};
-  }
+    std::shared_lock<std::shared_mutex> lock(db_mutex); // Shared read lock
+    if (!ann_algorithm) {
+        INTELLI_ERROR("Error: No ANNS algorithm available for querying.");
+        return {};
+    }
 
-  std::shared_lock<std::shared_mutex> lock(db_mutex);  // Shared read lock
-  if (!search_algorithm) {
-    std::cerr << "Error: No search algorithm available for querying." << std::endl;
-    return {};
-  }
+    // Query the nearest k tensors directly from the ANNS algorithm
+    std::vector<torch::Tensor> nearest_tensors = ann_algorithm->searchTensor(query_tensor, k);
 
-  // Query the nearest k vectors using the search algorithm
-  std::vector<size_t> nearest_ids = search_algorithm->query(query_vec, k);
-
-  // Retrieve the actual vectors based on the IDs returned
-  std::vector<std::vector<float>> nearest_vectors;
-  for (size_t id : nearest_ids) {
-    nearest_vectors.push_back(vector_store.at(id));
-  }
-
-  return nearest_vectors;
+    return nearest_tensors;
 }
+
 
 // Start the streaming engine (processes stream buffers in parallel)
 void VectorDB::start_streaming() {
-  is_running = true;
-  start_workers();  // Start the worker threads
+    is_running = true;
+    start_workers(); // Start the worker threads
 }
 
 // Stop the streaming engine
 void VectorDB::stop_streaming() {
-  is_running = false;
-  stop_workers();  // Stop the worker threads
+    is_running = false;
+    stop_workers(); // Stop the worker threads
 }
 
-// Insert a vector into the streaming queue (exclusive write access)
-void VectorDB::insert_streaming_vector(const std::vector<float> &vec) {
-  if (vec.size() != dimensions) {
-    std::cerr << "Error: Vector dimensions do not match the expected size (" << dimensions << ")." << std::endl;
-    return;
-  }
-
-  {
-    std::unique_lock<std::shared_mutex> lock(db_mutex);  // Exclusive write lock for streaming insert
-    stream_buffer.push(vec);  // Push the vector into the streaming queue
-  }
+// Insert a tensor into the streaming queue (exclusive write access)
+void VectorDB::insert_streaming_tensor(const torch::Tensor &tensor) {
+    if (tensor.size(0) != dimensions) {
+        INTELLI_ERROR("Error: Tensor dimensions do not match the expected size (" << dimensions << ").");
+        return;
+    } {
+        std::unique_lock<std::shared_mutex> lock(db_mutex); // Exclusive write lock for streaming insert
+        stream_buffer.push(tensor); // Push the tensor into the streaming queue
+    }
 }
 
-// Process the streaming queue (insert vectors into the database in parallel)
+// Process the streaming queue (insert tensors into the database in parallel)
 void VectorDB::process_streaming_queue() {
-  while (is_running) {
-    std::vector<float> vec;
-    {
-      std::unique_lock<std::shared_mutex> lock(db_mutex);  // Exclusive access to remove from queue
-      if (!stream_buffer.empty()) {
-        vec = stream_buffer.front();
-        stream_buffer.pop();
-      }
-    }
+    while (is_running) {
+        torch::Tensor tensor; {
+            std::unique_lock<std::shared_mutex> lock(db_mutex); // Exclusive access to remove from queue
+            if (!stream_buffer.empty()) {
+                tensor = stream_buffer.front();
+                stream_buffer.pop();
+            }
+        }
 
-    if (!vec.empty()) {
-      insert_vector(vec);  // Insert the vector into the database
+        if (tensor.defined()) {
+            insert_tensor(tensor); // Insert the tensor into the database
+        }
     }
-  }
 }
 
-int VectorDB::get_dimensions() {
-  return dimensions;
+int VectorDB::get_dimensions() const {
+    return dimensions;
 }
 
 // Start the worker threads to process the streaming queue
 void VectorDB::start_workers() {
-  for (int i = 0; i < std::thread::hardware_concurrency(); ++i) {
-    workers.emplace_back(&VectorDB::process_streaming_queue, this);
-  }
+    for (int i = 0; i < std::thread::hardware_concurrency(); ++i) {
+        workers.emplace_back(&VectorDB::process_streaming_queue, this);
+    }
 }
 
 // Stop the worker threads
 void VectorDB::stop_workers() {
-  for (auto &worker : workers) {
-    if (worker.joinable()) {
-      worker.join();  // Ensure all threads are properly joined
+    for (auto &worker: workers) {
+        if (worker.joinable()) {
+            worker.join(); // Ensure all threads are properly joined
+        }
     }
-  }
-  workers.clear();
+    workers.clear();
 }

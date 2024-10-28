@@ -53,5 +53,5 @@ ThirdParty/libtorch/
 commit.sh
 commit_info
 
-/apps/BenchmarkTool/datasets/fvecs/
-/apps/BenchmarkTool/datasets/hdf5/
+/apps/CPlusPlus/datasets/fvecs/
+/apps/CPlusPlus/datasets/hdf5/

@@ -1,16 +1,21 @@
 /*
  * Copyright (C) 2024 by the INTELLI team
- * Created by: Shuhao Zhang
  * Created on: 2024/10/9
  * Description: [Provide description here]
  */
-#ifndef INTELLISTREAM_SRC_ALGORITHMS_KNN_SEARCH_HPP_
-#define INTELLISTREAM_SRC_ALGORITHMS_KNN_SEARCH_HPP_
+
+#ifndef CANDY_INCLUDE_ALGORITHMS_KNN_SEARCH_HPP_
+#define CANDY_INCLUDE_ALGORITHMS_KNN_SEARCH_HPP_
 
 #include <unordered_map>
 #include <vector>
-
 #include <Algorithms/ANNSBase.hpp>
+#include <memory>
+#include <torch/torch.h>
+
+
+class KnnSearch;
+typedef std::shared_ptr<KnnSearch> KnnSearchPtr;
 
 class KnnSearch : public ANNSBase {
 public:
@@ -20,16 +25,9 @@ public:
  // Constructor with vector dimensions
  explicit KnnSearch(size_t dimensions);
 
- // Override functions from ANNSBase
- void reset() override;
+ void reset();
 
- bool setConfig(INTELLI::ConfigMapPtr cfg) override;
-
- bool startHPC() override;
-
- bool endHPC() override;
-
- bool insertTensor(torch::Tensor &t) override;
+ bool insertTensor(const torch::Tensor &t) override;
 
  bool loadInitialTensor(torch::Tensor &t) override;
 
@@ -37,19 +35,16 @@ public:
 
  bool reviseTensor(torch::Tensor &t, torch::Tensor &w) override;
 
+ std::vector<torch::Tensor> searchTensor(const torch::Tensor &q, int64_t k) override;
+
  bool resetIndexStatistics() override;
 
  INTELLI::ConfigMapPtr getIndexStatistics() override;
 
- // Additional function to find k-nearest neighbors
- std::vector<size_t> findKNearestNeighbors(const std::vector<float> &query, size_t k) const;
-
 private:
  size_t dimensions;
- std::unordered_map<size_t, std::vector<float> > index;
+ std::unordered_map<size_t, torch::Tensor> index;
 
- // Helper function to calculate Euclidean distance
- float calculate_distance(const std::vector<float> &vec1, const std::vector<float> &vec2) const;
 };
 
-#endif //INTELLISTREAM_SRC_ALGORITHMS_KNN_SEARCH_HPP_
+#endif // CANDY_INCLUDE_ALGORITHMS_KNN_SEARCH_HPP_

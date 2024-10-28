@@ -1,11 +1,12 @@
 /*
  * Copyright (C) 2024 by the INTELLI team
- * Created by: Shuhao Zhang
  * Created on: 2024/10/9
  * Description: [Provide description here]
  */
 #include <Algorithms/KNN/KNNSearch.hpp>
 #include <algorithm>
+
+#include <Utils/Computation.hpp>
 
 // Constructor with vector dimensions
 KnnSearch::KnnSearch(size_t dimensions) : dimensions(dimensions) {
@@ -16,38 +17,19 @@ void KnnSearch::reset() {
     index.clear();
 }
 
-// Set configuration (placeholder implementation)
-bool KnnSearch::setConfig(INTELLI::ConfigMapPtr cfg) {
-    // Implement the logic to handle configurations if needed
-    return true;
-}
-
-// Start High-Performance Computation (HPC) placeholder implementation
-bool KnnSearch::startHPC() {
-    // Implement the logic to handle starting HPC if needed
-    return true;
-}
-
-// End High-Performance Computation (HPC) placeholder implementation
-bool KnnSearch::endHPC() {
-    // Implement the logic to handle ending HPC if needed
-    return true;
-}
-
-
 // Insert tensor into the index
-bool KnnSearch::insertTensor(torch::Tensor &t) {
-    if (t.size(1) != dimensions) {
-        return false; // Dimension mismatch
+bool KnnSearch::insertTensor(const torch::Tensor &t) {
+    if (t.size(1) != dimensions) { // Dimension out of range (expected to be in range of [-1, 0], but got 1)
+        return false;
     }
 
     for (int64_t i = 0; i < t.size(0); ++i) {
-        auto tensor_row = t[i];
-        std::vector<float> vec(tensor_row.data_ptr<float>(), tensor_row.data_ptr<float>() + dimensions);
-        index[i] = vec;
+        index[i] = t[i]; // Directly assign the row tensor to the index map
     }
+
     return true;
 }
+
 
 // Load initial tensor into the index
 bool KnnSearch::loadInitialTensor(torch::Tensor &t) {
@@ -66,19 +48,49 @@ bool KnnSearch::deleteTensor(torch::Tensor &t, int64_t k) {
     return true;
 }
 
-// Revise tensor in the index
+
 bool KnnSearch::reviseTensor(torch::Tensor &t, torch::Tensor &w) {
     if (t.size(1) != dimensions || w.size(1) != dimensions) {
         return false; // Dimension mismatch
     }
-
+    // Assuming each row in `w` corresponds to an entry in `index`
     for (int64_t i = 0; i < t.size(0); ++i) {
-        auto tensor_row = w[i];
-        std::vector<float> vec(tensor_row.data_ptr<float>(), tensor_row.data_ptr<float>() + dimensions);
-        index[i] = vec;
+        index[i] = w[i]; // Directly assign the row tensor to the index map
     }
     return true;
 }
+
+std::vector<torch::Tensor> KnnSearch::searchTensor(const torch::Tensor &q, int64_t k) {
+    // Ensure the query tensor has the correct dimensions
+    if (q.size(0) != dimensions) {
+        std::cerr << "Error: Query tensor dimensions do not match the expected size (" << dimensions << ")." <<
+                std::endl;
+        return {};
+    }
+
+    // Vector to store pairs of distance and corresponding tensor ID
+    std::vector<std::pair<float, size_t> > distances;
+
+    // Calculate the Euclidean distance between the query tensor and each tensor in the index
+    for (const auto &[id, tensor]: index) {
+        float distance = CANDY::computeL2Distance(q.data_ptr<float>(), tensor.data_ptr<float>(), dimensions);
+        distances.emplace_back(distance, id);
+    }
+
+    // Sort the distances in ascending order
+    std::sort(distances.begin(), distances.end(), [](const auto &a, const auto &b) {
+        return a.first < b.first;
+    });
+
+    // Prepare the output vector for the k-nearest neighbors
+    std::vector<torch::Tensor> nearest_neighbors;
+    for (int64_t i = 0; i < k && i < distances.size(); ++i) {
+        nearest_neighbors.push_back(index[distances[i].second]);
+    }
+
+    return nearest_neighbors;
+}
+
 
 // Reset index statistics (placeholder implementation)
 bool KnnSearch::resetIndexStatistics() {
@@ -92,31 +104,4 @@ INTELLI::ConfigMapPtr KnnSearch::getIndexStatistics() {
     return nullptr;
 }
 
-// Helper function to calculate Euclidean distance
-float KnnSearch::calculate_distance(const std::vector<float> &vec1, const std::vector<float> &vec2) const {
-    float sum = 0.0f;
-    for (size_t i = 0; i < dimensions; ++i) {
-        float diff = vec1[i] - vec2[i];
-        sum += diff * diff;
-    }
-    return std::sqrt(sum);
-}
 
-// Example of finding the k-nearest neighbors
-std::vector<size_t> KnnSearch::findKNearestNeighbors(const std::vector<float> &query, size_t k) const {
-    std::vector<std::pair<float, size_t> > distances;
-
-    for (const auto &[key, value]: index) {
-        float distance = calculate_distance(query, value);
-        distances.emplace_back(distance, key);
-    }
-
-    std::sort(distances.begin(), distances.end());
-
-    std::vector<size_t> neighbors;
-    for (size_t i = 0; i < k && i < distances.size(); ++i) {
-        neighbors.push_back(distances[i].second);
-    }
-
-    return neighbors;
-}

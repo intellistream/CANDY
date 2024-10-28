@@ -34,7 +34,6 @@ get_headers(CANDY_HEADER_FILES)
 
 # Create the CANDY library from all the source files
 add_library(CANDY SHARED ${CANDY_SOURCE_FILES} ${CANDY_HEADER_FILES}
-        src/Utils/computation.cpp
         include/Utils/computation.hpp)
 
 # Add the include directory with absolute path

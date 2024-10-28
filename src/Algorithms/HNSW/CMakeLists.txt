@@ -1,3 +1,3 @@
 add_sources(CANDY
-        hnsw.cpp
+        HNSW.cpp
 )
