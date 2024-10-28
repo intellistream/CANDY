@@ -10,6 +10,28 @@ env:
   BUILD_TYPE: Release
 
 jobs:
+  format:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set Permission for clang-format Script
+        run: chmod +x ./scripts/run-clang-format.sh
+
+      - name: Install clang-format
+        run: sudo apt-get install clang-format-11
+
+      - name: Run clang-format
+        run: ./scripts/run-clang-format.sh
+
+      - name: Commit Changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "chore: Automatically formatted code using clang-format"
+          branch: ${{ github.head_ref }}
+          file_pattern: '**/*.{h,hpp,c,cpp}'
+
   build:
     runs-on: ubuntu-22.04
 
@@ -21,7 +43,7 @@ jobs:
           sudo apt install gcc-11 g++-11
           sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 11
           sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 11
-          sudo apt install gcc g++ cmake python3 pip libboost-dev libboost-all-dev
+          sudo apt install gcc g++ cmake python3 pip libboost-dev libboost-all-dev python3-dev
       - name: Install torch
         run: |
           sudo pip3 install torch==2.4.0 torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu

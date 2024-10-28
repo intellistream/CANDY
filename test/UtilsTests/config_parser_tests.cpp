@@ -26,12 +26,46 @@ void write_ini(const string& fname) {
   file << "key3 = 1.8\n";
 }
 
-TEST_CASE("ConfigParser: Parsing and Retrieving Values") {
+TEST_CASE("ConfigParser: Parsing and Retrieving Values From INI File") {
   string fname = "test_config.ini";
   write_ini(fname);
 
   ConfigParser parser;
-  parser.parse("test_config.ini");
+  parser.parse_ini("test_config.ini");
+
+  SECTION("Get string value from config") {
+    REQUIRE(parser.get_string("key1", "default_value") == "value1");
+  }
+
+  SECTION("Get int value from config") {
+    REQUIRE(parser.get_int("key2", 0) == 5);
+  }
+
+  SECTION("Get float value from config") {
+    REQUIRE(fabs(parser.get_float("key3", 0.0f) - 1.8f) < 1e-5);
+  }
+
+  SECTION("Get default values for non-existing keys") {
+    REQUIRE(parser.get_string("non_existing_key", "default_value") == "default_value");
+    REQUIRE(parser.get_int("non_existing_key", 10) == 10);
+    REQUIRE(fabs(parser.get_float("non_existing_key", 1.23f) - 1.23f) < 1e-5);
+  }
+
+  remove(fname.c_str());
+}
+
+TEST_CASE("ConfigParser: Parsing and Retrieving Values From CSV File") {
+  string fname = "test_config.csv";
+  ofstream file(fname);
+  if (file.is_open()) {
+    file << "key1,value1,String\n";
+    file << "key2,5,Int\n";
+    file << "key3,1.8,Float\n";
+    file.close();
+  }
+
+  ConfigParser parser;
+  parser.parse_csv(fname);
 
   SECTION("Get string value from config") {
     REQUIRE(parser.get_string("key1", "default_value") == "value1");

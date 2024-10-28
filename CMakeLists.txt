@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.15)
 project(CANDY CXX)
 # Logging setup (if needed)
 #include(cmake/LoggingSetup.cmake)
-include (cmake/FindCuda.cmake)
-include (cmake/FindTorch.cmake)
+include(cmake/FindCuda.cmake)
+include(cmake/FindTorch.cmake)
 find_package(Torch REQUIRED)
 # Add the cmake/ directory to CMAKE_MODULE_PATH
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
@@ -15,6 +15,10 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 include(cmake/macros.cmake)
 include(cmake/DefaultOptions.cmake)
 include(cmake/CompilerSetup.cmake)
+
+# # Find python development files
+find_package(Python3 REQUIRED COMPONENTS Interpreter Development) 
+include_directories(${Python3_INCLUDE_DIRS})
 
 # Link with external libraries (e.g., Log4cxx)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")

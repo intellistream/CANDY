@@ -28,7 +28,7 @@ streaming environments, enabling fast and efficient ANNS over dynamically changi
 
 ## Installation
 
-To install the ANNS engine, clone the repository and follow the installation instructions below:
+You need to have Docker, NVIDIA Container Toolkit, and CUDA installed. If any of them are not installed, follow the steps below for native Ubuntu:
 
 ```bash
 git clone https://github.com/intellistream/CANDY.git
