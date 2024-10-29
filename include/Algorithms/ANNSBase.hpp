@@ -19,19 +19,21 @@ typedef std::shared_ptr<ANNSBase> ANNSBasePtr;
 class ANNSBase : public CANDY::AbstractANNS {
 public:
     virtual ~ANNSBase() = default;
+
     // Methods with default implementations
     // Methods with default implementations
-    void reset() override;                       // Logs if no specific reset
-    bool startHPC() override;                    // Logs if no HPC setup
-    bool endHPC() override;                      // Logs if no HPC termination
+    void reset() override; // Logs if no specific reset
+    bool loadInitialTensor(torch::Tensor &t) override;
+
+    bool startHPC() override; // Logs if no HPC setup
+    bool endHPC() override; // Logs if no HPC termination
     bool setConfig(INTELLI::ConfigMapPtr cfg) override; // Logs if no config setup
     bool setParams(CANDY::ParamPtr param) override; // Logs if no parameters set
-    bool resetIndexStatistics() override;        // Logs if no statistics reset
+    bool resetIndexStatistics() override; // Logs if no statistics reset
+
     INTELLI::ConfigMapPtr getIndexStatistics() override; // Logs if no statistics retrieval
 
     virtual bool insertTensor(const torch::Tensor &t) override = 0;
-
-    virtual bool loadInitialTensor(torch::Tensor &t) override = 0;
 
     virtual bool deleteTensor(torch::Tensor &t, int64_t k) override = 0;
 

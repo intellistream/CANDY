@@ -81,7 +81,6 @@ bool CANDY::KnnSearch::reviseTensor(torch::Tensor &t, torch::Tensor &w) {
     return true;
 }
 
-
 std::vector<torch::Tensor> CANDY::KnnSearch::searchTensor(const torch::Tensor &q, int64_t k) {
     // Ensure dbTensor is contiguous in memory
     torch::Tensor dbData = dbTensor.contiguous();

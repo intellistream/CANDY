@@ -12,7 +12,7 @@ VectorDB::VectorDB(size_t dimensions, ANNSBasePtr ann_algorithm)
     : dimensions(dimensions), ann_algorithm(ann_algorithm), is_running(false) {
     if (!this->ann_algorithm) {
         // Instantiate a default ANNS algorithm if none provided
-        this->ann_algorithm = std::make_shared<CANDY::KnnSearch>(dimensions);
+        this->ann_algorithm = std::make_shared<CANDY::KnnSearch>(dimensions); //error: invalid new-expression of abstract class type ‘CANDY::KnnSearch’
     }
 }
 

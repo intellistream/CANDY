@@ -31,7 +31,7 @@ namespace CANDY {
  public:
   bool isHPCStarted = false;
 
-  AbstractANNS() = default;
+  AbstractANNS();
 
   virtual ~AbstractANNS() = default;
 
@@ -118,6 +118,8 @@ namespace CANDY {
    */
   virtual INTELLI::ConfigMapPtr getIndexStatistics() = 0;
  };
+
+
 } // namespace CANDY
 
 

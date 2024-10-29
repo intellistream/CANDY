@@ -14,9 +14,6 @@
 #include <torch/torch.h>
 
 namespace CANDY {
- class KnnSearch;
- typedef std::shared_ptr<KnnSearch> KnnSearchPtr;
-
  class KnnSearch : public ANNSBase {
  protected:
   INTELLI::ConfigMapPtr myCfg = nullptr;
@@ -31,9 +28,9 @@ namespace CANDY {
   // Constructor with vector dimensions
   explicit KnnSearch(size_t dimensions);
 
-  bool setConfig(INTELLI::ConfigMapPtr cfg);
+  bool setConfig(INTELLI::ConfigMapPtr cfg) override;
 
-  void reset();
+  void reset() override;
 
   bool insertTensor(const torch::Tensor &t) override;
 
@@ -43,10 +40,12 @@ namespace CANDY {
 
   std::vector<torch::Tensor> searchTensor(const torch::Tensor &q, int64_t k) override;
 
-
  private:
   size_t dimensions;
   std::unordered_map<size_t, torch::Tensor> index;
  };
 }
+
+typedef std::shared_ptr<CANDY::KnnSearch> KnnSearchPtr;
+
 #endif // CANDY_INCLUDE_ALGORITHMS_KNN_SEARCH_HPP_
