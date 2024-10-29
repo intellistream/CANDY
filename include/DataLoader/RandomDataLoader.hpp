@@ -12,32 +12,7 @@
 #include <DataLoader/AbstractDataLoader.hpp>
 
 namespace CANDY {
- /**
-  * @ingroup CANDY_DataLOADER_Random The Random dataloader
-  * @{
-  */
- /**
-  * @class RandomDataLoader DataLoader/RandomDataLoader.h
-  * @brief The class of ranom data loader,
-  * @ingroup CANDY_DataLOADER
-  * @note:
-  * - Must have a global config by @ref setConfig
-  * @note  Default behavior
- * - create
- * - call @ref setConfig, this function will also generate the tensor A and B correspondingly
- * - call @ref getData to get the raw data
- * - call  @ref getQuery to get the query
- * @note parameters of config
- * - vecDim, the dimension of vectors, default 768, I64
- * - vecVolume, the volume of vectors, default 1000, I64
- * - driftPosition, the position of starting some 'concept drift', default 0 (no drift), I64
-  * - driftOffset, the offset value of concept drift, default 0.5, Double
-  * - queryNoiseFraction, the fraction of noise in query, default 0, allow 0~1, Double
- * - querySize, the size of query, default 10, I64
- * - seed, the random seed, default 7758258, I64
- *  @note: default name tags
-  * "random": @ref RandomDataLoader
-  */
+
  class RandomDataLoader : public AbstractDataLoader {
  protected:
   torch::Tensor A, B;

@@ -5,8 +5,6 @@
  */
 #include <DataLoader/RandomDataLoader.hpp>
 
-//do nothing in Random class
-
 bool CANDY::RandomDataLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
   assert(cfg);
   vecDim = cfg->tryI64("vecDim", 768, true);

@@ -58,7 +58,7 @@ typedef std::shared_ptr<INTELLI::IntelliTimeStamp> IntelliTimeStampPtr;
 #define newIntelliTimeStamp std::make_shared<INTELLI::IntelliTimeStamp>
 
 /**
-* @class IntelliTimeStampGenerator  Utils/IntelliTimeStampGenerator.h
+* @class TimeStampGenerator  Utils/IntelliTimeStampGenerator.h
 * @brief The basic class to generate time stamps
 * @ingroup INTELLI_UTIL_TIMESTAMP
 * @note require configs:
@@ -72,7 +72,7 @@ typedef std::shared_ptr<INTELLI::IntelliTimeStamp> IntelliTimeStampPtr;
 * - call @ref setConfig to generate the timestamp under instructions
 * - call @ref getTimeStamps to get the timestamp
 */
-class IntelliTimeStampGenerator {
+class TimeStampGenerator {
  protected:
   INTELLI::ConfigMapPtr cfgGlobal;
   INTELLI::MicroDataSet md;
@@ -107,9 +107,9 @@ class IntelliTimeStampGenerator {
       std::vector<uint64_t> arrivalS);
 
  public:
-  IntelliTimeStampGenerator() {}
+  TimeStampGenerator() {}
 
-  ~IntelliTimeStampGenerator() {}
+  ~TimeStampGenerator() {}
 
   std::vector<INTELLI::IntelliTimeStampPtr> myTs;
 

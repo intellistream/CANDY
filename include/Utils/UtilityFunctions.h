@@ -11,7 +11,7 @@
 //#include <torch/torch.h>
 //#include <ATen/ATen.h>
 //#include <Common/Types.h>
-#include <Utils/IntelliTimeStampGenerator.h>
+#include <Utils/TimeStampGenerator.h>
 #include <Utils/IntelliTensorOP.hpp>
 #include <vector>
 #include <torch/torch.h>

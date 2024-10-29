@@ -4,6 +4,7 @@ add_sources(CANDY
         file_loader.cpp
         TensorOP.cpp
         IntelliLog.cpp
+        IntelliTimeStampGenerator.cpp
         timing.cpp
         thread_pool.cpp
 )
