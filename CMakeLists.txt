@@ -17,7 +17,7 @@ include(cmake/DefaultOptions.cmake)
 include(cmake/CompilerSetup.cmake)
 
 # # Find python development files
-find_package(Python3 REQUIRED COMPONENTS Interpreter Development) 
+find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
 include_directories(${Python3_INCLUDE_DIRS})
 
 # Link with external libraries (e.g., Log4cxx)
@@ -33,9 +33,7 @@ message(STATUS "CANDY_SOURCE_FILES: ${CANDY_SOURCE_FILES}")
 get_headers(CANDY_HEADER_FILES)
 
 # Create the CANDY library from all the source files
-add_library(CANDY SHARED ${CANDY_SOURCE_FILES} ${CANDY_HEADER_FILES}
-        include/Utils/computation.hpp)
-
+add_library(CANDY SHARED ${CANDY_SOURCE_FILES} ${CANDY_HEADER_FILES})
 # Add the include directory with absolute path
 target_include_directories(CANDY PUBLIC ${PROJECT_SOURCE_DIR}/include) # Include the "include/" directory as a system path
 target_include_directories(CANDY PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
