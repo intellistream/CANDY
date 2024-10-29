@@ -20,7 +20,7 @@ PYBIND11_MODULE(pycandy, m) {
       .def(py::init([](size_t dimensions, const std::string &search_algorithm) {
           std::shared_ptr<ANNSBase> algorithm;
           if (search_algorithm == "knnsearch") {
-              algorithm = std::make_shared<KnnSearch>(dimensions);
+              algorithm = std::make_shared<CANDY::KnnSearch>(dimensions);
           } else {
               throw std::invalid_argument("Unsupported search algorithm: " + search_algorithm);
           }
