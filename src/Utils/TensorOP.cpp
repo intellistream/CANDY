@@ -5,6 +5,7 @@
 #include <fstream>
 
 namespace INTELLI {
+
   bool TensorOP::deleteRow(torch::Tensor *tensor, int64_t rowIdx) {
     if (rowIdx >= tensor->size(0)) return false;
     auto rowMask = torch::arange(tensor->size(0)).to(torch::kLong).ne(rowIdx);
@@ -52,7 +53,7 @@ namespace INTELLI {
     return insertRows(tHead.get(), tTail.get(), startRow);
   }
 
-  bool TensorOP::editRows(torch::Tensor *tHead, torch::Tensor *tTail, int64_t startRow) {
+  bool TensorOP::editRows(torch::Tensor *tHead, const torch::Tensor *tTail, int64_t startRow) {
     if (tHead->size(1) != tTail->size(1)) return false;
     int64_t endRow = startRow + tTail->size(0);
     if (endRow > tHead->size(0)) {
@@ -91,7 +92,7 @@ namespace INTELLI {
     return deleteRowsBufferMode(tensor.get(), rowIdx, lastNNZ);
   }
 
-  bool TensorOP::appendRowsBufferMode(torch::Tensor *tHead, torch::Tensor *tTail, int64_t *lastNNZ,
+  bool TensorOP::appendRowsBufferMode(torch::Tensor *tHead, const torch::Tensor *tTail, int64_t *lastNNZ,
                                       int64_t customExpandSize) {
     if (tHead->size(1) != tTail->size(1)) return false;
     if (*lastNNZ + tTail->size(0) < tHead->size(0)) {
@@ -111,7 +112,8 @@ namespace INTELLI {
     return false;
   }
 
-  bool TensorOP::appendRowsBufferMode(TensorPtr tHead, TensorPtr tTail, int64_t *lastNNZ, int64_t customExpandSize) {
+  bool TensorOP::appendRowsBufferMode(TensorPtr tHead, TensorPtr tTail, int64_t *lastNNZ,
+                                      int64_t customExpandSize) {
     return appendRowsBufferMode(tHead.get(), tTail.get(), lastNNZ, customExpandSize);
   }
 
@@ -173,5 +175,4 @@ namespace INTELLI {
     torch::Tensor norm = torch::norm(tensor, 2, 0, true);
     return tensor / norm;
   }
-
 } // namespace INTELLI

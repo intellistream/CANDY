@@ -4,104 +4,103 @@
  * Description: [Provide description here]
  */
 #include <Algorithms/KNN/KNNSearch.hpp>
-#include <algorithm>
-
 #include <Utils/Computation.hpp>
+#include <Utils/TensorOP.hpp>
 
 // Constructor with vector dimensions
-KnnSearch::KnnSearch(size_t dimensions) : dimensions(dimensions) {
+CANDY::KnnSearch::KnnSearch(size_t dimensions) : dimensions(dimensions) {
+}
+
+bool CANDY::KnnSearch::setConfig(INTELLI::ConfigMapPtr cfg) {
+    ANNSBase::setConfig(cfg);
+    vecDim = cfg->tryI64("vecDim", 768, true);
+    initialVolume = cfg->tryI64("initialVolume", 1000, true);
+    expandStep = cfg->tryI64("expandStep", 100, true);
+    dbTensor = torch::zeros({initialVolume, vecDim});
+    lastNNZ = -1;
+    return true;
 }
 
 // Reset the current index
-void KnnSearch::reset() {
+void CANDY::KnnSearch::reset() {
     index.clear();
 }
 
 // Insert tensor into the index
-bool KnnSearch::insertTensor(const torch::Tensor &t) {
-    if (t.size(1) != dimensions) { // Dimension out of range (expected to be in range of [-1, 0], but got 1)
-        return false;
-    }
-
-    for (int64_t i = 0; i < t.size(0); ++i) {
-        index[i] = t[i]; // Directly assign the row tensor to the index map
-    }
-
-    return true;
-}
-
-
-// Load initial tensor into the index
-bool KnnSearch::loadInitialTensor(torch::Tensor &t) {
-    return insertTensor(t);
+bool CANDY::KnnSearch::insertTensor(const torch::Tensor &t) {
+    return INTELLI::TensorOP::appendRowsBufferMode(&dbTensor, &t, &lastNNZ, expandStep);
 }
 
 // Delete tensor from the index
-bool KnnSearch::deleteTensor(torch::Tensor &t, int64_t k) {
-    if (t.size(1) != dimensions) {
-        return false; // Dimension mismatch
+bool CANDY::KnnSearch::deleteTensor(torch::Tensor &t, int64_t k) {
+    // Use the searchTensor function to get the indices of k-nearest neighbors for each row in t
+    std::vector<torch::Tensor> idxToDeleteTensors = searchTensor(t, k);
+
+    // Flatten idxToDeleteTensors into a single vector of int64_t
+    std::vector<int64_t> idxToDelete;
+    for (const auto &tensor: idxToDeleteTensors) {
+        auto tensorAccessor = tensor.accessor<int64_t, 1>();
+        for (int64_t i = 0; i < tensor.size(0); ++i) {
+            idxToDelete.push_back(tensorAccessor[i]);
+        }
     }
 
+    // Delete rows using INTELLI::TensorOP::deleteRowsBufferMode
+    return INTELLI::TensorOP::deleteRowsBufferMode(&dbTensor, idxToDelete, &lastNNZ);
+}
+
+
+bool CANDY::KnnSearch::reviseTensor(torch::Tensor &t, torch::Tensor &w) {
+    // Check if dimensions match
+    if (t.size(0) > w.size(0) || t.size(1) != w.size(1)) {
+        return false;
+    }
+
+    // Ensure dbTensor and t are contiguous for compatibility with cdist
+    torch::Tensor dbData = dbTensor.contiguous();
+    torch::Tensor queryData = t.contiguous();
+
+    // Compute pairwise distances between queryData (t) and dbData (dbTensor)
+    torch::Tensor distances = torch::cdist(queryData, dbData); // Shape: (rows, dbSize)
+
+    // Iterate over each row in t to find and revise the nearest neighbor in dbTensor
     for (int64_t i = 0; i < t.size(0); ++i) {
-        index.erase(i);
+        // Find the index of the nearest neighbor for the current row in t
+        int64_t nearestIdx = std::get<1>(distances[i].min(0)).item<int64_t>();
+
+        // Ensure the index is within the bounds of lastNNZ
+        if (0 <= nearestIdx && nearestIdx <= lastNNZ) {
+            // Slice the corresponding row from w
+            auto rowW = w.slice(0, i, i + 1);
+
+            // Update dbTensor at the nearest neighbor index with the new data from w
+            INTELLI::TensorOP::editRows(&dbTensor, &rowW, nearestIdx);
+        }
     }
+
     return true;
 }
 
 
-bool KnnSearch::reviseTensor(torch::Tensor &t, torch::Tensor &w) {
-    if (t.size(1) != dimensions || w.size(1) != dimensions) {
-        return false; // Dimension mismatch
+std::vector<torch::Tensor> CANDY::KnnSearch::searchTensor(const torch::Tensor &q, int64_t k) {
+    // Ensure dbTensor is contiguous in memory
+    torch::Tensor dbData = dbTensor.contiguous();
+    torch::Tensor queryData = q.contiguous();
+
+    // Compute pairwise distances between the query tensor and dbTensor
+    torch::Tensor distances = torch::cdist(queryData, dbData); // Shape: (querySize, dbSize)
+
+    // Prepare vector to hold results
+    std::vector<torch::Tensor> results;
+
+    // For each query, retrieve the top-k nearest neighbors
+    for (int64_t i = 0; i < queryData.size(0); ++i) {
+        // Find the indices of the top-k smallest distances for the current query row
+        auto topk = std::get<1>(distances[i].topk(k, /*largest=*/false)); // Get indices of top-k closest neighbors
+
+        // Store the indices of top-k nearest neighbors for this query row
+        results.push_back(topk);
     }
-    // Assuming each row in `w` corresponds to an entry in `index`
-    for (int64_t i = 0; i < t.size(0); ++i) {
-        index[i] = w[i]; // Directly assign the row tensor to the index map
-    }
-    return true;
+
+    return results;
 }
-
-std::vector<torch::Tensor> KnnSearch::searchTensor(const torch::Tensor &q, int64_t k) {
-    // Ensure the query tensor has the correct dimensions
-    if (q.size(0) != dimensions) {
-        std::cerr << "Error: Query tensor dimensions do not match the expected size (" << dimensions << ")." <<
-                std::endl;
-        return {};
-    }
-
-    // Vector to store pairs of distance and corresponding tensor ID
-    std::vector<std::pair<float, size_t> > distances;
-
-    // Calculate the Euclidean distance between the query tensor and each tensor in the index
-    for (const auto &[id, tensor]: index) {
-        float distance = CANDY::computeL2Distance(q.data_ptr<float>(), tensor.data_ptr<float>(), dimensions);
-        distances.emplace_back(distance, id);
-    }
-
-    // Sort the distances in ascending order
-    std::sort(distances.begin(), distances.end(), [](const auto &a, const auto &b) {
-        return a.first < b.first;
-    });
-
-    // Prepare the output vector for the k-nearest neighbors
-    std::vector<torch::Tensor> nearest_neighbors;
-    for (int64_t i = 0; i < k && i < distances.size(); ++i) {
-        nearest_neighbors.push_back(index[distances[i].second]);
-    }
-
-    return nearest_neighbors;
-}
-
-
-// Reset index statistics (placeholder implementation)
-bool KnnSearch::resetIndexStatistics() {
-    // Implement resetting index statistics if needed
-    return true;
-}
-
-// Get index statistics (placeholder implementation)
-INTELLI::ConfigMapPtr KnnSearch::getIndexStatistics() {
-    // Implement retrieving index statistics if needed
-    return nullptr;
-}
-
-
