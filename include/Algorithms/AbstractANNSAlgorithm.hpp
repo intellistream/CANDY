@@ -119,7 +119,10 @@ namespace CANDY {
   virtual INTELLI::ConfigMapPtr getIndexStatistics() = 0;
  };
 
-
+ inline AbstractANNS::AbstractANNS() {
+  // Empty constructor body
+  INTELLI_INFO("Creating an abstract ANNS object...");
+ }
 } // namespace CANDY
 
 
