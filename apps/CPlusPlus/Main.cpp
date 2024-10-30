@@ -7,6 +7,7 @@
 #include <iostream>
 #include <chrono>
 #include <string>
+#include <filesystem>
 #include <Core/vector_db.hpp>
 #include <DataLoader/DataLoaderTable.hpp>
 #include <Algorithms/KNN/KNNSearch.hpp>
@@ -15,19 +16,27 @@
 using namespace INTELLI;
 using namespace std;
 
+//get current path
+std::string ParentDirectory() {
+    std::filesystem::path result = std::filesystem::current_path();
+    for (int i = 0; i < 3; ++i) {
+        result = result.parent_path();
+    }
+    return result.string();
+}
+
 int main(int argc, char **argv) {
     /**
      * @brief 1. Load the configuration
      */
     ConfigMapPtr inMap = newConfigMap();
-    std::string fileName = (argc >= 2) ? argv[1] : "config/config.csv";
+    std::string fileName = (argc >= 2) ? argv[1] : (ParentDirectory() + "/config/config.csv");
     if (inMap->fromFile(fileName)) {
         INTELLI_INFO("Config loaded from file: " + fileName);
     } else {
         INTELLI_ERROR("Failed to load config from file: " + fileName);
         return -1;
     }
-
     /**
      * @brief 2. Load data
      */

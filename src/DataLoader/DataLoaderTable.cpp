@@ -6,6 +6,11 @@
  */
 #include <DataLoader/DataLoaderTable.hpp>
 #include <DataLoader/RandomDataLoader.hpp>
+#include <DataLoader/FVECSDataLoader.h>
+// #include <include/hdf5_config.h>
+// #if CANDY_HDF5 == 1
+// #include <DataLoader/HDF5DataLoader.h>
+// #endif
 
 namespace CANDY {
     /**
@@ -14,5 +19,7 @@ namespace CANDY {
     CANDY::DataLoaderTable::DataLoaderTable() {
         loaderMap["null"] = newAbstractDataLoader();
         loaderMap["random"] = newRandomDataLoader();
+        loaderMap["fvecs"] = newFVECSDataLoader();
+        // loaderMap["hdf5"] = newHDF5DataLoader();
     }
 } // CANDY
