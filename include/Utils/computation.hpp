@@ -4,9 +4,7 @@
 
 #ifndef COMPUTATION_H
 #define COMPUTATION_H
-
-
-
+#include <vector>
 class computation {
 
     static float euclidean_distance(const std::vector<float>& a, const std::vector<float>& b) ;

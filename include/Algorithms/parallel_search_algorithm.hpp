@@ -8,8 +8,7 @@
 #define CANDY_INCLUDE_ALGORITHMS_PARALLEL_SEARCH_ALGORITHM_HPP_
 
 #include <Algorithms/search_algorithm.hpp>
-#include <Parallelism//task_scheduler.hpp>
-#include <vector>
+#include <Parallelism/task_scheduler.hpp>
 #include <memory>
 #include <vector>
 #include <memory>
