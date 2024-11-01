@@ -37,7 +37,7 @@
 
 *.pyc
 
-/build
+/build*
 /cmake-build-debug/
 /cmake-build-debug/_deps/
 /cmake-build-release/
@@ -55,3 +55,4 @@ commit_info
 
 /apps/BenchmarkTool/datasets/fvecs/
 /apps/BenchmarkTool/datasets/hdf5/
+/.cache

@@ -5,11 +5,43 @@
 
 set -e
 
-# Define the list of file types to format.
-file_types=("*.h" "*.hpp" "*.c" "*.cpp")
+cd tools
 
-# Find and format all files with the specified file types.
-for file_type in "${file_types[@]}"
-do
-  find . -name "$file_type" -exec clang-format -i {} +
-done
+mkdir -p build && cd build
+
+cmake ..
+
+cd ..
+
+cmake --build build --config Release --target run_format
+
+cd ..
+
+found_clang_format=false
+clang_format_executable="clang-format"
+# get clang-format binary
+if [ "$(command -v $clang_format_executable)" ]; then
+    found_clang_format=true
+fi
+# maybe there is clang-format link
+# from 11 - 18
+if [ "$found_clang_format" = false ]; then
+    for number in {11..18}
+    do
+        if [ "$(command -v clang-format-$number)" ]; then
+            clang_format_executable="clang-format-$number"
+            found_clang_format=true
+            break
+        fi
+    done
+fi
+if [ "$found_clang_format" = true ]; then
+    echo "Found clang-format executable: $clang_format_executable"
+    tools/build/run_format $clang_format_executable --source_dirs apps test src include python_bindings
+else
+    echo "clang-format not found. Please install clang-format or add it to your PATH."
+    exit 1
+fi
+
+rm -rf tools/build
+

@@ -3,9 +3,9 @@ name: CMake
 on:
   push:
     branches: [ main ]
+
   pull_request:
     branches: [ main ]
-
 env:
   BUILD_TYPE: Release
 
@@ -14,29 +14,29 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Set Permission for clang-format Script
         run: chmod +x ./scripts/run-clang-format.sh
 
       - name: Install clang-format
-        run: sudo apt-get install clang-format-11
+        run: sudo apt-get install clang-format -y
 
       - name: Run clang-format
         run: ./scripts/run-clang-format.sh
 
       - name: Commit Changes
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore: Automatically formatted code using clang-format"
           branch: ${{ github.head_ref }}
-          file_pattern: '**/*.{h,hpp,c,cpp}'
+          file_pattern: '*.hpp *.cpp *.c *.h'
 
   build:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Install toolchains
         run: |
           sudo apt-get update
