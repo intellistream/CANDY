@@ -33,4 +33,4 @@ jobs:
         with:
           commit_message: "chore: Automatically formatted code using clang-format"
           branch: ${{ github.head_ref }}
-          file_pattern: '*.hpp,*.cpp,*.h,*.c'
+          file_pattern: '*.hpp *.cpp *.h *.c'
