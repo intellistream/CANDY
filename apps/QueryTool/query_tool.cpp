@@ -4,15 +4,15 @@
  * Created on: 2024/10/9
  * Description: [Provide description here]
  */
-#include <Core/vector_db.hpp>           // Header for core vector database operations
-#include <Algorithms/knn_search.hpp>         // Header for k-NN search algorithm
+#include <Algorithms/knn_search.hpp>  // Header for k-NN search algorithm
+#include <Core/vector_db.hpp>  // Header for core vector database operations
 #include <iostream>
+#include <memory>  // For shared_ptr
 #include <string>
 #include <vector>
-#include <memory>  // For shared_ptr
 
 // Function to display a vector result
-void display_result(const std::vector<float> &result) {
+void display_result(const std::vector<float>& result) {
   std::cout << "[";
   for (size_t i = 0; i < result.size(); ++i) {
     std::cout << result[i];
@@ -24,7 +24,7 @@ void display_result(const std::vector<float> &result) {
 }
 
 // Function to process k-Nearest Neighbor search query
-void process_knn_query(VectorDB &db) {
+void process_knn_query(VectorDB& db) {
   std::cout << "Enter query vector (comma separated values): ";
   std::string input;
   std::getline(std::cin, input);
@@ -44,16 +44,17 @@ void process_knn_query(VectorDB &db) {
   std::cin.ignore();
 
   // Perform k-NN search using the core vector database
-  std::vector<std::vector<float>> results = db.query_nearest_vectors(query_vector, k);
+  std::vector<std::vector<float>> results =
+      db.query_nearest_vectors(query_vector, k);
 
   std::cout << "Top-" << k << " results (IDs): " << std::endl;
-  for (const auto &result : results) {
+  for (const auto& result : results) {
     display_result(result);
   }
 }
 
 // Function to process Approximate Nearest Neighbor search query
-void process_ann_query(VectorDB &db) {
+void process_ann_query(VectorDB& db) {
   std::cout << "Enter query vector (comma separated values): ";
   std::string input;
   std::getline(std::cin, input);
@@ -73,10 +74,11 @@ void process_ann_query(VectorDB &db) {
   std::cin.ignore();
 
   // Perform ANN search using the core vector database
-  std::vector<std::vector<float>> results = db.query_nearest_vectors(query_vector, k);
+  std::vector<std::vector<float>> results =
+      db.query_nearest_vectors(query_vector, k);
 
   std::cout << "Top-" << k << " approximate results (IDs): " << std::endl;
-  for (const auto &result : results) {
+  for (const auto& result : results) {
     display_result(result);
   }
 }
@@ -84,7 +86,8 @@ void process_ann_query(VectorDB &db) {
 int main() {
   // Initialize VectorDB object with a k-NN search algorithm
   size_t dimensions = 3;  // Assuming vectors have 3 dimensions for this example
-  std::shared_ptr<SearchAlgorithm> knn_algorithm = std::make_shared<KnnSearch>(dimensions);
+  std::shared_ptr<SearchAlgorithm> knn_algorithm =
+      std::make_shared<KnnSearch>(dimensions);
   VectorDB db(dimensions, knn_algorithm);
   db.insert_vector({1.0f, 2.0f, 3.0f});  // Example data insertion
   db.insert_vector({4.0f, 5.0f, 6.0f});
@@ -105,13 +108,17 @@ int main() {
     std::cin.ignore();  // Ignore newline character left in buffer
 
     switch (choice) {
-      case 1:process_knn_query(db);
+      case 1:
+        process_knn_query(db);
         break;
-      case 2:process_ann_query(db);
+      case 2:
+        process_ann_query(db);
         break;
-      case 3:running = false;
+      case 3:
+        running = false;
         break;
-      default:std::cout << "Invalid choice. Please try again." << std::endl;
+      default:
+        std::cout << "Invalid choice. Please try again." << std::endl;
         break;
     }
   }

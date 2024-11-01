@@ -7,8 +7,8 @@
 #ifndef CANDY_INCLUDE_ALGORITHMS_ABSTRACT_INDEX_HPP_
 #define CANDY_INCLUDE_ALGORITHMS_ABSTRACT_INDEX_HPP_
 
-#include <Utils/config_parser.hpp>
 #include <Algorithms/Utils/metric_type.hpp>
+#include <Utils/config_parser.hpp>
 
 #include <torch/torch.h>
 #include <memory>
@@ -19,10 +19,11 @@
  * @brief The abstract class of an index approach
  */
 class AbstractIndex {
-protected:
+ protected:
   MetricType Metric = METRIC_L2;
   int64_t containerTier = 0;
-public:
+
+ public:
   bool isHPCStarted = false;
   AbstractIndex() = default;
 
@@ -32,9 +33,7 @@ public:
   * @param tie the setting of tier number
   * @note The parameter of tier idx affects nothing now, but will do something later
   */
-  virtual void setTier(int64_t tie) {
-    containerTier = tie;
-  }
+  virtual void setTier(int64_t tie) { containerTier = tie; }
   /**
     * @brief reset this index to inited status
     */
@@ -66,7 +65,7 @@ public:
    * @param t the tensor, some index need to be single row
    * @return bool whether the insertion is successful
    */
-  virtual bool insertTensor(torch::Tensor &t);
+  virtual bool insertTensor(torch::Tensor& t);
 
   /**
   * @brief load the initial tensors of a data base, use this BEFORE @ref insertTensor
@@ -74,14 +73,14 @@ public:
   * @param t the tensor, some index need to be single row
   * @return bool whether the loading is successful
   */
-  virtual bool loadInitialTensor(torch::Tensor &t);
+  virtual bool loadInitialTensor(torch::Tensor& t);
   /**
    * @brief delete a tensor, also online function
    * @param t the tensor, some index needs to be single row
    * @param k the number of nearest neighbors
    * @return bool whether the deleting is successful
    */
-  virtual bool deleteTensor(torch::Tensor &t, int64_t k = 1);
+  virtual bool deleteTensor(torch::Tensor& t, int64_t k = 1);
 
   /**
    * @brief revise a tensor
@@ -89,7 +88,7 @@ public:
    * @param w the revised value
    * @return bool whether the revising is successful
    */
-  virtual bool reviseTensor(torch::Tensor &t, torch::Tensor &w);
+  virtual bool reviseTensor(torch::Tensor& t, torch::Tensor& w);
   /**
    * @brief search the k-NN of a query tensor, return their index
    * @param t the tensor, allow multiple rows
@@ -104,7 +103,8 @@ public:
    * @param k the returned neighbors, i.e., will be the number of rows of each returned tensor
    * @return a vector of tensors, each tensor represent KNN results of one query in idx
    */
-  virtual std::vector<torch::Tensor> getTensorByIndex(std::vector<idx_t> &idx, int64_t k);
+  virtual std::vector<torch::Tensor> getTensorByIndex(std::vector<idx_t>& idx,
+                                                      int64_t k);
   /**
     * @brief return the rawData of tensor
     * @return The raw data stored in tensor
@@ -116,7 +116,7 @@ public:
   * @param k the returned neighbors
   * @return std::vector<torch::Tensor> the result tensor for each row of query
   */
-  virtual std::vector<torch::Tensor> searchTensor(torch::Tensor &q, int64_t k);
+  virtual std::vector<torch::Tensor> searchTensor(torch::Tensor& q, int64_t k);
   /**
     * @brief some extra termination if the index has HPC features
     * @return bool whether the HPC termination is successful
@@ -135,7 +135,7 @@ public:
   * @note Please use @ref loadInitialTensor for loading initial tensors
   * @return whether the building is successful
   */
-  virtual bool offlineBuild(torch::Tensor &t);
+  virtual bool offlineBuild(torch::Tensor& t);
   /**
    * @brief a busy waiting for all pending operations to be done
    * @return bool, whether the waiting is actually done;
@@ -149,7 +149,8 @@ public:
    *  * @param strs the corresponding list of strings
   * @return bool whether the loading is successful
   */
-  virtual bool loadInitialStringObject(torch::Tensor &t, std::vector<std::string> &strs);
+  virtual bool loadInitialStringObject(torch::Tensor& t,
+                                       std::vector<std::string>& strs);
   /**
 * @brief load the initial tensors of a data base along with its string objects, use this BEFORE @ref insertTensor
 * @note This is majorly an offline function, and may be different from @ref insertTensor for some indexes
@@ -157,7 +158,8 @@ public:
  *  * @param u64s the corresponding list of uint64_t
 * @return bool whether the loading is successful
 */
-  virtual bool loadInitialU64Object(torch::Tensor &t, std::vector<uint64_t> &u64s);
+  virtual bool loadInitialU64Object(torch::Tensor& t,
+                                    std::vector<uint64_t>& u64s);
   /**
    * @brief insert a string object
    * @note This is majorly an online function
@@ -165,7 +167,8 @@ public:
    * @param strs the corresponding list of strings
    * @return bool whether the insertion is successful
    */
-  virtual bool insertStringObject(torch::Tensor &t, std::vector<std::string> &strs);
+  virtual bool insertStringObject(torch::Tensor& t,
+                                  std::vector<std::string>& strs);
   /**
   * @brief insert a u64 object
   * @note This is majorly an online function
@@ -173,7 +176,7 @@ public:
   * @param u64s the corresponding list of u64
   * @return bool whether the insertion is successful
   */
-  virtual bool insertU64Object(torch::Tensor &t, std::vector<uint64_t> &u64s);
+  virtual bool insertU64Object(torch::Tensor& t, std::vector<uint64_t>& u64s);
   /**
    * @brief  delete tensor along with its corresponding string object
    * @note This is majorly an online function
@@ -181,7 +184,7 @@ public:
    * @param k the number of nearest neighbors
    * @return bool whether the delet is successful
    */
-  virtual bool deleteStringObject(torch::Tensor &t, int64_t k = 1);
+  virtual bool deleteStringObject(torch::Tensor& t, int64_t k = 1);
   /**
    * @brief  delete tensor along with its corresponding U64 object
    * @note This is majorly an online function
@@ -189,30 +192,32 @@ public:
    * @param k the number of nearest neighbors
    * @return bool whether the delet is successful
    */
-  virtual bool deleteU64Object(torch::Tensor &t, int64_t k = 1);
+  virtual bool deleteU64Object(torch::Tensor& t, int64_t k = 1);
   /**
  * @brief search the k-NN of a query tensor, return the linked string objects
  * @param t the tensor, allow multiple rows
  * @param k the returned neighbors
  * @return std::vector<std::vector<std::string>> the result object for each row of query
  */
-  virtual std::vector<std::vector<std::string>> searchStringObject(torch::Tensor &q, int64_t k);
+  virtual std::vector<std::vector<std::string>> searchStringObject(
+      torch::Tensor& q, int64_t k);
   /**
 * @brief search the k-NN of a query tensor, return the linked U64 objects
 * @param t the tensor, allow multiple rows
 * @param k the returned neighbors
 * @return std::vector<std::vector<std::string>> the result object for each row of query
 */
-  virtual std::vector<std::vector<uint64_t >> searchU64Object(torch::Tensor &q, int64_t k);
+  virtual std::vector<std::vector<uint64_t>> searchU64Object(torch::Tensor& q,
+                                                             int64_t k);
   /**
  * @brief search the k-NN of a query tensor, return the linked string objects and original tensors
  * @param t the tensor, allow multiple rows
  * @param k the returned neighbors
  * @return std::tuple<std::vector<torch::Tensor>,std::vector<std::vector<std::string>>>
  */
-  virtual std::tuple<std::vector<torch::Tensor>, std::vector<std::vector<std::string>>> searchTensorAndStringObject(
-      torch::Tensor &q,
-      int64_t k);
+  virtual std::tuple<std::vector<torch::Tensor>,
+                     std::vector<std::vector<std::string>>>
+  searchTensorAndStringObject(torch::Tensor& q, int64_t k);
 
   /**
   * @brief load the initial tensors and query distributions of a data base, use this BEFORE @ref insertTensor
@@ -221,7 +226,8 @@ public:
   * @param query the example query tensor
   * @return bool whether the loading is successful
   */
-  virtual bool loadInitialTensorAndQueryDistribution(torch::Tensor &t, torch::Tensor &query);
+  virtual bool loadInitialTensorAndQueryDistribution(torch::Tensor& t,
+                                                     torch::Tensor& query);
   /**
    * @brief to reset the internal statistics of this index
    * @return whether the reset is executed
@@ -248,4 +254,4 @@ typedef std::shared_ptr<class AbstractIndex> AbstractIndexPtr;
  */
 #define newAbstractIndex std::make_shared<AbstractIndex>
 
-#endif //CANDY_INCLUDE_ALGORITHMS_ABSTRACT_INDEX_HPP_
+#endif  //CANDY_INCLUDE_ALGORITHMS_ABSTRACT_INDEX_HPP_

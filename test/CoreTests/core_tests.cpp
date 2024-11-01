@@ -4,18 +4,16 @@
  * Created on: 2024/10/9
  * Description: [Provide description here]
  */
-#include <Core/vector_db.hpp>
 #include <Algorithms/knn_search.hpp>
+#include <Core/vector_db.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <thread>
 #include <chrono>
+#include <thread>
 
 // Mock search algorithm class for testing purposes
-#include <cmath>       // For std::sqrt
-#include <algorithm>   // For std::sort
-#include <map>         // For std::map
-
-
+#include <algorithm>  // For std::sort
+#include <cmath>      // For std::sqrt
+#include <map>        // For std::map
 
 TEST_CASE("VectorDB: Insert and Query Operations") {
   size_t dimensions = 3;
@@ -64,7 +62,8 @@ TEST_CASE("VectorDB: Streaming Operations") {
     db.insert_streaming_vector(vec1);
     db.insert_streaming_vector(vec2);
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));  // Allow some time for processing
+    std::this_thread::sleep_for(
+        std::chrono::milliseconds(100));  // Allow some time for processing
     db.stop_streaming();
 
     std::vector<float> query_vec = {1.0, 2.0, 3.0};
@@ -81,7 +80,7 @@ TEST_CASE("VectorDB: Thread Safety") {
   SECTION("Concurrent insertion into the database") {
     db.start_streaming();
 
-    auto insert_task = [&db](const std::vector<float> &vec) {
+    auto insert_task = [&db](const std::vector<float>& vec) {
       db.insert_streaming_vector(vec);
     };
 
@@ -97,7 +96,8 @@ TEST_CASE("VectorDB: Thread Safety") {
     t2.join();
     t3.join();
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));  // Allow some time for processing
+    std::this_thread::sleep_for(
+        std::chrono::milliseconds(100));  // Allow some time for processing
     db.stop_streaming();
 
     std::vector<float> query_vec = {1.0, 2.0, 3.0};

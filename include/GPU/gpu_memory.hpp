@@ -7,8 +7,6 @@
 #ifndef INTELLISTREAM_SRC_GPU_GPU_MEMORY_HPP_
 #define INTELLISTREAM_SRC_GPU_GPU_MEMORY_HPP_
 
-class gpu_memory {
+class gpu_memory {};
 
-};
-
-#endif //INTELLISTREAM_SRC_GPU_GPU_MEMORY_HPP_
+#endif  //INTELLISTREAM_SRC_GPU_GPU_MEMORY_HPP_

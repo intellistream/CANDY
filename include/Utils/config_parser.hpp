@@ -8,17 +8,17 @@
 #ifndef INTELLISTREAM_SRC_UTILS_CONFIG_PARSER_HPP_
 #define INTELLISTREAM_SRC_UTILS_CONFIG_PARSER_HPP_
 
+#include <memory>
 #include <string>
 #include <unordered_map>
 #include <variant>
-#include <memory>
 #include <vector>
 
 using namespace std;
 
 class ConfigParser {
-protected:
-  static void spilt(const string s, const string &c, vector<string> &v) {
+ protected:
+  static void spilt(const string s, const string& c, vector<string>& v) {
     string::size_type pos1, pos2;
     pos2 = s.find(c);
     pos1 = 0;
@@ -32,21 +32,18 @@ protected:
     }
   }
   unordered_map<string, variant<int, float, string>> conf;
-public:
+
+ public:
   ConfigParser() = default;
 
   ~ConfigParser() = default;
 
-  ConfigParser(const ConfigParser &other) {
-    load_config(other);
-  }
+  ConfigParser(const ConfigParser& other) { load_config(other); }
 
-  void load_config(const ConfigParser &other) {
-    conf = other.conf;
-  }
+  void load_config(const ConfigParser& other) { conf = other.conf; }
 
   template <typename T>
-  void edit(const string &key, const T &value) {
+  void edit(const string& key, const T& value) {
     conf[key] = value;
   }
 
@@ -62,6 +59,6 @@ public:
 };
 
 typedef std::shared_ptr<ConfigParser> ConfigParserPtr;
-#define  newConfigParser make_shared<ConfigParser>
+#define newConfigParser make_shared<ConfigParser>
 
-#endif //INTELLISTREAM_SRC_UTILS_CONFIG_PARSER_HPP_
+#endif  //INTELLISTREAM_SRC_UTILS_CONFIG_PARSER_HPP_

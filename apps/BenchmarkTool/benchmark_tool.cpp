@@ -4,22 +4,23 @@
  * Created on: 2024/10/9
  * Description: [Provide description here]
  */
-#include <Performance/monitoring.hpp> // Performance utilities
-#include "scenarios.hpp"
+#include <Performance/monitoring.hpp>  // Performance utilities
 #include <Utils/logging.hpp>
+#include "scenarios.hpp"
 
-#include <iostream>
 #include <chrono>
+#include <iostream>
 #include <map>
 #include <string>
 
 using namespace std;
 using namespace chrono;
 
-#define CONFIG_PATH "./config/" // Common configuration directory in the current project's root
+#define CONFIG_PATH \
+  "./config/"  // Common configuration directory in the current project's root
 
 // Function to run a specific benchmark scenario
-void benchmarkScenario(VectorDB &db, ScenarioConfig &conf) {
+void benchmarkScenario(VectorDB& db, ScenarioConfig& conf) {
 
   auto it = scenarios.find(conf.scenario_name);
 
@@ -34,12 +35,13 @@ void benchmarkScenario(VectorDB &db, ScenarioConfig &conf) {
 
   auto stop = high_resolution_clock::now();
   auto duration = duration_cast<milliseconds>(stop - start);
-  INTELLI_INFO(string("Time taken for ") + conf.scenario_name + ": " + to_string(duration.count()) + " ms");
+  INTELLI_INFO(string("Time taken for ") + conf.scenario_name + ": " +
+               to_string(duration.count()) + " ms");
 }
 
 // Function to run a series of benchmarks
-void runBenchmarks(VectorDB &db, ScenarioConfig &conf) {
-  INTELLI_INFO("Starting benchmark tests...");  
+void runBenchmarks(VectorDB& db, ScenarioConfig& conf) {
+  INTELLI_INFO("Starting benchmark tests...");
 
   // Benchmark different scenarios
   benchmarkScenario(db, conf);

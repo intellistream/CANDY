@@ -8,12 +8,9 @@
 #define CANDY_INCLUDE_ALGORITHMS_PARALLEL_SEARCH_ALGORITHM_HPP_
 
 #include <Algorithms/search_algorithm.hpp>
-#include <Parallelism//task_scheduler.hpp>
-#include <vector>
+#include <Parallelism/task_scheduler.hpp>
 #include <memory>
 #include <vector>
-#include <memory>
-
 
 class ParallelSearchAlgorithm : public SearchAlgorithm {
  public:
@@ -24,24 +21,24 @@ class ParallelSearchAlgorithm : public SearchAlgorithm {
   ~ParallelSearchAlgorithm() override = default;
 
   // Insert a vector into the index
-  void insert(size_t id, const std::vector<float> &vec) override = 0;
+  void insert(size_t id, const std::vector<float>& vec) override = 0;
 
   // Query the nearest neighbors (returns vector of IDs)
-  std::vector<size_t> query(const std::vector<float> &query_vec, size_t k) const override = 0;
+  std::vector<size_t> query(const std::vector<float>& query_vec,
+                            size_t k) const override = 0;
 
   // Remove a vector from the index
   void remove(size_t id) override = 0;
 
-  void update(size_t id, const std::vector<float> &vector) override = 0;
+  void update(size_t id, const std::vector<float>& vector) override = 0;
 
-protected:
-
+ protected:
   // Pure virtual method for searching neighbors (to be implemented by derived classes)
-  virtual void search_layer(const std::vector<float>& query_vec, size_t k) const = 0;
+  virtual void search_layer(const std::vector<float>& query_vec,
+                            size_t k) const = 0;
 
   int ef_search_;
   TaskScheduler* scheduler_;  // Scheduler to manage parallel tasks
 };
 
-
-#endif //CANDY_INCLUDE_ALGORITHMS_PARALLEL_SEARCH_ALGORITHM_HPP_
+#endif  //CANDY_INCLUDE_ALGORITHMS_PARALLEL_SEARCH_ALGORITHM_HPP_

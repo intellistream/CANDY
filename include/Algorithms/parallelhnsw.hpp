@@ -8,25 +8,27 @@
 #define CANDY_INCLUDE_ALGORITHMS_PARALLEL_HNSW_ALGORITHM_HPP_
 
 #include <Algorithms/parallel_search_algorithm.hpp>
-#include <vector>
-#include <queue>
-#include <memory>
-#include <unordered_map>
 #include <Utils/logging.hpp>
+#include <memory>
+#include <queue>
+#include <unordered_map>
+#include <vector>
 
 class ParallelHNSWAlgorithm : public ParallelSearchAlgorithm {
  public:
-  ParallelHNSWAlgorithm(TaskScheduler* scheduler, int max_level = 1, int ef_search = 10)
-      : ParallelSearchAlgorithm(scheduler, ef_search), max_level_(max_level), entry_point_(nullptr) {}
-
-
+  ParallelHNSWAlgorithm(TaskScheduler* scheduler, int max_level = 1,
+                        int ef_search = 10)
+      : ParallelSearchAlgorithm(scheduler, ef_search),
+        max_level_(max_level),
+        entry_point_(nullptr) {}
 
   void insert(size_t id, const std::vector<float>& vec) override {
     // HNSW-specific insertion logic, using multiple levels
     INTELLI_ERROR("not implemented");
   }
 
-  std::vector<size_t> query(const std::vector<float>& query_vec, size_t k) const override {
+  std::vector<size_t> query(const std::vector<float>& query_vec,
+                            size_t k) const override {
     // HNSW-specific query logic, using the graph to find nearest neighbors
     INTELLI_ERROR("not implemented");
     return {};
@@ -37,13 +39,14 @@ class ParallelHNSWAlgorithm : public ParallelSearchAlgorithm {
     INTELLI_ERROR("not implemented");
   }
 
-  void update(size_t id, const std::vector<float> &vector) override {
+  void update(size_t id, const std::vector<float>& vector) override {
     //TO Be Supported.
     INTELLI_ERROR("not implemented");
   }
 
-protected:
-  void search_layer(const std::vector<float>& query_vec, size_t k) const override {
+ protected:
+  void search_layer(const std::vector<float>& query_vec,
+                    size_t k) const override {
     // HNSW-specific search layer logic
   }
 
@@ -62,5 +65,4 @@ protected:
   int max_level_;
 };
 
-#endif // CANDY_INCLUDE_ALGORITHMS_PARALLEL_HNSW_ALGORITHM_HPP_
-
+#endif  // CANDY_INCLUDE_ALGORITHMS_PARALLEL_HNSW_ALGORITHM_HPP_

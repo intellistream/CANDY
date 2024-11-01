@@ -12,13 +12,13 @@
 
 using namespace std;
 
-void test_func(int &result, int a, int b) { 
+void test_func(int& result, int a, int b) {
   this_thread::sleep_for(chrono::milliseconds(20));
   result = a + b;
 }
 
 TEST_CASE("ThreadPool submits and executes tasks correctly") {
-  ThreadPool pool(4);  
+  ThreadPool pool(4);
   pool.init();
 
   SECTION("Submit tasks when thread pool is empty") {
@@ -30,7 +30,7 @@ TEST_CASE("ThreadPool submits and executes tasks correctly") {
     REQUIRE(res == 10);
   }
 
-  SECTION("Submit more tasks than threads available") { 
+  SECTION("Submit more tasks than threads available") {
     vector<int> res(10, 0);
 
     vector<future<void>> futures;
@@ -38,14 +38,14 @@ TEST_CASE("ThreadPool submits and executes tasks correctly") {
       futures.push_back(pool.submit(test_func, std::ref(res[i]), i, i));
     }
 
-    for (auto &future : futures) { 
+    for (auto& future : futures) {
       future.get();
     }
 
-    for (int i = 0; i < 10; i++) { 
+    for (int i = 0; i < 10; i++) {
       REQUIRE(res[i] == i + i);
     }
   }
-    
+
   pool.shutdown();
 }

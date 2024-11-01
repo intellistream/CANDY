@@ -8,15 +8,15 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include <cmath>
-#include <fstream>
 #include <cstdio>
+#include <fstream>
 
 using namespace std;
 
 void write_ini(const string& fname) {
   ofstream file(fname);
   if (!file.is_open()) {
-      return;
+    return;
   }
 
   file << "; comment1\n";
@@ -46,7 +46,8 @@ TEST_CASE("ConfigParser: Parsing and Retrieving Values From INI File") {
   }
 
   SECTION("Get default values for non-existing keys") {
-    REQUIRE(parser.get_string("non_existing_key", "default_value") == "default_value");
+    REQUIRE(parser.get_string("non_existing_key", "default_value") ==
+            "default_value");
     REQUIRE(parser.get_int("non_existing_key", 10) == 10);
     REQUIRE(fabs(parser.get_float("non_existing_key", 1.23f) - 1.23f) < 1e-5);
   }
@@ -80,7 +81,8 @@ TEST_CASE("ConfigParser: Parsing and Retrieving Values From CSV File") {
   }
 
   SECTION("Get default values for non-existing keys") {
-    REQUIRE(parser.get_string("non_existing_key", "default_value") == "default_value");
+    REQUIRE(parser.get_string("non_existing_key", "default_value") ==
+            "default_value");
     REQUIRE(parser.get_int("non_existing_key", 10) == 10);
     REQUIRE(fabs(parser.get_float("non_existing_key", 1.23f) - 1.23f) < 1e-5);
   }

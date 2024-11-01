@@ -7,15 +7,16 @@
  * Description: [Provide description here]
  */
 
-#include <vector>
 #include <Utils/computation.hpp>
 #include <cmath>  // Added for std::sqrt
+#include <vector>
 // Utility function to calculate Euclidean distance between two vectors
-float computation::euclidean_distance(const std::vector<float> &a, const std::vector<float> &b) {
- float sum = 0.0;
- for (size_t i = 0; i < a.size(); ++i) {
-  float diff = a[i] - b[i];
-  sum += diff * diff;
- }
- return std::sqrt(sum);
+float computation::euclidean_distance(const std::vector<float>& a,
+                                      const std::vector<float>& b) {
+  float sum = 0.0;
+  for (size_t i = 0; i < a.size(); ++i) {
+    float diff = a[i] - b[i];
+    sum += diff * diff;
+  }
+  return std::sqrt(sum);
 }

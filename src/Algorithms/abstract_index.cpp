@@ -8,17 +8,19 @@
 #include <Algorithms/abstract_index.hpp>
 #include <cassert>
 
-static std::vector<std::string> u64ObjectToStringObject(std::vector<uint64_t> &u64s) {
+static std::vector<std::string> u64ObjectToStringObject(
+    std::vector<uint64_t>& u64s) {
   std::vector<std::string> ru(u64s.size());
   for (size_t i = 0; i < u64s.size(); i++) {
     uint64_t u64i = u64s[i];
-    const char *char_ptr = reinterpret_cast<const char *>(&u64i);
+    const char* char_ptr = reinterpret_cast<const char*>(&u64i);
     ru[i] = std::string(char_ptr, sizeof(uint64_t));
   }
   return ru;
 }
 
-static std::vector<uint64_t> stringObjectToU64Object(std::vector<std::string> &strs) {
+static std::vector<uint64_t> stringObjectToU64Object(
+    std::vector<std::string>& strs) {
   std::vector<uint64_t> ru(strs.size());
   for (size_t i = 0; i < strs.size(); i++) {
     uint64_t u64i = 0;
@@ -30,7 +32,7 @@ static std::vector<uint64_t> stringObjectToU64Object(std::vector<std::string> &s
 
 void AbstractIndex::reset() {}
 
-bool AbstractIndex::offlineBuild(torch::Tensor &t) {
+bool AbstractIndex::offlineBuild(torch::Tensor& t) {
   return false;
 }
 
@@ -54,52 +56,56 @@ bool AbstractIndex::setFrozenLevel(int64_t frozenLv) {
   return false;
 }
 
-bool AbstractIndex::insertTensor(torch::Tensor &t) {
+bool AbstractIndex::insertTensor(torch::Tensor& t) {
   assert(t.size(1));
   return false;
 }
 
-bool AbstractIndex::insertStringObject(torch::Tensor &t, std::vector<std::string> &strs) {
+bool AbstractIndex::insertStringObject(torch::Tensor& t,
+                                       std::vector<std::string>& strs) {
   assert(t.size(1));
-  assert (strs.size());
+  assert(strs.size());
   return false;
 }
 
-bool AbstractIndex::insertU64Object(torch::Tensor &t, std::vector<uint64_t> &u64s) {
+bool AbstractIndex::insertU64Object(torch::Tensor& t,
+                                    std::vector<uint64_t>& u64s) {
   auto strVec = u64ObjectToStringObject(u64s);
   return insertStringObject(t, strVec);
 }
 
-bool AbstractIndex::loadInitialU64Object(torch::Tensor &t, std::vector<uint64_t> &u64s) {
+bool AbstractIndex::loadInitialU64Object(torch::Tensor& t,
+                                         std::vector<uint64_t>& u64s) {
   auto strVec = u64ObjectToStringObject(u64s);
   return loadInitialStringObject(t, strVec);
 }
 
-bool AbstractIndex::loadInitialTensor(torch::Tensor &t) {
+bool AbstractIndex::loadInitialTensor(torch::Tensor& t) {
   return insertTensor(t);
 }
 
-bool AbstractIndex::loadInitialStringObject(torch::Tensor &t, std::vector<std::string> &strs) {
+bool AbstractIndex::loadInitialStringObject(torch::Tensor& t,
+                                            std::vector<std::string>& strs) {
   return insertStringObject(t, strs);
 }
 
-bool AbstractIndex::deleteTensor(torch::Tensor &t, int64_t k) {
+bool AbstractIndex::deleteTensor(torch::Tensor& t, int64_t k) {
   assert(t.size(1));
   assert(k > 0);
   return false;
 }
 
-bool AbstractIndex::deleteU64Object(torch::Tensor &t, int64_t k) {
+bool AbstractIndex::deleteU64Object(torch::Tensor& t, int64_t k) {
   return deleteStringObject(t, k);
 }
 
-bool AbstractIndex::deleteStringObject(torch::Tensor &t, int64_t k) {
+bool AbstractIndex::deleteStringObject(torch::Tensor& t, int64_t k) {
   assert(t.size(1));
   assert(k > 0);
   return false;
 }
 
-bool AbstractIndex::reviseTensor(torch::Tensor &t, torch::Tensor &w) {
+bool AbstractIndex::reviseTensor(torch::Tensor& t, torch::Tensor& w) {
   assert(t.size(1) == w.size(1));
   return false;
 }
@@ -111,7 +117,8 @@ std::vector<idx_t> AbstractIndex::searchIndex(torch::Tensor q, int64_t k) {
   return ru;
 }
 
-std::vector<std::vector<std::string>> AbstractIndex::searchStringObject(torch::Tensor &q, int64_t k) {
+std::vector<std::vector<std::string>> AbstractIndex::searchStringObject(
+    torch::Tensor& q, int64_t k) {
   assert(k > 0);
   assert(q.size(1));
   std::vector<std::vector<std::string>> ru(1);
@@ -120,16 +127,19 @@ std::vector<std::vector<std::string>> AbstractIndex::searchStringObject(torch::T
   return ru;
 }
 
-std::vector<std::vector<uint64_t >> AbstractIndex::searchU64Object(torch::Tensor &q, int64_t k) {
+std::vector<std::vector<uint64_t>> AbstractIndex::searchU64Object(
+    torch::Tensor& q, int64_t k) {
   auto ruS = searchStringObject(q, k);
-  std::vector<std::vector<uint64_t >> ruU = std::vector<std::vector<uint64_t >>(ruS.size());
+  std::vector<std::vector<uint64_t>> ruU =
+      std::vector<std::vector<uint64_t>>(ruS.size());
   for (size_t i = 0; i < ruU.size(); i++) {
     ruU[i] = stringObjectToU64Object(ruS[i]);
   }
   return ruU;
 }
 
-std::vector<torch::Tensor> AbstractIndex::getTensorByIndex(std::vector<idx_t> &idx, int64_t k) {
+std::vector<torch::Tensor> AbstractIndex::getTensorByIndex(
+    std::vector<idx_t>& idx, int64_t k) {
   assert(k > 0);
   assert(idx.size());
   std::vector<torch::Tensor> ru(1);
@@ -141,7 +151,8 @@ torch::Tensor AbstractIndex::rawData() {
   return torch::rand({1, 1});
 }
 
-std::vector<torch::Tensor> AbstractIndex::searchTensor(torch::Tensor &q, int64_t k) {
+std::vector<torch::Tensor> AbstractIndex::searchTensor(torch::Tensor& q,
+                                                       int64_t k) {
   assert(k > 0);
   assert(q.size(1));
   std::vector<torch::Tensor> ru(1);
@@ -161,16 +172,17 @@ bool AbstractIndex::waitPendingOperations() {
   return true;
 }
 
-std::tuple<std::vector<torch::Tensor>,
-           std::vector<std::vector<std::string>>> AbstractIndex::searchTensorAndStringObject(torch::Tensor &q,
-                                                                                                    int64_t k) {
+std::tuple<std::vector<torch::Tensor>, std::vector<std::vector<std::string>>>
+AbstractIndex::searchTensorAndStringObject(torch::Tensor& q, int64_t k) {
   auto ruT = searchTensor(q, k);
   auto ruS = searchStringObject(q, k);
-  std::tuple<std::vector<torch::Tensor>, std::vector<std::vector<std::string>>> ru(ruT, ruS);
+  std::tuple<std::vector<torch::Tensor>, std::vector<std::vector<std::string>>>
+      ru(ruT, ruS);
   return ru;
 }
 
-bool AbstractIndex::loadInitialTensorAndQueryDistribution(torch::Tensor &t, torch::Tensor &query) {
+bool AbstractIndex::loadInitialTensorAndQueryDistribution(
+    torch::Tensor& t, torch::Tensor& query) {
   assert(query.size(0) > 0);
   return loadInitialTensor(t);
 }

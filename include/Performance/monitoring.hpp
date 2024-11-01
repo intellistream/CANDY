@@ -7,10 +7,10 @@
 #ifndef INTELLISTREAM_SRC_PERFORMANCE_MONITORING_HPP_
 #define INTELLISTREAM_SRC_PERFORMANCE_MONITORING_HPP_
 
-#include <iostream>
-#include <chrono>
-#include <thread>
 #include <atomic>
+#include <chrono>
+#include <iostream>
+#include <thread>
 
 #include "Utils/logging.hpp"
 
@@ -50,10 +50,11 @@ class PerformanceMonitor {
   void monitor() {
     while (monitoring) {
       // Simulate CPU usage monitoring (this would be replaced with actual system calls in a real implementation)
-      cpu_usage = (rand() % 100) + 1; // Random CPU usage between 1 and 100%
+      cpu_usage = (rand() % 100) + 1;  // Random CPU usage between 1 and 100%
 
       // Simulate memory usage monitoring (this would be replaced with actual system calls in a real implementation)
-      memory_usage = (rand() % 800) + 200; // Random memory usage between 200 and 1000 MB
+      memory_usage =
+          (rand() % 800) + 200;  // Random memory usage between 200 and 1000 MB
 
       // Sleep for a while before the next measurement
       std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -61,4 +62,4 @@ class PerformanceMonitor {
   }
 };
 
-#endif //INTELLISTREAM_SRC_PERFORMANCE_MONITORING_HPP_
+#endif  //INTELLISTREAM_SRC_PERFORMANCE_MONITORING_HPP_

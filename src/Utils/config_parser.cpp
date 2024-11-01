@@ -8,10 +8,10 @@
 #include <Utils/config_parser.hpp>
 #include <Utils/logging.hpp>
 
-#include <vector>
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <sstream>
+#include <vector>
 
 using namespace std;
 
@@ -77,9 +77,8 @@ int ConfigParser::parse_csv(const string& fname) {
     spilt(line, ",", cols);
     if (cols.size() >= 3) {
       istringstream iss(cols[1]);
-      if (cols[2] == "U64" || cols[2] == "U64\r" ||
-          cols[2] == "I64" || cols[2] == "I64\r" ||
-          cols[2] == "Int" || cols[2] == "Int\r") {
+      if (cols[2] == "U64" || cols[2] == "U64\r" || cols[2] == "I64" ||
+          cols[2] == "I64\r" || cols[2] == "Int" || cols[2] == "Int\r") {
         int value;
         iss >> value;
         conf[cols[0]] = value;
@@ -87,7 +86,7 @@ int ConfigParser::parse_csv(const string& fname) {
         double value;
         iss >> value;
         conf[cols[0]] = static_cast<float>(value);
-      } else if(cols[2] == "Float" || cols[2] == "Float\r") {
+      } else if (cols[2] == "Float" || cols[2] == "Float\r") {
         float value;
         iss >> value;
         conf[cols[0]] = value;
@@ -99,7 +98,8 @@ int ConfigParser::parse_csv(const string& fname) {
   return 0;
 }
 
-string ConfigParser::get_string(const string& key, const string& default_value) const {
+string ConfigParser::get_string(const string& key,
+                                const string& default_value) const {
   auto it = conf.find(key);
   if (it != conf.end()) {
     if (holds_alternative<string>(it->second)) {
@@ -132,8 +132,9 @@ float ConfigParser::get_float(const string& key, float default_value) const {
   return default_value;
 }
 
-template void ConfigParser::edit<int>(const string &key, const int &value);
+template void ConfigParser::edit<int>(const string& key, const int& value);
 
-template void ConfigParser::edit<float>(const string &key, const float &value);
+template void ConfigParser::edit<float>(const string& key, const float& value);
 
-template void ConfigParser::edit<string>(const string &key, const string &value);
+template void ConfigParser::edit<string>(const string& key,
+                                         const string& value);

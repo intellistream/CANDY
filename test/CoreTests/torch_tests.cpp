@@ -4,20 +4,20 @@
  * Created on: 2024/10/9
  * Description: [Provide description here]
  */
-#include <Core/vector_db.hpp>
 #include <Algorithms/knn_search.hpp>
+#include <Core/vector_db.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <thread>
 #include <chrono>
+#include <thread>
 
 // Mock search algorithm class for testing purposes
-#include <cmath>       // For std::sqrt
-#include <algorithm>   // For std::sort
-#include <map>         // For std::map
-#include <torch/torch.h>
 #include <ATen/ATen.h>
-#include <iostream>
 #include <c10/util/Logging.h>
+#include <torch/torch.h>
+#include <algorithm>  // For std::sort
+#include <cmath>      // For std::sqrt
+#include <iostream>
+#include <map>  // For std::map
 TEST_CASE("Torch: Test basic functions") {
   auto ta = torch::rand({4, 4});
   std::cout << ta << std::endl;
