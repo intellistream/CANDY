@@ -15,7 +15,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 include(cmake/macros.cmake)
 include(cmake/DefaultOptions.cmake)
 include(cmake/CompilerSetup.cmake)
-
+add_subdirectory(tools)
 # # Find python development files
 find_package(Python3 REQUIRED COMPONENTS Interpreter Development) 
 include_directories(${Python3_INCLUDE_DIRS})
@@ -100,3 +100,11 @@ add_custom_command(TARGET CANDY
         COMMAND ${CMAKE_COMMAND} --build . --target install
         COMMENT "Installing CANDY to Python user site-packages"
 )
+
+# check if the user is trying to build in the source directory
+file(TO_CMAKE_PATH "${PROJECT_BINARY_DIR}/CMakeLists.txt" PATH_TO_CMAKELISTS_TXT)
+
+if(EXISTS "${PATH_TO_CMAKELISTS_TXT}")
+        message(FATAL_ERROR "Run CMake from a build subdirectory! \"mkdir build ; cd build ; cmake ..\" \
+    Some junk files were created in this folder (CMakeCache.txt, CMakeFiles); you should delete those.")
+endif()
