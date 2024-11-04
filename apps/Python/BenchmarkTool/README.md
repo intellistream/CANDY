@@ -17,7 +17,7 @@ python3 main.py <your config file>
 ### GUI (experimental)
 You should install PyQT first, by 
 ```shell
-pip PyQt5
+pip install PyQt5
 ```
 Then, run the following
 ```shell
