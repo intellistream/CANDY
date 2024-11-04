@@ -17,7 +17,7 @@ include(cmake/DefaultOptions.cmake)
 include(cmake/CompilerSetup.cmake)
 
 # # Find python development files
-find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
+find_package(Python REQUIRED COMPONENTS Interpreter Development)
 include_directories(${Python3_INCLUDE_DIRS})
 
 # Link with external libraries (e.g., Log4cxx)
@@ -113,7 +113,7 @@ COMMENT "Clear previous version"
 # Add a post-build custom command to automatically run `make install`
 add_custom_command(TARGET CANDY
         POST_BUILD
-        COMMAND cd ${PROJECT_SOURCE_DIR} && python3 setup.py install --user
+        COMMAND cd ${PROJECT_SOURCE_DIR} && python3 ${PROJECT_SOURCE_DIR}/installation/python_package_setup/setup.py install --user
         COMMENT "Installing new compiled PyCANDYFramework python packages"
 )
 endif ()
