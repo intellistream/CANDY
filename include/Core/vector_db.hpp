@@ -23,7 +23,9 @@
 class VectorDB {
 public:
  // Constructor and Destructor
- VectorDB(size_t dimensions, ANNSBasePtr ann_algorithm = nullptr);
+
+ VectorDB(size_t dimensions, CANDY_ALGO::ANNSBasePtr ann_algorithm = nullptr);
+
 
  ~VectorDB();
 
@@ -53,7 +55,9 @@ private:
  std::unordered_map<size_t, torch::Tensor> tensor_store;
 
  // ANNS algorithm for querying (e.g., k-NN, Approximate NN)
- ANNSBasePtr ann_algorithm;
+
+ CANDY_ALGO::ANNSBasePtr ann_algorithm;
+
 
  // Thread-safe data structures for concurrency
  mutable std::shared_mutex db_mutex;

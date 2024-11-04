@@ -7,11 +7,13 @@
 #include <DataLoader/DataLoaderTable.hpp>
 #include <DataLoader/RandomDataLoader.hpp>
 
-namespace CANDY {
+
+namespace CANDY_ALGO {
     /**
      * @note revise me if you need new loader
      */
-    CANDY::DataLoaderTable::DataLoaderTable() {
+    CANDY_ALGO::DataLoaderTable::DataLoaderTable() {
+
         loaderMap["null"] = newAbstractDataLoader();
         loaderMap["random"] = newRandomDataLoader();
     }

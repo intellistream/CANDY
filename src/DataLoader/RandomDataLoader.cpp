@@ -5,7 +5,9 @@
  */
 #include <DataLoader/RandomDataLoader.hpp>
 
-bool CANDY::RandomDataLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
+
+bool CANDY_ALGO::RandomDataLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
+
   assert(cfg);
   vecDim = cfg->tryI64("vecDim", 768, true);
   vecVolume = cfg->tryI64("vecVolume", 1000, true);
@@ -42,10 +44,12 @@ bool CANDY::RandomDataLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
   return true;
 }
 
-torch::Tensor CANDY::RandomDataLoader::getData() {
+
+torch::Tensor CANDY_ALGO::RandomDataLoader::getData() {
   return A;
 }
 
-torch::Tensor CANDY::RandomDataLoader::getQuery() {
+torch::Tensor CANDY_ALGO::RandomDataLoader::getQuery() {
+
   return B;
 }

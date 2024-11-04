@@ -36,8 +36,8 @@ class PerformanceMonitor {
   // Report the gathered metrics
   void report() const {
     INTELLI_INFO("Performance Report:")
-    INTELLI_INFO("CPU Usage (approximate): " << cpu_usage << "%")
-    INTELLI_INFO("Memory Usage (approximate): " << memory_usage << " MB")
+    INTELLI_INFO("CPU Usage (approximate): "+ std::to_string(cpu_usage) + "%")
+    INTELLI_INFO("Memory Usage (approximate): " + std::to_string(memory_usage) + " MB")
   }
 
  private:

@@ -53,5 +53,7 @@ ThirdParty/libtorch/
 commit.sh
 commit_info
 
+/PyCANDYFramework.egg-info/
+
 /apps/CPlusPlus/datasets/fvecs/
 /apps/CPlusPlus/datasets/hdf5/

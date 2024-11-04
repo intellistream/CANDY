@@ -10,32 +10,40 @@
 #include <map>
 #include <DataLoader/AbstractDataLoader.hpp>
 
-namespace CANDY {
 
-#define newDataLoaderTable std::make_shared<CANDY::DataLoaderTable>
+namespace CANDY_ALGO {
+
+#define newDataLoaderTable std::make_shared<CANDY_ALGO::DataLoaderTable>
 
 class DataLoaderTable {
  protected:
-  std::map<std::string, CANDY::AbstractDataLoaderPtr> loaderMap;
+  std::map<std::string, CANDY_ALGO::AbstractDataLoaderPtr> loaderMap;
+
  public:
   DataLoaderTable();
   ~DataLoaderTable() {
   }
-  void registerNewDataLoader(CANDY::AbstractDataLoaderPtr dnew, std::string tag) {
+
+  void registerNewDataLoader(CANDY_ALGO::AbstractDataLoaderPtr dnew, std::string tag) {
     loaderMap[tag] = dnew;
   }
-  CANDY::AbstractDataLoaderPtr findDataLoader(std::string name) {
+  CANDY_ALGO::AbstractDataLoaderPtr findDataLoader(std::string name) {
+
     if (loaderMap.count(name)) {
       return loaderMap[name];
     }
     return nullptr;
   }
 
-  typedef std::shared_ptr<class CANDY::DataLoaderTable> DataLoaderTablePtr;
+
+  typedef std::shared_ptr<class CANDY_ALGO::DataLoaderTable> DataLoaderTablePtr;
+
 
 
 };
 
 } // CANDY
 
+
 #endif //INTELLISTREAM_INCLUDE_DataLOADER_DataLOADERTABLE_H_
+

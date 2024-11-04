@@ -8,11 +8,13 @@
 #include <Utils/TensorOP.hpp>
 
 // Constructor with vector dimensions
-CANDY::KnnSearch::KnnSearch(size_t dimensions) : dimensions(dimensions) {
+
+CANDY_ALGO::KnnSearch::KnnSearch(size_t dimensions) : dimensions(dimensions) {
 }
 
-bool CANDY::KnnSearch::setConfig(INTELLI::ConfigMapPtr cfg) {
-    ANNSBase::setConfig(cfg);
+bool CANDY_ALGO::KnnSearch::setConfig(INTELLI::ConfigMapPtr cfg) {
+//ANNSBase::setConfig(cfg);
+
     vecDim = cfg->tryI64("vecDim", 768, true);
     initialVolume = cfg->tryI64("initialVolume", 1000, true);
     expandStep = cfg->tryI64("expandStep", 100, true);
@@ -22,17 +24,23 @@ bool CANDY::KnnSearch::setConfig(INTELLI::ConfigMapPtr cfg) {
 }
 
 // Reset the current index
-void CANDY::KnnSearch::reset() {
+
+void CANDY_ALGO::KnnSearch::reset() {
+
     index.clear();
 }
 
 // Insert tensor into the index
-bool CANDY::KnnSearch::insertTensor(const torch::Tensor &t) {
+
+bool CANDY_ALGO::KnnSearch::insertTensor(const torch::Tensor &t) {
+
     return INTELLI::TensorOP::appendRowsBufferMode(&dbTensor, &t, &lastNNZ, expandStep);
 }
 
 // Delete tensor from the index
-bool CANDY::KnnSearch::deleteTensor(torch::Tensor &t, int64_t k) {
+
+bool CANDY_ALGO::KnnSearch::deleteTensor(torch::Tensor &t, int64_t k) {
+
     // Use the searchTensor function to get the indices of k-nearest neighbors for each row in t
     std::vector<torch::Tensor> idxToDeleteTensors = searchTensor(t, k);
 
@@ -50,7 +58,8 @@ bool CANDY::KnnSearch::deleteTensor(torch::Tensor &t, int64_t k) {
 }
 
 
-bool CANDY::KnnSearch::reviseTensor(torch::Tensor &t, torch::Tensor &w) {
+bool CANDY_ALGO::KnnSearch::reviseTensor(torch::Tensor &t, torch::Tensor &w) {
+
     // Check if dimensions match
     if (t.size(0) > w.size(0) || t.size(1) != w.size(1)) {
         return false;
@@ -81,7 +90,9 @@ bool CANDY::KnnSearch::reviseTensor(torch::Tensor &t, torch::Tensor &w) {
     return true;
 }
 
-std::vector<torch::Tensor> CANDY::KnnSearch::searchTensor(const torch::Tensor &q, int64_t k) {
+
+std::vector<torch::Tensor> CANDY_ALGO::KnnSearch::searchTensor(const torch::Tensor &q, int64_t k) {
+
     // Ensure dbTensor is contiguous in memory
     torch::Tensor dbData = dbTensor.contiguous();
     torch::Tensor queryData = q.contiguous();
