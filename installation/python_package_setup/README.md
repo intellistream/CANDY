@@ -7,6 +7,8 @@ This folder packages `.so` files into a Python `.whl` file, allowing easy instal
 
 ## Packaging Instructions
 
+Steps 1, 2, and 3 can be automatically executed by the install_pycandy.sh, and a `./dist/` folder that contains `.whl` file will be generated. You can install this `.whl` file according to steps 3 or 4.
+
 1. **Copy `.so` files to `./lib/` directory** in this folder. Verify that the `.so` files are present in the `site-packages` directory, or locate them in the designated build path.
 
     ```bash
