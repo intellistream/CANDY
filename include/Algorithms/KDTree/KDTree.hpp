@@ -9,6 +9,7 @@
 #include <Algorithms/ANNSBase.hpp>
 #include <Algorithms/KDTree/KDTreeUtils.hpp>
 #include <Utils/Param.hpp>
+
 namespace CANDY_ALGO {
 class KDTree : public ANNSBase {
  public:
@@ -79,5 +80,6 @@ class KDTree : public ANNSBase {
                    float epsError, Heap<BranchSt> *heap, VisitBitset &checked);
 };
 }
+
 #endif // KD_TREE_HPP
 

@@ -14,6 +14,7 @@
 #include <Utils/Param.hpp>
 
 
+
 namespace CANDY_ALGO {
 class ANNSBase;
 typedef std::shared_ptr<ANNSBase> ANNSBasePtr;
@@ -42,4 +43,5 @@ class ANNSBase : public CANDY::AbstractANNS {
   virtual std::vector<torch::Tensor> searchTensor(const torch::Tensor &q, int64_t k);
 };
 }
+
 #endif // ANNS_ALGORITHM_BASE_HPP

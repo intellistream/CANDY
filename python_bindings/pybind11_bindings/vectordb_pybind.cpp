@@ -12,6 +12,7 @@
 namespace py = pybind11;
 
 PYBIND11_MODULE(pycandy, m) {
+
   py::class_<CANDY_ALGO::ANNSBase, std::shared_ptr<CANDY_ALGO::ANNSBase>>(m, "ANNSBase")
       .def("insert_tensor", &CANDY_ALGO::ANNSBase::insertTensor)
       .def("search_tensor", &CANDY_ALGO::ANNSBase::searchTensor);
@@ -21,6 +22,7 @@ PYBIND11_MODULE(pycandy, m) {
           std::shared_ptr<CANDY_ALGO::ANNSBase> algorithm;
           if (search_algorithm == "knnsearch") {
               algorithm = std::make_shared<CANDY_ALGO::KnnSearch>(dimensions);
+
           } else {
               throw std::invalid_argument("Unsupported search algorithm: " + search_algorithm);
           }

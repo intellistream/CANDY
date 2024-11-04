@@ -13,7 +13,9 @@
 #include <memory>
 #include <torch/torch.h>
 
+
 namespace CANDY_ALGO {
+
  class KnnSearch : public ANNSBase {
  protected:
   INTELLI::ConfigMapPtr myCfg = nullptr;
@@ -24,6 +26,7 @@ namespace CANDY_ALGO {
  public:
   // Destructor
   ~KnnSearch() override = default;
+
    KnnSearch() {}
   // Constructor with vector dimensions
    KnnSearch(size_t dimensions);
@@ -40,13 +43,16 @@ namespace CANDY_ALGO {
 
    virtual std::vector<torch::Tensor> searchTensor(const torch::Tensor &q, int64_t k) override;
 
+
  private:
   size_t dimensions;
   std::unordered_map<size_t, torch::Tensor> index;
  };
 
 
+
 typedef std::shared_ptr<CANDY_ALGO::KnnSearch> KnnSearchPtr;
 #define newKNNIndex std::make_shared<CANDY_ALGO::KnnSearch>
 }
+
 #endif // CANDY_INCLUDE_ALGORITHMS_KNN_SEARCH_HPP_

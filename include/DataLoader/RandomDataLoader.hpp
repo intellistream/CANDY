@@ -11,7 +11,9 @@
 #include <memory>
 #include <DataLoader/AbstractDataLoader.hpp>
 
+
 namespace CANDY_ALGO {
+
 
  class RandomDataLoader : public AbstractDataLoader {
  protected:
@@ -52,13 +54,17 @@ namespace CANDY_ALGO {
   * @brief The class to describe a shared pointer to @ref RandomDataLoader
 
   */
+
  typedef std::shared_ptr<class CANDY_ALGO::RandomDataLoader> RandomDataLoaderPtr;
+
  /**
   * @ingroup CANDY_MatrixLOADER_Random
   * @def newRandomDataLoader
   * @brief (Macro) To creat a new @ref RandomDataLoader under shared pointer.
   */
+
 #define newRandomDataLoader std::make_shared<CANDY_ALGO::RandomDataLoader>
+
 } // CANDY
 
 #endif //CANDY_INCLUDE_MATRIXLOADER_RandomDataLoader_H_

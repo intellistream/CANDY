@@ -12,6 +12,7 @@
 #include <Utils/TensorOP.hpp>
 
 #include "Utils/Param.hpp"
+
 namespace CANDY_ALGO {
 bool KDTree::setConfig(INTELLI::ConfigMapPtr cfg) {
   vecDim = cfg->tryI64("vecDim", 768, true);
@@ -25,10 +26,12 @@ bool KDTree::setParams(CANDY::ParamPtr param) {
   num_trees = param->num_trees;
   printf("Best param for KdTree\n num_trees: %ld\n", num_trees);
   return true;
+
 }
 
 KDTree::KDTree(size_t dimensions) : vecDim(dimensions), mean(nullptr), var(nullptr), lastNNZ(-1), expandStep(100),
                                     eps(0.0), checks(32), ntotal(0) {
+
   vecDim = 768; // default
   num_trees = 4; // default
   dbTensor = torch::zeros({0, static_cast<int64_t>(vecDim)});
@@ -300,10 +303,12 @@ void KDTree::addPointToTree(NodePtr node, int64_t idx) {
       addPointToTree(node->child2, idx);
     }
   }
+
 }
 
 void KDTree::searchLevel(ResultSet &result, const float *vec, NodePtr node, float mindist, int &checkCount,
                          int maxCheck, float epsError, Heap<BranchSt> *heap, VisitBitset &checked) {
+
   if (result.worstDist() < mindist) {
     return;
   }
@@ -349,3 +354,4 @@ void KDTree::get_neighbors(ResultSet &result, const float *vec, int maxCheck, fl
   }
 }
 }
+

@@ -31,7 +31,9 @@ int main(int argc, char **argv) {
     /**
      * @brief 2. Load data
      */
+
     CANDY_ALGO::DataLoaderTable dataLoaderTable;
+
     std::string dataLoaderTag = inMap->tryString("dataLoaderTag", "random", true);
     auto dataLoader = dataLoaderTable.findDataLoader(dataLoaderTag);
     if (dataLoader == nullptr) {
@@ -59,7 +61,9 @@ int main(int argc, char **argv) {
      * @brief 4. Create index (ANNS Index Initialization)
      */
     size_t dimensions = dataTensorStream.size(1);
+
     auto indexPtr = std::make_shared<CANDY_ALGO::KnnSearch>(dimensions);
+
     if (!indexPtr->setConfig(inMap)) {
         INTELLI_ERROR("Failed to configure ANNS index.");
         return -1;

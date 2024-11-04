@@ -10,6 +10,7 @@
 #include <map>
 #include <DataLoader/AbstractDataLoader.hpp>
 
+
 namespace CANDY_ALGO {
 
 #define newDataLoaderTable std::make_shared<CANDY_ALGO::DataLoaderTable>
@@ -17,25 +18,32 @@ namespace CANDY_ALGO {
 class DataLoaderTable {
  protected:
   std::map<std::string, CANDY_ALGO::AbstractDataLoaderPtr> loaderMap;
+
  public:
   DataLoaderTable();
   ~DataLoaderTable() {
   }
+
   void registerNewDataLoader(CANDY_ALGO::AbstractDataLoaderPtr dnew, std::string tag) {
     loaderMap[tag] = dnew;
   }
   CANDY_ALGO::AbstractDataLoaderPtr findDataLoader(std::string name) {
+
     if (loaderMap.count(name)) {
       return loaderMap[name];
     }
     return nullptr;
   }
 
+
   typedef std::shared_ptr<class CANDY_ALGO::DataLoaderTable> DataLoaderTablePtr;
+
 
 
 };
 
 } // CANDY
 
+
 #endif //INTELLISTREAM_INCLUDE_DataLOADER_DataLOADERTABLE_H_
+
