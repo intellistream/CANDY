@@ -5,7 +5,7 @@
  * Description: [Provide description here]
  */
 #ifndef INTELLISTREAM_SRC_IO_BACKUP_RESTORE_HPP_
-#define INTELLISTREAM_SRC_IO_BACKUP_RESTORE_HPP_
+#define INTELLISTREAM_SRC_IO_BACKUP_RESTORE_HPP
 
 class backup_restore {
 

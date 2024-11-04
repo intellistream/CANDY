@@ -12,7 +12,7 @@
 #include <thread>
 #include <atomic>
 
-#include "Utils/logging.hpp"
+#include "Utils/IntelliLog.hpp"
 
 class PerformanceMonitor {
  public:
