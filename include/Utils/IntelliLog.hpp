@@ -11,7 +11,7 @@
 #include <string>
 #include <stdexcept>
 #include <sstream>
-
+#include <c10/util/Logging.h>
 enum DebugLevel { LOG_NONE, LOG_WARNING, LOG_DEBUG, LOG_INFO, LOG_TRACE };
 
 static std::string getDebugLevelAsString(DebugLevel level) {
@@ -83,5 +83,10 @@ static DebugLevel getStringAsDebugLevel(const std::string& level) {
 static void setupLogging(const std::string& logFileName, DebugLevel level) {
   std::cout << "LogFileName: " << logFileName << ", and DebugLevel: " << getDebugLevelAsString(level) << std::endl;
 }
+
+#define C10_INFO(n) LOG(INFO)<<n
+
+#define C10_ERROR(n) LOG(ERROR)<<n
+#define C10_WARNING(n) LOG(WARNING)<<n
 
 #endif //INTELLISTREAM_SRC_UTILS_LOGGING_HPP_

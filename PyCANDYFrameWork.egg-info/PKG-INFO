@@ -1,0 +1,6 @@
+Metadata-Version: 2.1
+Name: PyCANDYFrameWork
+Version: 0.0.0
+Summary: A simple python version of CANDY Framework built with Pybind11 and CMake
+Author: Your Name
+License-File: LICENSE

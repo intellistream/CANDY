@@ -8,11 +8,11 @@
 #include <thread>
 #include <Algorithms/KNN/KNNSearch.hpp>
 // Constructor: Initialize the tensor database with a number of dimensions and a search algorithm
-VectorDB::VectorDB(size_t dimensions, ANNSBasePtr ann_algorithm)
+VectorDB::VectorDB(size_t dimensions,CANDY_ALGO::ANNSBasePtr ann_algorithm)
     : dimensions(dimensions), ann_algorithm(ann_algorithm), is_running(false) {
     if (!this->ann_algorithm) {
         // Instantiate a default ANNS algorithm if none provided
-        this->ann_algorithm = std::make_shared<CANDY::KnnSearch>(dimensions);
+        this->ann_algorithm = std::make_shared<CANDY_ALGO::KnnSearch>(dimensions);
     }
 }
 

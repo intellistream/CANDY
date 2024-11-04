@@ -1,0 +1,8 @@
+LICENSE
+README.md
+setup.py
+PyCANDYFrameWork.egg-info/PKG-INFO
+PyCANDYFrameWork.egg-info/SOURCES.txt
+PyCANDYFrameWork.egg-info/dependency_links.txt
+PyCANDYFrameWork.egg-info/not-zip-safe
+PyCANDYFrameWork.egg-info/top_level.txt

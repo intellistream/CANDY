@@ -9,75 +9,75 @@
 #include <Algorithms/ANNSBase.hpp>
 #include <Algorithms/KDTree/KDTreeUtils.hpp>
 #include <Utils/Param.hpp>
-
+namespace CANDY_ALGO {
 class KDTree : public ANNSBase {
-public:
-    typedef Node *NodePtr;
-    typedef BranchStruct<NodePtr> BranchSt;
-    typedef BranchSt *Branch;
+ public:
+  typedef Node *NodePtr;
+  typedef BranchStruct<NodePtr> BranchSt;
+  typedef BranchSt *Branch;
 
-private:
-    uint64_t num_trees;
-    float *mean;
-    float *var;
-    uint64_t ntotal;
-    size_t vecDim;
+ private:
+  uint64_t num_trees;
+  float *mean;
+  float *var;
+  uint64_t ntotal;
+  size_t vecDim;
 
-    int RAND_DIM = 5;
-    int SAMPLE_MEAN = 114;
+  int RAND_DIM = 5;
+  int SAMPLE_MEAN = 114;
 
-    torch::Tensor dbTensor;
-    int64_t lastNNZ;
-    int64_t expandStep;
-    float eps;
-    int checks;
-    std::vector<NodePtr> tree_roots;
+  torch::Tensor dbTensor;
+  int64_t lastNNZ;
+  int64_t expandStep;
+  float eps;
+  int checks;
+  std::vector<NodePtr> tree_roots;
 
-public:
-    bool setConfig(INTELLI::ConfigMapPtr cfg) override;
+ public:
+  bool setConfig(INTELLI::ConfigMapPtr cfg) override;
 
-    bool setParams(CANDY::ParamPtr param);
+  bool setParams(CANDY::ParamPtr param);
 
-    KDTree(size_t dimensions);
+  KDTree(size_t dimensions);
 
-    ~KDTree();
+  ~KDTree();
 
-    bool insertTensor(const torch::Tensor &t);
+  bool insertTensor(const torch::Tensor &t);
 
-    bool loadInitialTensor(const torch::Tensor &t);
+  bool loadInitialTensor(const torch::Tensor &t);
 
-    bool deleteTensor(const torch::Tensor &t, int64_t k = 1);
+  bool deleteTensor(const torch::Tensor &t, int64_t k = 1);
 
-    bool reviseTensor(const torch::Tensor &t, const torch::Tensor &w);
+  bool reviseTensor(const torch::Tensor &t, const torch::Tensor &w);
 
-    std::vector<idx_t> searchIndex(const torch::Tensor &q, int64_t k);
+  std::vector<idx_t> searchIndex(const torch::Tensor &q, int64_t k);
 
-    std::vector<torch::Tensor> searchTensor(const torch::Tensor &q, int64_t k);
+  std::vector<torch::Tensor> searchTensor(const torch::Tensor &q, int64_t k);
 
-    torch::Tensor rawData();
+  torch::Tensor rawData();
 
-private:
-    void addPoints(torch::Tensor &t);
+ private:
+  void addPoints(torch::Tensor &t);
 
-    int knnSearch(torch::Tensor &q, int64_t *idx, float *distances, int64_t aknn);
+  int knnSearch(torch::Tensor &q, int64_t *idx, float *distances, int64_t aknn);
 
-    NodePtr divideTree(int64_t *idx, int count);
+  NodePtr divideTree(int64_t *idx, int count);
 
-    void meanSplit(int64_t *ind, int count, int64_t &index, int64_t &cutfeat, float &cutval);
+  void meanSplit(int64_t *ind, int count, int64_t &index, int64_t &cutfeat, float &cutval);
 
-    int selectDivision(float *v);
+  int selectDivision(float *v);
 
-    void planeSplit(int64_t *ind, int count, int64_t cutfeat, float cutval, int &lim1, int &lim2);
+  void planeSplit(int64_t *ind, int count, int64_t cutfeat, float cutval, int &lim1, int &lim2);
 
-    void buildTree();
+  void buildTree();
 
-    void addPointToTree(NodePtr node, int64_t idx);
+  void addPointToTree(NodePtr node, int64_t idx);
 
-    void get_neighbors(ResultSet &result, const float *vec, int maxCheck, float epsError);
+  void get_neighbors(ResultSet &result, const float *vec, int maxCheck, float epsError);
 
-    void searchLevel(ResultSet &result, const float *vec, NodePtr node, float mindist, int &checkCount, int maxCheck,
-                     float epsError, Heap<BranchSt> *heap, VisitBitset &checked);
+  void searchLevel(ResultSet &result, const float *vec, NodePtr node, float mindist, int &checkCount, int maxCheck,
+                   float epsError, Heap<BranchSt> *heap, VisitBitset &checked);
 };
-
+}
 #endif // KD_TREE_HPP
 

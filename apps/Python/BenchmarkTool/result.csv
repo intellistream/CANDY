@@ -1,0 +1,5 @@
+key,value,type
+95%latency(Del),70871.000000,Double
+95%latency(Insert),19961.000000,Double
+QPS,1383.680908,Double
+recall,1.000000,Double

@@ -67,6 +67,10 @@ add_custom_command(TARGET pycandy
         COMMENT "Installing pycandy shared library at ${PYTHON_SITE_PACKAGES}"
 )
 
+pybind11_add_module(PyCANDYAlgos algos_pybind.cpp)
+find_library(TORCH_PYTHON_LIBRARY torch_python PATH "${TORCH_INSTALL_PREFIX}/lib")
+target_link_libraries(PyCANDYAlgos PUBLIC ${LIBRARIES} CANDY ${TORCH_PYTHON_LIBRARY})
+set_property(TARGET PyCANDYAlgos  PROPERTY CXX_STANDARD 20)
 ## Add a post-build custom command to automatically run `make install`
 #add_custom_command(TARGET pycandy
 #        POST_BUILD

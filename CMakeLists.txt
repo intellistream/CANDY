@@ -33,7 +33,8 @@ message(STATUS "CANDY_SOURCE_FILES: ${CANDY_SOURCE_FILES}")
 get_headers(CANDY_HEADER_FILES)
 
 # Create the CANDY library from all the source files
-add_library(CANDY SHARED ${CANDY_SOURCE_FILES} ${CANDY_HEADER_FILES})
+add_library(CANDY SHARED ${CANDY_SOURCE_FILES} ${CANDY_HEADER_FILES}
+        include/DataLoader/DataLoaderTable.hpp)
 # Add the include directory with absolute path
 target_include_directories(CANDY PUBLIC ${PROJECT_SOURCE_DIR}/include) # Include the "include/" directory as a system path
 target_include_directories(CANDY PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
@@ -97,3 +98,20 @@ add_custom_command(TARGET CANDY
         COMMAND ${CMAKE_COMMAND} --build . --target install
         COMMENT "Installing CANDY to Python user site-packages"
 )
+option(ENABLE_AUTO_GLOBAL_PYTHON_PKG
+        "Enable automatically add and update global packages to python"
+        ON
+)
+if (ENABLE_AUTO_GLOBAL_PYTHON_PKG)
+add_custom_command(TARGET CANDY
+POST_BUILD
+COMMAND  pip uninstall PyCANDYFrameWork -y
+COMMENT "Clear previous version"
+)
+# Add a post-build custom command to automatically run `make install`
+add_custom_command(TARGET CANDY
+        POST_BUILD
+        COMMAND cd ${PROJECT_SOURCE_DIR} && python3 setup.py install --user
+        COMMENT "Installing new compiled PyCANDYFramework python packages"
+)
+endif ()
