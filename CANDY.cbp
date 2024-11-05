@@ -167,7 +167,7 @@
 		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/Algorithms/hybrid_search.hpp">
 			<Option target="CANDY"/>
 		</Unit>
-		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/Algorithms/knn_search.hpp">
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/Algorithms/KNNSearch.hpp">
 			<Option target="CANDY"/>
 		</Unit>
 		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/Algorithms/parallel_helpers.hpp">
@@ -245,7 +245,7 @@
 		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/Utils/error_handling.hpp">
 			<Option target="CANDY"/>
 		</Unit>
-		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/Utils/logging.hpp">
+		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/Utils/IntelliLog.hpp">
 			<Option target="CANDY"/>
 		</Unit>
 		<Unit filename="/mnt/d/Programs/CLionProjects/CANDY/include/Utils/timing.hpp">

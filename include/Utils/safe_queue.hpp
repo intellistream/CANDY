@@ -13,43 +13,41 @@
 
 template <typename T>
 class SafeQueue {
-private:
-	std::queue<T> m_queue;
-	std::mutex m_mutex;
+ private:
+  std::queue<T> m_queue;
+  std::mutex m_mutex;
 
-public:
-	SafeQueue() {
-	}
+ public:
+  SafeQueue() {}
 
-	~SafeQueue() {
-	}
+  ~SafeQueue() {}
 
-	bool empty() {
-		std::unique_lock<std::mutex> lock(m_mutex);
-		return m_queue.empty();
-	}
+  bool empty() {
+    std::unique_lock<std::mutex> lock(m_mutex);
+    return m_queue.empty();
+  }
 
-	int size() {
-		std::unique_lock<std::mutex> lock(m_mutex);
-		return m_queue.size();
-	}
+  int size() {
+    std::unique_lock<std::mutex> lock(m_mutex);
+    return m_queue.size();
+  }
 
-	void enqueue(T &t) {
-		std::unique_lock<std::mutex> lock(m_mutex);
-		m_queue.push(t);
-	}
+  void enqueue(T& t) {
+    std::unique_lock<std::mutex> lock(m_mutex);
+    m_queue.push(t);
+  }
 
-	bool dequeue(T &t) {
-		std::unique_lock<std::mutex> lock(m_mutex);
+  bool dequeue(T& t) {
+    std::unique_lock<std::mutex> lock(m_mutex);
 
-		if (m_queue.empty()) {
-				return false;
-		}
-		t = std::move(m_queue.front());
+    if (m_queue.empty()) {
+      return false;
+    }
+    t = std::move(m_queue.front());
 
-		m_queue.pop();
-		return true;
-	}
+    m_queue.pop();
+    return true;
+  }
 };
 
-#endif //INTELLISTREAM_SRC_UTILS_SAFE_QUEUE_HPP_
+#endif  //INTELLISTREAM_SRC_UTILS_SAFE_QUEUE_HPP_

@@ -7,8 +7,6 @@
 #ifndef INTELLISTREAM_SRC_IO_WAL_HPP_
 #define INTELLISTREAM_SRC_IO_WAL_HPP_
 
-class wal {
+class wal {};
 
-};
-
-#endif //INTELLISTREAM_SRC_IO_WAL_HPP_
+#endif  //INTELLISTREAM_SRC_IO_WAL_HPP_

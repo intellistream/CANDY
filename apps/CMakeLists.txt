@@ -1,3 +1,1 @@
-add_subdirectory(BenchmarkTool)
-add_subdirectory(OptimizerTool)
-add_subdirectory(QueryTool)
+add_subdirectory(CPlusPlus)

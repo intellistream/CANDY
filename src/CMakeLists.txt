@@ -1,6 +1,7 @@
 add_subdirectory(Algorithms)
 add_subdirectory(API)
 add_subdirectory(Core)
+add_subdirectory(DataLoader)
 add_subdirectory(GPU)
 add_subdirectory(IO)
 add_subdirectory(Optimization)

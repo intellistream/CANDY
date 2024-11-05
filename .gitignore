@@ -37,7 +37,7 @@
 
 *.pyc
 
-/build
+/build*
 /cmake-build-debug/
 /cmake-build-debug/_deps/
 /cmake-build-release/
@@ -53,5 +53,14 @@ ThirdParty/libtorch/
 commit.sh
 commit_info
 
+/PyCANDYFramework.egg-info/
+
+/apps/CPlusPlus/datasets/fvecs/
+/apps/CPlusPlus/datasets/hdf5/
+/dist/
 /apps/BenchmarkTool/datasets/fvecs/
 /apps/BenchmarkTool/datasets/hdf5/
+/.cache
+
+
+/candy.egg-info

@@ -7,8 +7,6 @@
 #ifndef INTELLISTREAM_SRC_IO_S3_STORAGE_HPP_
 #define INTELLISTREAM_SRC_IO_S3_STORAGE_HPP_
 
-class s3_storage {
+class s3_storage {};
 
-};
-
-#endif //INTELLISTREAM_SRC_IO_S3_STORAGE_HPP_
+#endif  //INTELLISTREAM_SRC_IO_S3_STORAGE_HPP_
