@@ -5,6 +5,7 @@ import sys
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
 import glob
+import torch
 
 class CMakeExtension(Extension):
     def __init__(self, name, sourcedir=""):
@@ -29,16 +30,10 @@ class CMakeBuild(build_ext):
             self.build_extension(ext)
 
     def build_extension(self, ext):
+        build_path = "build"
         extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
-        os.system("python3 -c 'import torch;print(torch.utils.cmake_prefix_path)' >> 1.txt")
-        with open('1.txt', 'r') as file:
-            torchCmake = file.read().rstrip('\n')
-        os.system('rm 1.txt')
-        os.system('nproc >> 1.txt')
-        with open('1.txt', 'r') as file:
-            threads = file.read().rstrip('\n')
-        os.system('rm 1.txt')
-        print(threads) 
+        torchCmake = torch.utils.cmake_prefix_path
+        threads = str(os.cpu_count())
         cmake_args = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
                       '-DPYTHON_EXECUTABLE=' + sys.executable,
                     '-DCMAKE_PREFIX_PATH='+torchCmake,
@@ -46,26 +41,26 @@ class CMakeBuild(build_ext):
         
         cfg = 'Debug' if self.debug else 'Release'
         cmake_args += ['-DCMAKE_BUILD_TYPE=' + cfg]
-
         build_args = ['--config', cfg]
         build_args +=  ['--', '-j'+threads]
-        if not os.path.exists(self.build_temp):
-            os.makedirs(self.build_temp)
-        subprocess.run(['cmake', ext.sourcedir] + cmake_args, cwd=self.build_temp,check=True)
-        subprocess.run(['cmake', '--build', '.'] + build_args, cwd=self.build_temp,check=True)
+        subprocess.run(['cmake', ext.sourcedir] + cmake_args,cwd= build_path,check=True)
+        subprocess.run(['cmake', '--build', '.'] + build_args,cwd= build_path,check=True)
+        # cwd
+
         # Now copy all *.so files from the build directory to the final installation directory
-        so_files = glob.glob(os.path.join(self.build_temp, '*.so'))
+        so_files = glob.glob(os.path.join(build_path, '*.so'))
         for file in so_files:
             shutil.copy(file, extdir)
-setup(
-    name='PyCANDYFramework',
-    version='0.0.0',
-    author='Your Name',
-    description='A simple python version of CANDY Framework built with Pybind11 and CMake',
-    long_description='',
-    ext_modules=[CMakeExtension('.')],
-    cmdclass={
-        'build_ext': CMakeBuild,
-    },
-    zip_safe=False,
-)
+if  __name__ == "__main__":
+    setup(
+        name='PyCANDYFramework',
+        version='0.0.0',
+        author='IntelliStream',
+        description='A simple python version of CANDY Framework built with Pybind11 and CMake',
+        long_description='',
+        ext_modules=[CMakeExtension('.')],
+        cmdclass={
+            'build_ext': CMakeBuild,
+        },
+        zip_safe=False,
+    )

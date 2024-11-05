@@ -37,7 +37,7 @@
 
 *.pyc
 
-/build
+/build*
 /cmake-build-debug/
 /cmake-build-debug/_deps/
 /cmake-build-release/
@@ -58,3 +58,9 @@ commit_info
 /apps/CPlusPlus/datasets/fvecs/
 /apps/CPlusPlus/datasets/hdf5/
 /dist/
+/apps/BenchmarkTool/datasets/fvecs/
+/apps/BenchmarkTool/datasets/hdf5/
+/.cache
+
+
+/candy.egg-info

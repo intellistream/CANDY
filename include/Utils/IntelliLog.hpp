@@ -1,3 +1,4 @@
+#pragma GCC diagnostic ignored "-Wunused-function"
 /*
  * Copyright (C) 2024 by the INTELLI team
  * Created by: Shuhao Zhang
