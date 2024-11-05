@@ -74,7 +74,7 @@ torch::Tensor CANDY_ALGO::FVECSDataLoader::tensorFromFVECS(std::string fname) {
   return ru;
 }
 
-bool CANDY::FVECSDataLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
+bool CANDY_ALGO::FVECSDataLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
   assert(cfg);
   vecDim = cfg->tryI64("vecDim", 128, true);
   vecVolume = cfg->tryI64("vecVolume", 10000, true);
