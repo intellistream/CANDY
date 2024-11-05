@@ -5,8 +5,8 @@
  */
 #include <DataLoader/FVECSDataLoader.h>
 
-bool CANDY::FVECSDataLoader::generateData(std::string fname) {
-  auto dataTensor = CANDY::FVECSDataLoader::tensorFromFVECS(fname);
+bool CANDY_ALGO::FVECSDataLoader::generateData(std::string fname) {
+  auto dataTensor = CANDY_ALGO::FVECSDataLoader::tensorFromFVECS(fname);
   if (dataTensor.size(0) == 0) {
     return false;
   }
@@ -22,13 +22,13 @@ bool CANDY::FVECSDataLoader::generateData(std::string fname) {
   return true;
 }
 
-bool CANDY::FVECSDataLoader::generateQuery(std::string fname) {
+bool CANDY_ALGO::FVECSDataLoader::generateQuery(std::string fname) {
   if (!useSeparateQuery) {
     B = INTELLI::TensorOP::rowSampling(A, querySize);
     B = (1 - queryNoiseFraction) * B + queryNoiseFraction * torch::rand({querySize, vecDim});
     return true;
   } else {
-    auto queryTensor = CANDY::FVECSDataLoader::tensorFromFVECS(fname);
+    auto queryTensor = CANDY_ALGO::FVECSDataLoader::tensorFromFVECS(fname);
     if (queryTensor.size(0) == 0) {
       return false;
     }
@@ -46,7 +46,7 @@ bool CANDY::FVECSDataLoader::generateQuery(std::string fname) {
   return false;
 }
 
-torch::Tensor CANDY::FVECSDataLoader::tensorFromFVECS(std::string fname) {
+torch::Tensor CANDY_ALGO::FVECSDataLoader::tensorFromFVECS(std::string fname) {
   torch::Tensor ru;
   unsigned num, dim;
   std::ifstream in(fname, std::ios::binary);    //以二进制的方式打开文件
@@ -113,10 +113,10 @@ bool CANDY::FVECSDataLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
   return true;
 }
 
-torch::Tensor CANDY::FVECSDataLoader::getData() {
+torch::Tensor CANDY_ALGO::FVECSDataLoader::getData() {
   return A;
 }
 
-torch::Tensor CANDY::FVECSDataLoader::getQuery() {
+torch::Tensor CANDY_ALGO::FVECSDataLoader::getQuery() {
   return B;
 }
