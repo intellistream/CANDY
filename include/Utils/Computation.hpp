@@ -11,9 +11,9 @@
 #include <vector>
 
 namespace CANDY {
-    inline float computeL2Distance(const float *a, const float *b, size_t size) {
-        return std::inner_product(a, a + size, b, 0.0f, std::plus<float>(),
-                                  [](float x, float y) { return (x - y) * (x - y); });
-    }
+inline float computeL2Distance(const float* a, const float* b, size_t size) {
+  return std::inner_product(a, a + size, b, 0.0f, std::plus<float>(),
+                            [](float x, float y) { return (x - y) * (x - y); });
 }
-#endif // COMPUTATION_H
+}  // namespace CANDY
+#endif  // COMPUTATION_H

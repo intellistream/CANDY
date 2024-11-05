@@ -13,14 +13,14 @@
 namespace CANDY_ALGO {
 class KDTree : public ANNSBase {
  public:
-  typedef Node *NodePtr;
+  typedef Node* NodePtr;
   typedef BranchStruct<NodePtr> BranchSt;
-  typedef BranchSt *Branch;
+  typedef BranchSt* Branch;
 
  private:
   uint64_t num_trees;
-  float *mean;
-  float *var;
+  float* mean;
+  float* var;
   uint64_t ntotal;
   size_t vecDim;
 
@@ -43,43 +43,46 @@ class KDTree : public ANNSBase {
 
   ~KDTree();
 
-  bool insertTensor(const torch::Tensor &t);
+  bool insertTensor(const torch::Tensor& t);
 
-  bool loadInitialTensor(const torch::Tensor &t);
+  bool loadInitialTensor(const torch::Tensor& t);
 
-  bool deleteTensor(const torch::Tensor &t, int64_t k = 1);
+  bool deleteTensor(const torch::Tensor& t, int64_t k = 1);
 
-  bool reviseTensor(const torch::Tensor &t, const torch::Tensor &w);
+  bool reviseTensor(const torch::Tensor& t, const torch::Tensor& w);
 
-  std::vector<idx_t> searchIndex(const torch::Tensor &q, int64_t k);
+  std::vector<idx_t> searchIndex(const torch::Tensor& q, int64_t k);
 
-  std::vector<torch::Tensor> searchTensor(const torch::Tensor &q, int64_t k);
+  std::vector<torch::Tensor> searchTensor(const torch::Tensor& q, int64_t k);
 
   torch::Tensor rawData();
 
  private:
-  void addPoints(torch::Tensor &t);
+  void addPoints(torch::Tensor& t);
 
-  int knnSearch(torch::Tensor &q, int64_t *idx, float *distances, int64_t aknn);
+  int knnSearch(torch::Tensor& q, int64_t* idx, float* distances, int64_t aknn);
 
-  NodePtr divideTree(int64_t *idx, int count);
+  NodePtr divideTree(int64_t* idx, int count);
 
-  void meanSplit(int64_t *ind, int count, int64_t &index, int64_t &cutfeat, float &cutval);
+  void meanSplit(int64_t* ind, int count, int64_t& index, int64_t& cutfeat,
+                 float& cutval);
 
-  int selectDivision(float *v);
+  int selectDivision(float* v);
 
-  void planeSplit(int64_t *ind, int count, int64_t cutfeat, float cutval, int &lim1, int &lim2);
+  void planeSplit(int64_t* ind, int count, int64_t cutfeat, float cutval,
+                  int& lim1, int& lim2);
 
   void buildTree();
 
   void addPointToTree(NodePtr node, int64_t idx);
 
-  void get_neighbors(ResultSet &result, const float *vec, int maxCheck, float epsError);
+  void get_neighbors(ResultSet& result, const float* vec, int maxCheck,
+                     float epsError);
 
-  void searchLevel(ResultSet &result, const float *vec, NodePtr node, float mindist, int &checkCount, int maxCheck,
-                   float epsError, Heap<BranchSt> *heap, VisitBitset &checked);
+  void searchLevel(ResultSet& result, const float* vec, NodePtr node,
+                   float mindist, int& checkCount, int maxCheck, float epsError,
+                   Heap<BranchSt>* heap, VisitBitset& checked);
 };
-}
+}  // namespace CANDY_ALGO
 
-#endif // KD_TREE_HPP
-
+#endif  // KD_TREE_HPP

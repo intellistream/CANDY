@@ -3,13 +3,13 @@
  * Created on: 2024/10/14
  * Description: [Provide description here]
  */
+#include <torch/torch.h>
 #include <Algorithms/KDTree/KDTree.hpp>
 #include <Utils/Computation.hpp>
-#include <torch/torch.h>
-#include <vector>
+#include <Utils/TensorOP.hpp>
 #include <algorithm>
 #include <random>
-#include <Utils/TensorOP.hpp>
+#include <vector>
 
 #include "Utils/Param.hpp"
 
@@ -26,14 +26,20 @@ bool KDTree::setParams(CANDY::ParamPtr param) {
   num_trees = param->num_trees;
   printf("Best param for KdTree\n num_trees: %ld\n", num_trees);
   return true;
-
 }
 
-KDTree::KDTree(size_t dimensions) : vecDim(dimensions), mean(nullptr), var(nullptr), lastNNZ(-1), expandStep(100),
-                                    eps(0.0), checks(32), ntotal(0) {
+KDTree::KDTree(size_t dimensions)
+    : vecDim(dimensions),
+      mean(nullptr),
+      var(nullptr),
+      lastNNZ(-1),
+      expandStep(100),
+      eps(0.0),
+      checks(32),
+      ntotal(0) {
 
-  vecDim = 768; // default
-  num_trees = 4; // default
+  vecDim = 768;   // default
+  num_trees = 4;  // default
   dbTensor = torch::zeros({0, static_cast<int64_t>(vecDim)});
   tree_roots = std::vector<KDTree::NodePtr>(num_trees, nullptr);
 }
@@ -47,32 +53,32 @@ KDTree::~KDTree() {
   delete[] var;
 }
 
-bool KDTree::insertTensor(const torch::Tensor &t) {
-  addPoints(const_cast<torch::Tensor &>(t));
+bool KDTree::insertTensor(const torch::Tensor& t) {
+  addPoints(const_cast<torch::Tensor&>(t));
   return true;
 }
 
-bool KDTree::loadInitialTensor(const torch::Tensor &t) {
+bool KDTree::loadInitialTensor(const torch::Tensor& t) {
   dbTensor = t;
   buildTree();
   return true;
 }
 
-bool KDTree::deleteTensor(const torch::Tensor &t, int64_t k) {
+bool KDTree::deleteTensor(const torch::Tensor& t, int64_t k) {
   // Implementation for deleting tensor
   return true;
 }
 
-bool KDTree::reviseTensor(const torch::Tensor &t, const torch::Tensor &w) {
+bool KDTree::reviseTensor(const torch::Tensor& t, const torch::Tensor& w) {
   // Implementation for revising tensor
   return true;
 }
 
-std::vector<idx_t> KDTree::searchIndex(const torch::Tensor &q, int64_t k) {
+std::vector<idx_t> KDTree::searchIndex(const torch::Tensor& q, int64_t k) {
   int64_t query_size = q.size(0);
   std::vector<idx_t> results(query_size * k);
-  float *distances = new float[query_size * k];
-  knnSearch(const_cast<torch::Tensor &>(q), results.data(), distances, k);
+  float* distances = new float[query_size * k];
+  knnSearch(const_cast<torch::Tensor&>(q), results.data(), distances, k);
   delete[] distances;
   return results;
 }
@@ -81,12 +87,13 @@ torch::Tensor KDTree::rawData() {
   return dbTensor;
 }
 
-std::vector<torch::Tensor> KDTree::searchTensor(const torch::Tensor &q, int64_t k) {
+std::vector<torch::Tensor> KDTree::searchTensor(const torch::Tensor& q,
+                                                int64_t k) {
   int64_t query_size = q.size(0);
   std::vector<torch::Tensor> results(query_size);
-  int64_t *indices = new int64_t[query_size * k];
-  float *distances = new float[query_size * k];
-  knnSearch(const_cast<torch::Tensor &>(q), indices, distances, k);
+  int64_t* indices = new int64_t[query_size * k];
+  float* distances = new float[query_size * k];
+  knnSearch(const_cast<torch::Tensor&>(q), indices, distances, k);
 
   for (int64_t i = 0; i < query_size; ++i) {
     results[i] = torch::from_blob(indices + i * k, {k}, torch::kInt64).clone();
@@ -96,8 +103,9 @@ std::vector<torch::Tensor> KDTree::searchTensor(const torch::Tensor &q, int64_t 
   return results;
 }
 
-void KDTree::addPoints(torch::Tensor &t) {
-  bool success = INTELLI::TensorOP::appendRowsBufferMode(&dbTensor, &t, &lastNNZ, expandStep);
+void KDTree::addPoints(torch::Tensor& t) {
+  bool success = INTELLI::TensorOP::appendRowsBufferMode(&dbTensor, &t,
+                                                         &lastNNZ, expandStep);
   assert(success);
   ntotal += t.size(0);
   if ((ntotal - t.size(0)) * 2 < ntotal) {
@@ -111,7 +119,8 @@ void KDTree::addPoints(torch::Tensor &t) {
   }
 }
 
-int KDTree::knnSearch(torch::Tensor &q, int64_t *idx, float *distances, int64_t aknn) {
+int KDTree::knnSearch(torch::Tensor& q, int64_t* idx, float* distances,
+                      int64_t aknn) {
   int count = 0;
   for (int64_t i = 0; i < q.size(0); i++) {
     ResultSet resultSet = ResultSet(aknn);
@@ -124,7 +133,7 @@ int KDTree::knnSearch(torch::Tensor &q, int64_t *idx, float *distances, int64_t 
   return count;
 }
 
-KDTree::NodePtr KDTree::divideTree(int64_t *ind, int count) {
+KDTree::NodePtr KDTree::divideTree(int64_t* ind, int count) {
   NodePtr node = new Node();
 
   if (count == 1) {
@@ -148,12 +157,14 @@ KDTree::NodePtr KDTree::divideTree(int64_t *ind, int count) {
   return node;
 }
 
-void KDTree::meanSplit(int64_t *ind, int count, int64_t &index, int64_t &cutfeat, float &cutval) {
+void KDTree::meanSplit(int64_t* ind, int count, int64_t& index,
+                       int64_t& cutfeat, float& cutval) {
   memset(mean, 0, vecDim * sizeof(float));
   memset(var, 0, vecDim * sizeof(float));
   int cnt = std::min(KDTree::SAMPLE_MEAN, count);
   for (int j = 0; j < cnt; j++) {
-    float *v = dbTensor.slice(0, ind[j], ind[j + 1]).contiguous().data_ptr<float>();
+    float* v =
+        dbTensor.slice(0, ind[j], ind[j + 1]).contiguous().data_ptr<float>();
     for (int64_t k = 0; k < vecDim; k++) {
       mean[k] += v[k];
     }
@@ -163,7 +174,8 @@ void KDTree::meanSplit(int64_t *ind, int count, int64_t &index, int64_t &cutfeat
     mean[k] *= div_factor;
   }
   for (int j = 0; j < cnt; j++) {
-    float *v = dbTensor.slice(0, ind[j], ind[j + 1]).contiguous().data_ptr<float>();
+    float* v =
+        dbTensor.slice(0, ind[j], ind[j + 1]).contiguous().data_ptr<float>();
     for (int64_t k = 0; k < vecDim; k++) {
       auto dist = v[k] - mean[k];
       var[k] = dist * dist;
@@ -187,7 +199,7 @@ void KDTree::meanSplit(int64_t *ind, int count, int64_t &index, int64_t &cutfeat
   }
 }
 
-int KDTree::selectDivision(float *v) {
+int KDTree::selectDivision(float* v) {
   int num = 0;
   size_t topind[KDTree::RAND_DIM];
   for (int64_t i = 0; i < vecDim; i++) {
@@ -206,18 +218,26 @@ int KDTree::selectDivision(float *v) {
     }
   }
   int rand = std::rand() % (num);
-  return (int) (topind[rand]);
+  return (int)(topind[rand]);
 }
 
-void KDTree::planeSplit(int64_t *ind, int count, int64_t cutfeat, float cutval, int &lim1, int &lim2) {
+void KDTree::planeSplit(int64_t* ind, int count, int64_t cutfeat, float cutval,
+                        int& lim1, int& lim2) {
   int left = 0;
   int right = count - 1;
   for (;;) {
-    auto left_data = dbTensor.slice(0, ind[left], ind[left] + 1).contiguous().data_ptr<float>();
-    auto right_data = dbTensor.slice(0, ind[right], ind[right] + 1).contiguous().data_ptr<float>();
-    while (left <= right && left_data[cutfeat] < cutval) ++left;
-    while (left <= right && right_data[cutfeat] >= cutval) --right;
-    if (left > right) break;
+    auto left_data = dbTensor.slice(0, ind[left], ind[left] + 1)
+                         .contiguous()
+                         .data_ptr<float>();
+    auto right_data = dbTensor.slice(0, ind[right], ind[right] + 1)
+                          .contiguous()
+                          .data_ptr<float>();
+    while (left <= right && left_data[cutfeat] < cutval)
+      ++left;
+    while (left <= right && right_data[cutfeat] >= cutval)
+      --right;
+    if (left > right)
+      break;
     std::swap(ind[left], ind[right]);
     ++left;
     --right;
@@ -225,11 +245,18 @@ void KDTree::planeSplit(int64_t *ind, int count, int64_t cutfeat, float cutval, 
   lim1 = left;
   right = count - 1;
   for (;;) {
-    auto left_data = dbTensor.slice(0, ind[left], ind[left] + 1).contiguous().data_ptr<float>();
-    auto right_data = dbTensor.slice(0, ind[right], ind[right] + 1).contiguous().data_ptr<float>();
-    while (left <= right && left_data[cutfeat] < cutval) ++left;
-    while (left <= right && right_data[cutfeat] >= cutval) --right;
-    if (left > right) break;
+    auto left_data = dbTensor.slice(0, ind[left], ind[left] + 1)
+                         .contiguous()
+                         .data_ptr<float>();
+    auto right_data = dbTensor.slice(0, ind[right], ind[right] + 1)
+                          .contiguous()
+                          .data_ptr<float>();
+    while (left <= right && left_data[cutfeat] < cutval)
+      ++left;
+    while (left <= right && right_data[cutfeat] >= cutval)
+      --right;
+    if (left > right)
+      break;
     std::swap(ind[left], ind[right]);
     ++left;
     --right;
@@ -240,7 +267,7 @@ void KDTree::planeSplit(int64_t *ind, int count, int64_t cutfeat, float cutval, 
 
 void KDTree::buildTree() {
   // Free existing trees
-  for (auto &root : tree_roots) {
+  for (auto& root : tree_roots) {
     if (root != nullptr) {
       delete root;
       root = nullptr;
@@ -266,7 +293,8 @@ void KDTree::buildTree() {
 }
 
 void KDTree::addPointToTree(NodePtr node, int64_t idx) {
-  auto new_data = dbTensor.slice(0, idx, idx + 1).contiguous().data_ptr<float>();
+  auto new_data =
+      dbTensor.slice(0, idx, idx + 1).contiguous().data_ptr<float>();
   if (node->child1 == nullptr && node->child2 == nullptr) {
     auto leaf_data = node->data.contiguous().data_ptr<float>();
     float max_span = 0;
@@ -303,11 +331,12 @@ void KDTree::addPointToTree(NodePtr node, int64_t idx) {
       addPointToTree(node->child2, idx);
     }
   }
-
 }
 
-void KDTree::searchLevel(ResultSet &result, const float *vec, NodePtr node, float mindist, int &checkCount,
-                         int maxCheck, float epsError, Heap<BranchSt> *heap, VisitBitset &checked) {
+void KDTree::searchLevel(ResultSet& result, const float* vec, NodePtr node,
+                         float mindist, int& checkCount, int maxCheck,
+                         float epsError, Heap<BranchSt>* heap,
+                         VisitBitset& checked) {
 
   if (result.worstDist() < mindist) {
     return;
@@ -337,21 +366,24 @@ void KDTree::searchLevel(ResultSet &result, const float *vec, NodePtr node, floa
   }
 
   // recursively search to next level down
-  searchLevel(result, vec, bestChild, mindist, checkCount, maxCheck, epsError, heap, checked);
+  searchLevel(result, vec, bestChild, mindist, checkCount, maxCheck, epsError,
+              heap, checked);
 }
 
-void KDTree::get_neighbors(ResultSet &result, const float *vec, int maxCheck, float epsError) {
+void KDTree::get_neighbors(ResultSet& result, const float* vec, int maxCheck,
+                           float epsError) {
   BranchSt branch;
   int checkCount = 0;
   Heap<BranchSt> heap;
   VisitBitset checked(ntotal);
   for (uint64_t i = 0; i < num_trees; i++) {
-    searchLevel(result, vec, tree_roots[i], 0, checkCount, maxCheck, epsError, &heap, checked);
+    searchLevel(result, vec, tree_roots[i], 0, checkCount, maxCheck, epsError,
+                &heap, checked);
   }
 
   while (heap.pop(branch) && (checkCount < maxCheck || !result.isFull())) {
-    searchLevel(result, vec, branch.node, 0, checkCount, maxCheck, epsError, &heap, checked);
+    searchLevel(result, vec, branch.node, 0, checkCount, maxCheck, epsError,
+                &heap, checked);
   }
 }
-}
-
+}  // namespace CANDY_ALGO

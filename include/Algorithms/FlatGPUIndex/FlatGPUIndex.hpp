@@ -5,14 +5,16 @@
 
 #ifndef CANDY_ALGO_INCLUDE_CANDY_ALGO_FlatGPUIndex_H_
 #define CANDY_ALGO_INCLUDE_CANDY_ALGO_FlatGPUIndex_H_
-#include "Utils/ConfigMap.hpp"
 #include <memory>
 #include <vector>
+#include "Utils/ConfigMap.hpp"
 //#include <Utils/IntelliTensorOP.hpp>
 #include "Algorithms/ANNSBase.hpp"
 #include "disk_mem_buffer.h"
-namespace  CANDY_ALGO {
+
+namespace CANDY_ALGO {
 class FlatGPUIndex;
+
 /**
  * @ingroup  CANDY_ALGO_lib_bottom The main body and interfaces of library function
  * @{
@@ -43,7 +45,8 @@ class FlatGPUIndex : public ANNSBase {
   int64_t cudaDevice = -1;
 
   // Main function to process batches and find top_k closest vectors
-  std::vector<int64_t> findTopKClosest(const torch::Tensor &query, int64_t top_k, int64_t batch_size);
+  std::vector<int64_t> findTopKClosest(const torch::Tensor& query,
+                                       int64_t top_k, int64_t batch_size);
   // torch::Tensor myMMInline(torch::Tensor &a, torch::Tensor &b, int64_t ss = 10);
   /**
   * @brief return a vector of tensors according to some index
@@ -51,7 +54,8 @@ class FlatGPUIndex : public ANNSBase {
   * @param k the returned neighbors, i.e., will be the number of rows of each returned tensor
   * @return a vector of tensors, each tensor represent KNN results of one query in idx
   */
-  virtual std::vector<torch::Tensor> getTensorByStdIdx(std::vector<int64_t> &idx, int64_t k);
+  virtual std::vector<torch::Tensor> getTensorByStdIdx(
+      std::vector<int64_t>& idx, int64_t k);
   /**
    * @brief the distance function pointer member
    * @note will select largest distance during the following sorting, please convert if your distance is 'minimal'
@@ -61,7 +65,8 @@ class FlatGPUIndex : public ANNSBase {
    * @param idx the pointer to index
    * @return The distance tensor, must sized [q*n] and remain in cpu
    */
-  torch::Tensor (*distanceFunc)(torch::Tensor db, torch::Tensor query, int64_t cudaDev, FlatGPUIndex *idx);
+  torch::Tensor (*distanceFunc)(torch::Tensor db, torch::Tensor query,
+                                int64_t cudaDev, FlatGPUIndex* idx);
   /**
    * @brief the distance function of inner product
    * @param db The data base tensor, sized [n*vecDim] to be scanned
@@ -70,7 +75,8 @@ class FlatGPUIndex : public ANNSBase {
    * @param idx the pointer to index
    * @return The distance tensor, must sized [q*n], will in GPU if cuda is valid
    */
-  static torch::Tensor distanceIP(torch::Tensor db, torch::Tensor query, int64_t cudaDev, FlatGPUIndex *idx);
+  static torch::Tensor distanceIP(torch::Tensor db, torch::Tensor query,
+                                  int64_t cudaDev, FlatGPUIndex* idx);
   /**
    * @brief the distance function of L2
    * @param db The data base tensor, sized [n*vecDim] to be scanned
@@ -79,12 +85,11 @@ class FlatGPUIndex : public ANNSBase {
    * @param idx the pointer to index
    * @return The distance tensor, must sized [q*n], will in GPU if cuda is valid
    */
-  static torch::Tensor distanceL2(torch::Tensor db, torch::Tensor query, int64_t cudaDev, FlatGPUIndex *idx);
+  static torch::Tensor distanceL2(torch::Tensor db, torch::Tensor query,
+                                  int64_t cudaDev, FlatGPUIndex* idx);
   // std::vector<faiss::idx_t> knnInline(torch::Tensor &query, int64_t k, int64_t distanceBatch = -1);
  public:
-  FlatGPUIndex() {
-
-  }
+  FlatGPUIndex() {}
 
   ~FlatGPUIndex() override = default;
   int64_t gpuComputingUs = 0;
@@ -92,22 +97,21 @@ class FlatGPUIndex : public ANNSBase {
 
   virtual bool setConfig(INTELLI::ConfigMapPtr cfg) override;
 
+  virtual bool insertTensor(const torch::Tensor& t) override;
 
-  virtual bool insertTensor(const torch::Tensor &t) override;
+  virtual bool deleteTensor(torch::Tensor& t, int64_t k = 1) override;
 
-  virtual bool deleteTensor(torch::Tensor &t, int64_t k = 1) override;
+  virtual bool reviseTensor(torch::Tensor& t, torch::Tensor& w) override;
 
-  virtual bool reviseTensor(torch::Tensor &t, torch::Tensor &w) override;
-
-  virtual std::vector<torch::Tensor> searchTensor(const torch::Tensor &q, int64_t k) override;
+  virtual std::vector<torch::Tensor> searchTensor(const torch::Tensor& q,
+                                                  int64_t k) override;
 
   /**
    * @brief return the size of ingested tensors
    * @return
    */
-  virtual int64_t size() {
-    return dmBuffer.size();
-  }
+  virtual int64_t size() { return dmBuffer.size(); }
+
   /**
    * @brief insert a string object
    * @note This is majorly an online function
@@ -159,8 +163,9 @@ typedef std::shared_ptr<class CANDY_ALGO::FlatGPUIndex> FlatGPUIndexPtr;
  * @brief (Macro) To creat a new @ref  FlatGPUIndex shared pointer.
  */
 #define newFlatGPUIndex std::make_shared<CANDY_ALGO::FlatGPUIndex>
-}
+}  // namespace CANDY_ALGO
+
 /**
  * @}
  */
-#endif //INTELLISTREAM_INCLUDE_CPPALGOS_ABSTRACTCPPALGO_H_
+#endif  //INTELLISTREAM_INCLUDE_CPPALGOS_ABSTRACTCPPALGO_H_

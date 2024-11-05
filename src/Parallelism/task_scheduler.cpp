@@ -6,18 +6,20 @@
  */
 #include <Parallelism/task_scheduler.hpp>
 
+#include <iostream>
 #include <thread>
 #include <vector>
-#include <iostream>
 
 // Concrete implementation of TaskScheduler for multi-threaded execution
 class ThreadPoolTaskScheduler : public TaskScheduler {
  public:
-  ThreadPoolTaskScheduler(size_t num_threads = std::thread::hardware_concurrency())
+  ThreadPoolTaskScheduler(
+      size_t num_threads = std::thread::hardware_concurrency())
       : num_threads_(num_threads) {}
 
   // Implementation of parallel_for using multiple threads
-  void parallel_for(size_t start, size_t end, const std::function<void(size_t)> &func) const override {
+  void parallel_for(size_t start, size_t end,
+                    const std::function<void(size_t)>& func) const override {
     size_t range = end - start;
     size_t chunk_size = (range + num_threads_ - 1) / num_threads_;
 
@@ -37,7 +39,7 @@ class ThreadPoolTaskScheduler : public TaskScheduler {
       });
     }
 
-    for (auto &thread : threads) {
+    for (auto& thread : threads) {
       if (thread.joinable()) {
         thread.join();
       }

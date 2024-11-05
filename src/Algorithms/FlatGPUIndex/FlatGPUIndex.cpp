@@ -8,28 +8,30 @@
 
 #include <Utils/UtilityFunctions.h>
 
-#include <Algorithms/FlatGPUIndex/FlatGPUIndex.hpp>
-#include "Utils/UtilityFunctions.h"
-#include <time.h>
-#include <chrono>
 #include <assert.h>
+#include <time.h>
+#include <Algorithms/FlatGPUIndex/FlatGPUIndex.hpp>
+#include <chrono>
+#include "Utils/UtilityFunctions.h"
 
-#include <vector>
 #include <algorithm>
 #include <utility>
+#include <vector>
+
 namespace CANDY_ALGO {
 bool CANDY_ALGO::FlatGPUIndex::setConfig(INTELLI::ConfigMapPtr cfg) {
   distanceFunc = distanceIP;
   INTELLI_INFO("I am able to use GPU");
   std::string metricType = cfg->tryString("metricType", "L2", true);
   vecDim = cfg->tryI64("vecDim", 768, true);
-  int64_t  vecVolume = cfg->tryI64("vecVolume", 1000, true);
-  memBufferSize = cfg->tryI64("memBufferSize", vecVolume+1000, true);
+  int64_t vecVolume = cfg->tryI64("vecVolume", 1000, true);
+  memBufferSize = cfg->tryI64("memBufferSize", vecVolume + 1000, true);
   sketchSize = cfg->tryI64("sketchSize", 10, true);
   DCOBatchSize = cfg->tryI64("DCOBatchSize", memBufferSize, true);
   if (torch::cuda::is_available()) {
     cudaDevice = cfg->tryI64("cudaDevice", -1, true);
-    C10_INFO("Cuda is detected. and use this cuda device for DCO:" + std::to_string(cudaDevice));
+    C10_INFO("Cuda is detected. and use this cuda device for DCO:" +
+             std::to_string(cudaDevice));
   }
   if (DCOBatchSize > memBufferSize && memBufferSize > 0) {
     C10_WARNING("DCO batch size is not recommended to exceed mem buffer size.");
@@ -49,10 +51,12 @@ bool CANDY_ALGO::FlatGPUIndex::setConfig(INTELLI::ConfigMapPtr cfg) {
   dmBuffer.init(vecDim, memBufferSize, 0, 0, 0);
   return true;
 }
-bool CANDY_ALGO::FlatGPUIndex::insertTensor(const torch::Tensor &t) {
+
+bool CANDY_ALGO::FlatGPUIndex::insertTensor(const torch::Tensor& t) {
   if (t.size(0) > memBufferSize && memBufferSize > 0) {
     int64_t total_vectors = t.size(0);
-    for (int64_t startPos = 0; startPos < total_vectors; startPos += memBufferSize) {
+    for (int64_t startPos = 0; startPos < total_vectors;
+         startPos += memBufferSize) {
       int64_t endPos = std::min(startPos + memBufferSize, total_vectors);
       auto tempTensor = t.slice(0, startPos, endPos);
       dmBuffer.appendTensor(tempTensor);
@@ -62,51 +66,51 @@ bool CANDY_ALGO::FlatGPUIndex::insertTensor(const torch::Tensor &t) {
     auto tempTensor = t;
     return dmBuffer.appendTensor(tempTensor);
   }
-
 }
 
-bool CANDY_ALGO::FlatGPUIndex::deleteTensor(torch::Tensor &t, int64_t k) {
+bool CANDY_ALGO::FlatGPUIndex::deleteTensor(torch::Tensor& t, int64_t k) {
 
   int64_t rows = t.size(0);
   auto idx = findTopKClosest(t, k, DCOBatchSize);
   std::map<int64_t, int64_t> i64Map;
   for (int64_t i = 0; i < rows * k; i++) {
     if (idx[i] >= 0) {
-      if(i64Map.count(idx[i])!=1) {
+      if (i64Map.count(idx[i]) != 1) {
         dmBuffer.deleteTensor(idx[i], idx[i] + 1);
-        i64Map[idx[i]]=1;
+        i64Map[idx[i]] = 1;
       }
-     // dmBuffer.deleteTensor(idx[i], idx[i] + 1);
+      // dmBuffer.deleteTensor(idx[i], idx[i] + 1);
     }
   }
   return true;
 }
-static
-void mergeTopK(std::vector<std::pair<float, int64_t>> &topK,
-               const std::vector<std::pair<float, int64_t>> &newResults,
-               int64_t top_k) {
+
+static void mergeTopK(std::vector<std::pair<float, int64_t>>& topK,
+                      const std::vector<std::pair<float, int64_t>>& newResults,
+                      int64_t top_k) {
   topK.insert(topK.end(), newResults.begin(), newResults.end());
-  std::sort(topK.begin(), topK.end(), [](const std::pair<float, int64_t> &a, const std::pair<float, int64_t> &b) {
-    return a.first > b.first;
-  });
+  std::sort(
+      topK.begin(), topK.end(),
+      [](const std::pair<float, int64_t>& a,
+         const std::pair<float, int64_t>& b) { return a.first > b.first; });
   // Keep only the top_k elements
-  if (topK.size() > (size_t) top_k) {
+  if (topK.size() > (size_t)top_k) {
     topK.resize(top_k);
   }
 }
-static
-void mergeTopKVec(std::vector<std::vector<std::pair<float, int64_t>>> &topK,
-                  const std::vector<std::vector<std::pair<float, int64_t>>> &newResults,
-                  int64_t top_k) {
+
+static void mergeTopKVec(
+    std::vector<std::vector<std::pair<float, int64_t>>>& topK,
+    const std::vector<std::vector<std::pair<float, int64_t>>>& newResults,
+    int64_t top_k) {
   size_t rows = topK.size();
   for (size_t i = 0; i < rows; i++) {
     mergeTopK(topK[i], newResults[i], top_k);
   }
 }
-std::vector<int64_t> CANDY_ALGO::FlatGPUIndex::findTopKClosest(const torch::Tensor &query,
-                                                             int64_t top_k,
-                                                             int64_t batch_size
-) {
+
+std::vector<int64_t> CANDY_ALGO::FlatGPUIndex::findTopKClosest(
+    const torch::Tensor& query, int64_t top_k, int64_t batch_size) {
   std::vector<std::vector<std::pair<float, int64_t>>> topK;
   int64_t total_vectors = dmBuffer.size();
   int64_t queryRows = query.size(0);
@@ -123,7 +127,8 @@ std::vector<int64_t> CANDY_ALGO::FlatGPUIndex::findTopKClosest(const torch::Tens
     //std::cout<<"distance :\n"<<distances.t()<<std::endl;
     auto tStartTopK = std::chrono::high_resolution_clock::now();
     // Use torch::topk to get the top_k smallest distances and their indices
-    auto topk_result = torch::topk(distances, top_k, /*dim=*/1, /*largest=*/true, /*sorted=*/true);
+    auto topk_result = torch::topk(distances, top_k, /*dim=*/1,
+                                   /*largest=*/true, /*sorted=*/true);
 
     // std::cout<<"top k :\n"<<std::get<0>(topk_result)<<std::endl;
     // Extract top_k distances and indices
@@ -141,7 +146,8 @@ std::vector<int64_t> CANDY_ALGO::FlatGPUIndex::findTopKClosest(const torch::Tens
     std::vector<std::vector<std::pair<float, int64_t>>> batchResults(queryRows);
     for (int64_t i = 0; i < queryRows; i++) {
       for (int64_t j = 0; j < top_k; j++) {
-        batchResults[i].emplace_back(topk_distances[i][j].item<float>(), topk_indices[i][j].item<int64_t>());
+        batchResults[i].emplace_back(topk_distances[i][j].item<float>(),
+                                     topk_indices[i][j].item<int64_t>());
       }
     }
     // Merge current batch results with topK
@@ -161,7 +167,9 @@ std::vector<int64_t> CANDY_ALGO::FlatGPUIndex::findTopKClosest(const torch::Tens
   }
   return topKIndices;
 }
-bool CANDY_ALGO::FlatGPUIndex::reviseTensor(torch::Tensor &t, torch::Tensor &w) {
+
+bool CANDY_ALGO::FlatGPUIndex::reviseTensor(torch::Tensor& t,
+                                            torch::Tensor& w) {
   if (t.size(0) > w.size(0) || t.size(1) != w.size(1)) {
     return false;
   }
@@ -177,63 +185,70 @@ bool CANDY_ALGO::FlatGPUIndex::reviseTensor(torch::Tensor &t, torch::Tensor &w) 
   }
   return true;
 }
+
 bool CANDY_ALGO::FlatGPUIndex::resetIndexStatistics() {
   dmBuffer.clearStatistics();
   gpuComputingUs = 0;
   gpuCommunicationUs = 0;
   return true;
 }
+
 INTELLI::ConfigMapPtr CANDY_ALGO::FlatGPUIndex::getIndexStatistics() {
   auto cfg = newConfigMap();
-  cfg->edit("hasExtraStatistics", (int64_t) 1);
+  cfg->edit("hasExtraStatistics", (int64_t)1);
   /**
    * @brief count of memory access
    */
-  cfg->edit("totalMemReadCnt", (int64_t) dmBuffer.getMemoryReadCntTotal());
-  cfg->edit("missMemReadCnt", (int64_t) dmBuffer.getMemoryReadCntMiss());
+  cfg->edit("totalMemReadCnt", (int64_t)dmBuffer.getMemoryReadCntTotal());
+  cfg->edit("missMemReadCnt", (int64_t)dmBuffer.getMemoryReadCntMiss());
   double memMissHitRead = dmBuffer.getMemoryReadCntMiss();
   memMissHitRead = memMissHitRead / dmBuffer.getMemoryReadCntTotal();
-  cfg->edit("memMissRead", (double) memMissHitRead);
-  cfg->edit("totalMemWriteCnt", (int64_t) dmBuffer.getMemoryWriteCntTotal());
-  cfg->edit("missMemWriteCnt", (int64_t) dmBuffer.getMemoryWriteCntMiss());
+  cfg->edit("memMissRead", (double)memMissHitRead);
+  cfg->edit("totalMemWriteCnt", (int64_t)dmBuffer.getMemoryWriteCntTotal());
+  cfg->edit("missMemWriteCnt", (int64_t)dmBuffer.getMemoryWriteCntMiss());
   double memMissHitWrite = dmBuffer.getMemoryWriteCntMiss();
   memMissHitWrite = memMissHitWrite / dmBuffer.getMemoryWriteCntTotal();
-  cfg->edit("memMissWrite", (double) memMissHitWrite);
+  cfg->edit("memMissWrite", (double)memMissHitWrite);
   /**
    * @brief gpu statistics
    */
   if (cudaDevice > -1 && torch::cuda::is_available()) {
-    cfg->edit("gpuCommunicationUs", (int64_t) gpuCommunicationUs);
-    cfg->edit("gpuComputingUs", (int64_t) gpuComputingUs);
+    cfg->edit("gpuCommunicationUs", (int64_t)gpuCommunicationUs);
+    cfg->edit("gpuComputingUs", (int64_t)gpuComputingUs);
   } else {
-    cfg->edit("cpuComputingUs", (int64_t) gpuComputingUs);
+    cfg->edit("cpuComputingUs", (int64_t)gpuComputingUs);
   }
   return cfg;
 }
 
-std::vector<torch::Tensor> CANDY_ALGO::FlatGPUIndex::searchTensor(const torch::Tensor &q, int64_t k) {
+std::vector<torch::Tensor> CANDY_ALGO::FlatGPUIndex::searchTensor(
+    const torch::Tensor& q, int64_t k) {
   auto idx = findTopKClosest(q, k, DCOBatchSize);
   //std::cout<<"sorting idx"<<std::endl;
 
   return getTensorByStdIdx(idx, k);
 }
 
-std::vector<torch::Tensor> CANDY_ALGO::FlatGPUIndex::getTensorByStdIdx(std::vector<int64_t> &idx, int64_t k) {
+std::vector<torch::Tensor> CANDY_ALGO::FlatGPUIndex::getTensorByStdIdx(
+    std::vector<int64_t>& idx, int64_t k) {
   int64_t tensors = idx.size() / k;
   std::vector<torch::Tensor> ru(tensors);
   for (int64_t i = 0; i < tensors; i++) {
     ru[i] = torch::zeros({k, vecDim});
     for (int64_t j = 0; j < k; j++) {
       int64_t tempIdx = idx[i * k + j];
-      if (tempIdx >= 0) { ru[i].slice(0, j, j + 1) = dmBuffer.getTensor(tempIdx, tempIdx + 1); }
+      if (tempIdx >= 0) {
+        ru[i].slice(0, j, j + 1) = dmBuffer.getTensor(tempIdx, tempIdx + 1);
+      }
     }
   }
   return ru;
 }
+
 torch::Tensor CANDY_ALGO::FlatGPUIndex::distanceIP(torch::Tensor db,
-                                                 torch::Tensor query,
-                                                 int64_t cudaDev,
-                                                 FlatGPUIndex *idx) {
+                                                   torch::Tensor query,
+                                                   int64_t cudaDev,
+                                                   FlatGPUIndex* idx) {
   torch::Tensor q0 = query;
   torch::Tensor dbTensor = db;
   int64_t compTime = 0, commTime = 0;
@@ -257,9 +272,9 @@ torch::Tensor CANDY_ALGO::FlatGPUIndex::distanceIP(torch::Tensor db,
 }
 
 torch::Tensor CANDY_ALGO::FlatGPUIndex::distanceL2(torch::Tensor db0,
-                                                 torch::Tensor _q,
-                                                 int64_t cudaDev,
-                                                 FlatGPUIndex *idx) {
+                                                   torch::Tensor _q,
+                                                   int64_t cudaDev,
+                                                   FlatGPUIndex* idx) {
   torch::Tensor dbTensor = db0;
   torch::Tensor query = _q;
   int64_t compTime = 0, commTime = 0;
@@ -281,9 +296,9 @@ torch::Tensor CANDY_ALGO::FlatGPUIndex::distanceL2(torch::Tensor db0,
 
   // Compute L2 distance using a for loop
   for (int64_t i = 0; i < q; ++i) {
-    auto query_row = query[i].view({1, vecDim}); // [1, vecDim]
-    auto diff = dbTensor - query_row; // [n, vecDim]
-    auto dist_squared = diff.pow(2).sum(1); // [n]
+    auto query_row = query[i].view({1, vecDim});  // [1, vecDim]
+    auto diff = dbTensor - query_row;             // [n, vecDim]
+    auto dist_squared = diff.pow(2).sum(1);       // [n]
     result[i] = dist_squared;
   }
   result = -result;
@@ -295,4 +310,4 @@ torch::Tensor CANDY_ALGO::FlatGPUIndex::distanceL2(torch::Tensor db0,
   }*/
   return result;
 }
-}
+}  // namespace CANDY_ALGO

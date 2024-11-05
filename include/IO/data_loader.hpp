@@ -7,8 +7,6 @@
 #ifndef INTELLISTREAM_SRC_IO_DATA_LOADER_HPP_
 #define INTELLISTREAM_SRC_IO_DATA_LOADER_HPP_
 
-class data_loader {
+class data_loader {};
 
-};
-
-#endif //INTELLISTREAM_SRC_IO_DATA_LOADER_HPP_
+#endif  //INTELLISTREAM_SRC_IO_DATA_LOADER_HPP_

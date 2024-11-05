@@ -10,11 +10,9 @@
 #include <Utils/TensorOP.hpp>
 #include <memory>
 
-
 namespace CANDY_ALGO {
 
-
- class AbstractDataLoader {
+class AbstractDataLoader {
  public:
   AbstractDataLoader() = default;
   virtual ~AbstractDataLoader() = default;
@@ -27,14 +25,12 @@ namespace CANDY_ALGO {
    */
   virtual torch::Tensor getData();
 
-
-   /**
+  /**
     * @brief get the data tensor at specific offset
     * @note implement and use this when the whole data tensor does not fit into main memory
     * @return the generated data tensor
     */
-   virtual torch::Tensor getDataAt(int64_t startPos, int64_t endPos);
-
+  virtual torch::Tensor getDataAt(int64_t startPos, int64_t endPos);
 
   /**
   * @brief get the query tensor
@@ -47,14 +43,13 @@ namespace CANDY_ALGO {
    * @return the rows
    */
   virtual int64_t size();
- };
+};
 
-
- typedef std::shared_ptr<class CANDY_ALGO::AbstractDataLoader> AbstractDataLoaderPtr;
+typedef std::shared_ptr<class CANDY_ALGO::AbstractDataLoader>
+    AbstractDataLoaderPtr;
 
 #define newAbstractDataLoader std::make_shared<CANDY_ALGO::AbstractDataLoader>
 
+}  // namespace CANDY_ALGO
 
-} // CANDY
-
-#endif //CANDY_INCLUDE_MATRIXLOADER_AbstractDataLoader_H_
+#endif  //CANDY_INCLUDE_MATRIXLOADER_AbstractDataLoader_H_
