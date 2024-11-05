@@ -67,7 +67,7 @@ int main(int argc, char** argv) {
      */
   size_t dimensions = dataTensorStream.size(1);
 
-    auto indexPtr = std::make_shared<CANDY_ALGO::KnnSearch>(dimensions);
+  auto indexPtr = std::make_shared<CANDY_ALGO::KnnSearch>(dimensions);
 
   if (!indexPtr->setConfig(inMap)) {
     INTELLI_ERROR("Failed to configure ANNS index.");

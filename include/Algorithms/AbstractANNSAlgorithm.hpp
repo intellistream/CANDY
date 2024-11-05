@@ -15,15 +15,15 @@
 #include <Utils/Param.hpp>
 
 namespace CANDY {
- /**
+/**
   * @ingroup CANDY_lib_bottom The main body and interfaces of library function
   * @{
   */
- /**
+/**
   * @class AbstractANNS CANDY/AbstractIndex.h
   * @brief The abstract class of an index approach
   */
- class AbstractANNS {
+class AbstractANNS {
  protected:
   MetricType faissMetric = METRIC_L2;
   int64_t containerTier = 0;
@@ -52,7 +52,7 @@ namespace CANDY {
    * @param param best param
    * @return true if success
    */
-  virtual bool setParams(CANDY::ParamPtr param) =0;
+  virtual bool setParams(CANDY::ParamPtr param) = 0;
 
   /**
    * @brief Some extra set-ups if the index has HPC features
@@ -72,7 +72,7 @@ namespace CANDY {
    * @param t the tensor, some index need to be single row
    * @return bool whether the insertion is successful
    */
-  virtual bool insertTensor(const torch::Tensor &t) = 0;
+  virtual bool insertTensor(const torch::Tensor& t) = 0;
 
   /**
    * @brief Load the initial tensors of a data base, use this BEFORE insertTensor
@@ -80,7 +80,7 @@ namespace CANDY {
    * @param t the tensor, some index need to be single row
    * @return bool whether the loading is successful
    */
-  virtual bool loadInitialTensor(torch::Tensor &t) = 0;
+  virtual bool loadInitialTensor(torch::Tensor& t) = 0;
 
   /**
    * @brief Delete a tensor, also online function
@@ -88,7 +88,7 @@ namespace CANDY {
    * @param k the number of nearest neighbors
    * @return bool whether the deleting is successful
    */
-  virtual bool deleteTensor(torch::Tensor &t, int64_t k = 1) = 0;
+  virtual bool deleteTensor(torch::Tensor& t, int64_t k = 1) = 0;
 
   /**
    * @brief Revise a tensor
@@ -96,7 +96,7 @@ namespace CANDY {
    * @param w the revised value
    * @return bool whether the revising is successful
    */
-  virtual bool reviseTensor(torch::Tensor &t, torch::Tensor &w) = 0;
+  virtual bool reviseTensor(torch::Tensor& t, torch::Tensor& w) = 0;
 
   /**
    * @brief search the k-NN of a query tensor, return the result tensors
@@ -104,7 +104,8 @@ namespace CANDY {
    * @param k the returned neighbors
    * @return std::vector<torch::Tensor> the result tensor for each row of query
    */
-  virtual std::vector<torch::Tensor> searchTensor(const torch::Tensor &q, int64_t k) =0;
+  virtual std::vector<torch::Tensor> searchTensor(const torch::Tensor& q,
+                                                  int64_t k) = 0;
 
   /**
    * @brief To reset the internal statistics of this index
@@ -117,13 +118,12 @@ namespace CANDY {
    * @return the statistics results in ConfigMapPtr
    */
   virtual INTELLI::ConfigMapPtr getIndexStatistics() = 0;
- };
+};
 
- inline AbstractANNS::AbstractANNS() {
+inline AbstractANNS::AbstractANNS() {
   // Empty constructor body
   INTELLI_INFO("Creating an abstract ANNS object...");
- }
-} // namespace CANDY
+}
+}  // namespace CANDY
 
-
-#endif //CANDY_INCLUDE_ALGORITHMS_ABSTRACT_INDEX_HPP_
+#endif  //CANDY_INCLUDE_ALGORITHMS_ABSTRACT_INDEX_HPP_

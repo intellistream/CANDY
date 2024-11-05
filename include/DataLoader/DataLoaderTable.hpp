@@ -7,9 +7,8 @@
 #ifndef CANDY_INCLUDE_DataLOADER_DataLOADERTABLE_H_
 #define CANDY_INCLUDE_DataLOADER_DataLOADERTABLE_H_
 
-#include <map>
 #include <DataLoader/AbstractDataLoader.hpp>
-
+#include <map>
 
 namespace CANDY_ALGO {
 
@@ -21,12 +20,14 @@ class DataLoaderTable {
 
  public:
   DataLoaderTable();
-  ~DataLoaderTable() {
-  }
 
-  void registerNewDataLoader(CANDY_ALGO::AbstractDataLoaderPtr dnew, std::string tag) {
+  ~DataLoaderTable() {}
+
+  void registerNewDataLoader(CANDY_ALGO::AbstractDataLoaderPtr dnew,
+                             std::string tag) {
     loaderMap[tag] = dnew;
   }
+
   CANDY_ALGO::AbstractDataLoaderPtr findDataLoader(std::string name) {
 
     if (loaderMap.count(name)) {
@@ -35,15 +36,9 @@ class DataLoaderTable {
     return nullptr;
   }
 
-
   typedef std::shared_ptr<class CANDY_ALGO::DataLoaderTable> DataLoaderTablePtr;
-
-
-
 };
 
-} // CANDY
+}  // namespace CANDY_ALGO
 
-
-#endif //INTELLISTREAM_INCLUDE_DataLOADER_DataLOADERTABLE_H_
-
+#endif  //INTELLISTREAM_INCLUDE_DataLOADER_DataLOADERTABLE_H_

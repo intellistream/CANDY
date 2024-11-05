@@ -7,16 +7,15 @@
 #ifndef CANDY_INCLUDE_ALGORITHMS_KNN_SEARCH_HPP_
 #define CANDY_INCLUDE_ALGORITHMS_KNN_SEARCH_HPP_
 
-#include <unordered_map>
-#include <vector>
+#include <torch/torch.h>
 #include <Algorithms/ANNSBase.hpp>
 #include <memory>
-#include <torch/torch.h>
-
+#include <unordered_map>
+#include <vector>
 
 namespace CANDY_ALGO {
 
- class KnnSearch : public ANNSBase {
+class KnnSearch : public ANNSBase {
  protected:
   INTELLI::ConfigMapPtr myCfg = nullptr;
   torch::Tensor dbTensor;
@@ -27,32 +26,31 @@ namespace CANDY_ALGO {
   // Destructor
   ~KnnSearch() override = default;
 
-   KnnSearch() {}
+  KnnSearch() {}
+
   // Constructor with vector dimensions
-   KnnSearch(size_t dimensions);
+  KnnSearch(size_t dimensions);
 
-   virtual bool setConfig(INTELLI::ConfigMapPtr cfg) override;
+  virtual bool setConfig(INTELLI::ConfigMapPtr cfg) override;
 
-   virtual  void reset() override;
+  virtual void reset() override;
 
-   virtual bool insertTensor(const torch::Tensor &t) override;
+  virtual bool insertTensor(const torch::Tensor& t) override;
 
-   virtual bool deleteTensor(torch::Tensor &t, int64_t k = 1) override;
+  virtual bool deleteTensor(torch::Tensor& t, int64_t k = 1) override;
 
-   virtual bool reviseTensor(torch::Tensor &t, torch::Tensor &w) override;
+  virtual bool reviseTensor(torch::Tensor& t, torch::Tensor& w) override;
 
-   virtual std::vector<torch::Tensor> searchTensor(const torch::Tensor &q, int64_t k) override;
-
+  virtual std::vector<torch::Tensor> searchTensor(const torch::Tensor& q,
+                                                  int64_t k) override;
 
  private:
   size_t dimensions;
   std::unordered_map<size_t, torch::Tensor> index;
- };
-
-
+};
 
 typedef std::shared_ptr<CANDY_ALGO::KnnSearch> KnnSearchPtr;
 #define newKNNIndex std::make_shared<CANDY_ALGO::KnnSearch>
-}
+}  // namespace CANDY_ALGO
 
-#endif // CANDY_INCLUDE_ALGORITHMS_KNN_SEARCH_HPP_
+#endif  // CANDY_INCLUDE_ALGORITHMS_KNN_SEARCH_HPP_

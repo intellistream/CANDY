@@ -6,10 +6,11 @@
 #ifndef CANDY_INCLUDE_CANDY_FLATSSDGPUINDEX_DISKMEMBUFFER_H_
 #define CANDY_INCLUDE_CANDY_FLATSSDGPUINDEX_DISKMEMBUFFER_H_
 #include <stdint.h>
-#include <memory>
 #include <torch/torch.h>
-#include <vector>
 #include <atomic>
+#include <memory>
+#include <vector>
+
 namespace CANDY_ALGO {
 /**
  *  @defgroup  CANDY_lib_bottom_sub The support classes for index approaches
@@ -26,9 +27,12 @@ class DiskHeader {
   uint64_t vecCnt = 0;
   uint64_t u64Cnt = 0;
   uint64_t aknnType = 0;
+
   DiskHeader() {}
+
   ~DiskHeader() {}
 };
+
 /**
  * @class TensorCacheLine CANDY/FlatSSDGPUIndex/DiskMemBuffer.h
  * @brief The virtual cache line to buffer data, storage of tensor
@@ -39,9 +43,12 @@ class TensorVCacheLine {
   int64_t endPos = 0;
   int64_t temperature = 0;
   torch::Tensor buffer;
+
   TensorVCacheLine() {}
+
   ~TensorVCacheLine() {}
 };
+
 /**
  * @class U64VCacheLine CANDY/FlatSSDGPUIndex/DiskMemBuffer.h
  * @brief The virtual cache line to buffer data, storage of uint64_t
@@ -52,9 +59,12 @@ class U64VCacheLine {
   int64_t endPos = 0;
   int64_t temperature = 0;
   std::vector<uint64_t> buffer;
+
   U64VCacheLine() {}
+
   ~U64VCacheLine() {}
 };
+
 /**
  * @class PlainDiskMemBufferOfTensor CANDY/FlatSSDGPUIndex/DiskMemBuffer.h
  * @brief a straight forward plain storage of tensor and u64, will firstly use in-memory data, and switch into disk, full flush between memory and disk
@@ -86,11 +96,14 @@ class PlainMemBufferTU {
    * @param t the tensor, [n*vecDim]
    * @return whether it is successful
    */
-  bool reviseTensorInline(int64_t startPos, torch::Tensor &t);
+  bool reviseTensorInline(int64_t startPos, torch::Tensor& t);
+
  public:
- // struct spdk_nvme_qpair *diskQpair;
+  // struct spdk_nvme_qpair *diskQpair;
   PlainMemBufferTU() {}
+
   ~PlainMemBufferTU() {}
+
   //SPDKSSD *ssdPtr = nullptr;
   /**
    * @brief get the total count of times in terms of memory read
@@ -120,11 +133,8 @@ class PlainMemBufferTU {
    * @param _u64Begin the begin offset of u64 storage in disk
    * @param _dmaSize the max size of dma buffer, I64, default 1024000
    */
-  void init(int64_t vecDim,
-            int64_t bufferSize,
-            int64_t _tensorBegin,
-            int64_t _u64Begin,
-            int64_t _dmaSize = 1024000);
+  void init(int64_t vecDim, int64_t bufferSize, int64_t _tensorBegin,
+            int64_t _u64Begin, int64_t _dmaSize = 1024000);
   /**
    * @brief to return the size of ingested vectors
    * @return the number of rows.
@@ -158,26 +168,26 @@ class PlainMemBufferTU {
    * @param t the tensor, [n*vecDim]
    * @return whether it is successful
    */
-  bool reviseTensor(int64_t startPos, torch::Tensor &t);
+  bool reviseTensor(int64_t startPos, torch::Tensor& t);
   /**
    * @brief to revise the tensor at specified position
    * @param startPos the start position
    * @param u the u64 vector, [n]
    * @return whether it is successful
    */
-  bool reviseU64(int64_t startPos, std::vector<uint64_t> &u);
+  bool reviseU64(int64_t startPos, std::vector<uint64_t>& u);
   /**
  * @brief to append the tensor to the end of storage region
  * @param t the tensor, [n*vecDim]
  * @return whether it is successful
  */
-  bool appendTensor(torch::Tensor &t);
+  bool appendTensor(torch::Tensor& t);
   /**
  * @brief to append the tensor to the end of storage region
  * @param u the u64 vector, [n]
  * @return whether it is successful
  */
-  bool appendU64(std::vector<uint64_t> &u);
+  bool appendU64(std::vector<uint64_t>& u);
   /**
    * @brief to delete the tensor at specified position
    * @param startPos the start position
@@ -192,10 +202,10 @@ class PlainMemBufferTU {
    * @return whether it is successful
    */
   bool deleteU64(int64_t startPos, int64_t endPos);
-
 };
-}
+}  // namespace CANDY_ALGO
+
 /**
  * @}
  */
-#endif //CANDY_INCLUDE_CANDY_FLATSSDGPUINDEX_DISKMEMBUFFER_H_
+#endif  //CANDY_INCLUDE_CANDY_FLATSSDGPUINDEX_DISKMEMBUFFER_H_

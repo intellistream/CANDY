@@ -6,16 +6,14 @@
 #ifndef CANDY_INCLUDE_DATALOADER_RandomDataLoader_H_
 #define CANDY_INCLUDE_DATALOADER_RandomDataLoader_H_
 
+#include <DataLoader/AbstractDataLoader.hpp>
 #include <Utils/ConfigMap.hpp>
 #include <Utils/TensorOP.hpp>
 #include <memory>
-#include <DataLoader/AbstractDataLoader.hpp>
-
 
 namespace CANDY_ALGO {
 
-
- class RandomDataLoader : public AbstractDataLoader {
+class RandomDataLoader : public AbstractDataLoader {
  protected:
   torch::Tensor A, B;
   int64_t vecDim, vecVolume, querySize, seed;
@@ -46,18 +44,18 @@ namespace CANDY_ALGO {
   * @return the generated query tensor
   */
   virtual torch::Tensor getQuery();
- };
+};
 
- /**
+/**
   * @ingroup CANDY_MatrixLOADER_Random
   * @typedef RandomDataLoaderPtr
   * @brief The class to describe a shared pointer to @ref RandomDataLoader
 
   */
 
- typedef std::shared_ptr<class CANDY_ALGO::RandomDataLoader> RandomDataLoaderPtr;
+typedef std::shared_ptr<class CANDY_ALGO::RandomDataLoader> RandomDataLoaderPtr;
 
- /**
+/**
   * @ingroup CANDY_MatrixLOADER_Random
   * @def newRandomDataLoader
   * @brief (Macro) To creat a new @ref RandomDataLoader under shared pointer.
@@ -65,6 +63,6 @@ namespace CANDY_ALGO {
 
 #define newRandomDataLoader std::make_shared<CANDY_ALGO::RandomDataLoader>
 
-} // CANDY
+}  // namespace CANDY_ALGO
 
-#endif //CANDY_INCLUDE_MATRIXLOADER_RandomDataLoader_H_
+#endif  //CANDY_INCLUDE_MATRIXLOADER_RandomDataLoader_H_

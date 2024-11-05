@@ -7,10 +7,10 @@
 #define _UTILS_INTELLITIMESTAMPGENERATOR_H_
 #pragma once
 #include <stdint.h>
-#include <vector>
-#include <memory>
 #include <Utils/ConfigMap.hpp>
 #include <Utils/MicroDataSet.hpp>
+#include <memory>
+#include <vector>
 
 namespace INTELLI {
 /**
@@ -103,8 +103,7 @@ class TimeStampGenerator {
   void generateFinal();
 
   std::vector<INTELLI::IntelliTimeStampPtr> constructTimeStamps(
-      std::vector<uint64_t> eventS,
-      std::vector<uint64_t> arrivalS);
+      std::vector<uint64_t> eventS, std::vector<uint64_t> arrivalS);
 
  public:
   TimeStampGenerator() {}
@@ -127,7 +126,7 @@ class TimeStampGenerator {
   virtual std::vector<INTELLI::IntelliTimeStampPtr> getTimeStamps();
 };
 
-}
+}  // namespace INTELLI
 
 /**
  * @}
@@ -136,4 +135,4 @@ class TimeStampGenerator {
  * @}
  */
 
-#endif //CANDY_INCLUDE_UTILS_INTELLITIMESTAMPGENERATOR_H_
+#endif  //CANDY_INCLUDE_UTILS_INTELLITIMESTAMPGENERATOR_H_

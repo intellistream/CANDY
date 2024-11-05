@@ -10,15 +10,14 @@
 #include <memory>
 
 namespace CANDY {
- class Param;
- typedef std::shared_ptr<Param> ParamPtr;
+class Param;
+typedef std::shared_ptr<Param> ParamPtr;
 
- class Param {
+class Param {
  public:
   // for kdtree
   int64_t num_trees;
- };
-}
+};
+}  // namespace CANDY
 
-
-#endif //PARAM_HPP
+#endif  //PARAM_HPP

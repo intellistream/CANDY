@@ -4,19 +4,19 @@
 #ifndef IntelliStream_SRC_UTILS_UTILITYFUNCTIONS_HPP_
 #define IntelliStream_SRC_UTILS_UTILITYFUNCTIONS_HPP_
 
-#include <string>
-#include <experimental/filesystem>
 #include <barrier>
+#include <experimental/filesystem>
 #include <functional>
+#include <string>
 //#include <torch/torch.h>
 //#include <ATen/ATen.h>
 //#include <Common/Types.h>
 
 #include <Utils/TensorOP.hpp>
 
-#include <vector>
 #include <torch/torch.h>
 #include <filesystem>
+#include <vector>
 /* Period parameters */
 
 #define TRUE 1
@@ -28,7 +28,11 @@ namespace INTELLI {
 typedef std::shared_ptr<std::barrier<>> BarrierPtr;
 #define TIME_LAST_UNIT_MS 1000
 #define TIME_LAST_UNIT_US 1000000
-#define chronoElapsedTime(start) std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count()
+#define chronoElapsedTime(start)                         \
+  std::chrono::duration_cast<std::chrono::microseconds>( \
+      std::chrono::high_resolution_clock::now() - start) \
+      .count()
+
 /**
  * @defgroup
  */
@@ -58,9 +62,11 @@ class UtilityFunctions {
   static int bind2Core(int id);
   //partition
 
-  static std::vector<size_t> avgPartitionSizeFinal(size_t inS, std::vector<size_t> partitionWeight);
+  static std::vector<size_t> avgPartitionSizeFinal(
+      size_t inS, std::vector<size_t> partitionWeight);
 
-  static std::vector<size_t> weightedPartitionSizeFinal(size_t inS, std::vector<size_t> partitionWeight);
+  static std::vector<size_t> weightedPartitionSizeFinal(
+      size_t inS, std::vector<size_t> partitionWeight);
 
   static size_t to_periodical(size_t val, size_t period) {
     if (val < period) {
@@ -73,9 +79,6 @@ class UtilityFunctions {
      }*/
     return ru;
   }
-
- 
-
 };
-}
-#endif //IntelliStream_SRC_UTILS_UTILITYFUNCTIONS_HPP_
+}  // namespace INTELLI
+#endif  //IntelliStream_SRC_UTILS_UTILITYFUNCTIONS_HPP_

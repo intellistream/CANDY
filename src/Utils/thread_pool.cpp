@@ -7,37 +7,37 @@
 
 #include <Utils/thread_pool.hpp>
 
-void ThreadPool::init() { 
-  for (int i = 0; i < m_threads.size(); i++) { 
+void ThreadPool::init() {
+  for (int i = 0; i < m_threads.size(); i++) {
     m_threads[i] = std::thread(thread_worker(this, i));
   }
 }
 
-void ThreadPool::shutdown() { 
+void ThreadPool::shutdown() {
   m_shutdown = true;
   m_conditional_lock.notify_all();
 
   for (int i = 0; i < m_threads.size(); i++) {
-    if (m_threads[i].joinable()) { 
+    if (m_threads[i].joinable()) {
       m_threads[i].join();
     }
   }
 }
 
-void ThreadPool::thread_worker::operator()() { 
+void ThreadPool::thread_worker::operator()() {
   std::function<void()> func;
   bool dequeued;
 
-  while (!m_pool->m_shutdown) { 
+  while (!m_pool->m_shutdown) {
     {
       std::unique_lock<std::mutex> lock(m_pool->m_conditional_mutex);
       if (m_pool->m_queue.empty()) {
         m_pool->m_conditional_lock.wait(lock);
       }
-      dequeued = m_pool->m_queue.dequeue(func);          
+      dequeued = m_pool->m_queue.dequeue(func);
     }
 
-    if (dequeued) { 
+    if (dequeued) {
       func();
     }
   }
