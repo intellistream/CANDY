@@ -10,75 +10,78 @@
 #ifndef VECTOR_DB_H
 #define VECTOR_DB_H
 
-#include <unordered_map>
-#include <vector>
-#include <shared_mutex>  // For shared_mutex, unique_lock, shared_lock
-#include <mutex>         // For std::mutex
-#include <queue>
-#include <thread>
+#include <Algorithms/ANNSBase.hpp>
 #include <functional>
 #include <memory>
-#include <Algorithms/ANNSBase.hpp>
+#include <mutex>  // For std::mutex
+#include <queue>
+#include <shared_mutex>  // For shared_mutex, unique_lock, shared_lock
+#include <thread>
+#include <unordered_map>
+#include <vector>
 
 class VectorDB {
-public:
- // Constructor and Destructor
- VectorDB(size_t dimensions, ANNSBasePtr ann_algorithm = nullptr);
+ public:
+  // Constructor and Destructor
 
- ~VectorDB();
+  VectorDB(size_t dimensions, CANDY_ALGO::ANNSBasePtr ann_algorithm = nullptr);
 
- // Insert, update, and remove tensor-based operations for the database
- bool insert_tensor(const torch::Tensor &tensor);
+  ~VectorDB();
 
- bool update_tensor(size_t id, torch::Tensor &new_tensor);
+  // Insert, update, and remove tensor-based operations for the database
+  bool insert_tensor(const torch::Tensor& tensor);
 
- bool remove_tensor(size_t id);
+  bool update_tensor(size_t id, torch::Tensor& new_tensor);
 
- // Query using a k-NN search or other specified search algorithms
- std::vector<torch::Tensor> query_nearest_tensors(const torch::Tensor &query_tensor, size_t k) const;
+  bool remove_tensor(size_t id);
 
- // Stream support: Insert tensors continuously and process them in parallel
- void start_streaming();
+  // Query using a k-NN search or other specified search algorithms
+  std::vector<torch::Tensor> query_nearest_tensors(
+      const torch::Tensor& query_tensor, size_t k) const;
 
- void stop_streaming();
+  // Stream support: Insert tensors continuously and process them in parallel
+  void start_streaming();
 
- void insert_streaming_tensor(const torch::Tensor &tensor); // Insert tensor into the stream buffer
+  void stop_streaming();
 
- // Streaming helper functions
- void process_streaming_queue(); // Process tensors from the streaming queue
- int get_dimensions() const;
+  void insert_streaming_tensor(
+      const torch::Tensor& tensor);  // Insert tensor into the stream buffer
 
-private:
- // Internal storage for tensors (indexed by ID)
- std::unordered_map<size_t, torch::Tensor> tensor_store;
+  // Streaming helper functions
+  void process_streaming_queue();  // Process tensors from the streaming queue
+  int get_dimensions() const;
 
- // ANNS algorithm for querying (e.g., k-NN, Approximate NN)
- ANNSBasePtr ann_algorithm;
+ private:
+  // Internal storage for tensors (indexed by ID)
+  std::unordered_map<size_t, torch::Tensor> tensor_store;
 
- // Thread-safe data structures for concurrency
- mutable std::shared_mutex db_mutex;
- std::queue<torch::Tensor> stream_buffer; // Holds input stream tensors
- size_t buffer_size;
- bool is_running;
+  // ANNS algorithm for querying (e.g., k-NN, Approximate NN)
 
- // Parallel processing: thread workers
- std::vector<std::thread> workers;
+  CANDY_ALGO::ANNSBasePtr ann_algorithm;
 
- // Dimensions of the tensors
- size_t dimensions;
+  // Thread-safe data structures for concurrency
+  mutable std::shared_mutex db_mutex;
+  std::queue<torch::Tensor> stream_buffer;  // Holds input stream tensors
+  size_t buffer_size;
+  bool is_running;
 
- // ID generation for tensors
- size_t next_id = 0;
+  // Parallel processing: thread workers
+  std::vector<std::thread> workers;
 
- size_t generate_id();
+  // Dimensions of the tensors
+  size_t dimensions;
 
- // Helper function for thread safety
- void start_workers();
+  // ID generation for tensors
+  size_t next_id = 0;
 
- void stop_workers();
+  size_t generate_id();
+
+  // Helper function for thread safety
+  void start_workers();
+
+  void stop_workers();
 };
 
+#endif  // VECTOR_DB_H
 
-#endif // VECTOR_DB_H
-
-#endif //INTELLISTREAM_SRC_CORE_VECTOR_DB_HPP_
+#endif  //INTELLISTREAM_SRC_CORE_VECTOR_DB_HPP_

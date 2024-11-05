@@ -7,16 +7,17 @@
 #define _UTILS_MICRODATASET_H_
 #pragma once
 
-#include <stdint.h>
-#include <vector>
 #include <stddef.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <time.h>
-#include <random>
+#include <algorithm>
 #include <cmath>
 #include <iostream>
-#include <algorithm>
+#include <random>
+#include <vector>
 using namespace std;
+
 namespace INTELLI {
 /**
  * @ingroup INTELLI_UTIL
@@ -76,6 +77,7 @@ class MicroDataSet {
   }
 
   ~MicroDataSet() = default;
+
   /** @defgroup MICRO_GENERIC generic
    * @{
    * The functions for general generation of Micro
@@ -86,12 +88,12 @@ class MicroDataSet {
    * @param len The length of alphabet
    * @return The output vector alphabet
    */
-  template<class dType=uint32_t>
+  template <class dType = uint32_t>
   vector<dType> genIncrementalAlphabet(size_t len) {
     vector<dType> ru(len);
     /* populate */
     for (size_t i = 0; i < len; i++) {
-      ru[i] = i + 1;   /* don't let 0 be in the alphabet */
+      ru[i] = i + 1; /* don't let 0 be in the alphabet */
     }
     return ru;
   }
@@ -104,13 +106,14 @@ class MicroDataSet {
    * @param fac The zipf factor, in [0,1]
    * @return the output vector
    */
-  template<class tsType=size_t>
+  template <class tsType = size_t>
   vector<tsType> genZipfInt(size_t len, tsType maxV, double fac) {
     vector<tsType> ret(len);
     vector<tsType> alphabet = genIncrementalAlphabet<tsType>(maxV);
     std::mt19937_64 gen;
     if (!hasSeed) {
-      gen = std::mt19937_64(rd()); // 以 rd() 播种的标准 mersenne_twister_engine
+      gen =
+          std::mt19937_64(rd());  // 以 rd() 播种的标准 mersenne_twister_engine
     } else {
       gen = std::mt19937_64(seed);
       seed++;
@@ -124,8 +127,8 @@ class MicroDataSet {
       /* binary search in lookup table to determine item */
       size_t left = 0;
       size_t right = maxV - 1;
-      size_t m;       /* middle between left and right */
-      size_t pos;     /* position to take */
+      size_t m;   /* middle between left and right */
+      size_t pos; /* position to take */
 
       if (lut[0] >= r)
         pos = 0;
@@ -160,7 +163,7 @@ class MicroDataSet {
    * \li ranlux24: 24 bit
    * \li ranlux48:  48 bit
    */
-  template<class tsType=uint32_t, class genType=std::mt19937>
+  template <class tsType = uint32_t, class genType = std::mt19937>
   vector<tsType> genRandInt(size_t len, tsType maxV, tsType minV = 0) {
     genType gen;
     if (!hasSeed) {
@@ -172,7 +175,7 @@ class MicroDataSet {
     std::uniform_int_distribution<> dis(minV, maxV);
     vector<tsType> ret(len);
     for (size_t i = 0; i < len; i++) {
-      ret[i] = (tsType) dis(gen);
+      ret[i] = (tsType)dis(gen);
     }
     return ret;
   }
@@ -184,7 +187,7 @@ class MicroDataSet {
    * @param fac The zipf factor, in [0,1]
    * @return The output vector lut
    */
-  template<class dType=double>
+  template <class dType = double>
   vector<dType> genZipfLut(size_t len, dType fac) {
     dType scaling_factor;
     dType sum;
@@ -196,7 +199,9 @@ class MicroDataSet {
      *
      */
     scaling_factor = 0.0;
-    for (size_t i = 1; i <= len; i++) { scaling_factor += 1.0 / pow(i, fac); }
+    for (size_t i = 1; i <= len; i++) {
+      scaling_factor += 1.0 / pow(i, fac);
+    }
     /**
      * Generate the lookup table
      */
@@ -224,7 +229,7 @@ class MicroDataSet {
   * @param interval The incremental value between two steps
   * @return The vector of time stamp
   */
-  template<class tsType=size_t>
+  template <class tsType = size_t>
   vector<tsType> genSmoothTimeStamp(size_t len, size_t step, size_t interval) {
     vector<tsType> ret(len);
     tsType ts = 0;
@@ -233,15 +238,14 @@ class MicroDataSet {
       if (i % (step) == 0) {
         ts += interval;
       }
-
     }
     return ret;
   }
 
-  template<class tsType=size_t>
+  template <class tsType = size_t>
   vector<tsType> genSmoothTimeStamp(size_t len, size_t maxTime) {
     vector<tsType> ret = genRandInt<tsType>(len, maxTime);
-    std::sort(ret.begin(), ret.end()); //just incremental re-arrange
+    std::sort(ret.begin(), ret.end());  //just incremental re-arrange
     return ret;
   }
 
@@ -254,19 +258,21 @@ class MicroDataSet {
    * @return the output vector
    * @see genZipfInt
    */
-  template<class tsType=size_t>
+  template <class tsType = size_t>
   vector<tsType> genZipfTimeStamp(size_t len, tsType maxTime, double fac) {
     vector<tsType> ret = genZipfInt<tsType>(len, maxTime, fac);
-    std::sort(ret.begin(), ret.end()); //just incremental re-arrange
+    std::sort(ret.begin(), ret.end());  //just incremental re-arrange
     return ret;
   }
+
   /**
    * @}
    */
 };
-}
+}  // namespace INTELLI
+
 /**
  * @}
  * @}
  */
-#endif //ALIANCEDB_INCLUDE_UTILS_MICRODATASET_H_
+#endif  //ALIANCEDB_INCLUDE_UTILS_MICRODATASET_H_

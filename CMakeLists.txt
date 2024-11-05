@@ -7,21 +7,21 @@ include(cmake/FindTorch.cmake)
 find_package(Torch REQUIRED)
 # Add the cmake/ directory to CMAKE_MODULE_PATH
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
-
-# Add the cmake/ directory to CMAKE_MODULE_PATH
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+if (NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release)
+endif ()
 
 # Include necessary modules and options
 include(cmake/macros.cmake)
 include(cmake/DefaultOptions.cmake)
 include(cmake/CompilerSetup.cmake)
-
+add_subdirectory(tools)
 # # Find python development files
-find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
+find_package(Python REQUIRED COMPONENTS Interpreter Development)
 include_directories(${Python3_INCLUDE_DIRS})
 
 # Link with external libraries (e.g., Log4cxx)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS} -Wunused-function")
 set(LIBRARIES ${LIBRARIES} ${TORCH_LIBRARIES})
 # Collect Source Files
 add_subdirectory(src)
@@ -33,7 +33,10 @@ message(STATUS "CANDY_SOURCE_FILES: ${CANDY_SOURCE_FILES}")
 get_headers(CANDY_HEADER_FILES)
 
 # Create the CANDY library from all the source files
-add_library(CANDY SHARED ${CANDY_SOURCE_FILES} ${CANDY_HEADER_FILES})
+
+add_library(CANDY SHARED ${CANDY_SOURCE_FILES} ${CANDY_HEADER_FILES}
+        include/DataLoader/DataLoaderTable.hpp)
+
 # Add the include directory with absolute path
 target_include_directories(CANDY PUBLIC ${PROJECT_SOURCE_DIR}/include) # Include the "include/" directory as a system path
 target_include_directories(CANDY PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
@@ -84,16 +87,32 @@ execute_process(
 # Install targets
 install(TARGETS CANDY
         LIBRARY DESTINATION ${PYTHON_USER_SITE_PACKAGES}
-        COMPONENT CANDY)
+        COMPONENT CANDY
+)
 
 # Install headers
 install(DIRECTORY "include"
         DESTINATION "${PYTHON_USER_SITE_PACKAGES}/include/CANDY"
-        COMPONENT CANDY)
-
-# Add a post-build custom command to automatically run `make install`
-add_custom_command(TARGET CANDY
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} --build . --target install
-        COMMENT "Installing CANDY to Python user site-packages"
+        COMPONENT CANDY
 )
+
+option(ENABLE_AUTO_GLOBAL_PYTHON_PKG
+        "Enable automatically add and update global packages to python"
+        ON
+)
+if (ENABLE_AUTO_GLOBAL_PYTHON_PKG)
+    # Add a post-build custom command to automatically run `make install`
+    add_custom_command(TARGET CANDY
+            POST_BUILD
+            COMMAND cd ${PROJECT_SOURCE_DIR} && python3 ${PROJECT_SOURCE_DIR}/installation/python_package_setup/setup.py install --user
+            COMMENT "Installing compiled  python packages"
+    )
+endif ()
+
+# check if the user is trying to build in the source directory
+file(TO_CMAKE_PATH "${PROJECT_BINARY_DIR}/CMakeLists.txt" PATH_TO_CMAKELISTS_TXT)
+
+if (EXISTS "${PATH_TO_CMAKELISTS_TXT}")
+    message(FATAL_ERROR "Run CMake from a build subdirectory! \"mkdir build ; cd build ; cmake ..\" \
+    Some junk files were created in this folder (CMakeCache.txt, CMakeFiles); you should delete those.")
+endif ()
