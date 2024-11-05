@@ -11,8 +11,7 @@ bool CANDY_ALGO::FVECSDataLoader::generateData(std::string fname) {
     return false;
   }
   if (dataTensor.size(1) != vecDim) {
-    INTELLI_ERROR(
-        "conflict dimension in" + fname);
+    INTELLI_ERROR("conflict dimension in" + fname);
     return false;
   }
   A = INTELLI::TensorOP::rowSampling(dataTensor, vecVolume);
@@ -25,7 +24,8 @@ bool CANDY_ALGO::FVECSDataLoader::generateData(std::string fname) {
 bool CANDY_ALGO::FVECSDataLoader::generateQuery(std::string fname) {
   if (!useSeparateQuery) {
     B = INTELLI::TensorOP::rowSampling(A, querySize);
-    B = (1 - queryNoiseFraction) * B + queryNoiseFraction * torch::rand({querySize, vecDim});
+    B = (1 - queryNoiseFraction) * B +
+        queryNoiseFraction * torch::rand({querySize, vecDim});
     return true;
   } else {
     auto queryTensor = CANDY_ALGO::FVECSDataLoader::tensorFromFVECS(fname);
@@ -33,8 +33,7 @@ bool CANDY_ALGO::FVECSDataLoader::generateQuery(std::string fname) {
       return false;
     }
     if (queryTensor.size(1) != vecDim) {
-      INTELLI_ERROR(
-          "conflict dimension in" + fname);
+      INTELLI_ERROR("conflict dimension in" + fname);
       return false;
     }
     if (normalizeTensor) {
@@ -49,28 +48,27 @@ bool CANDY_ALGO::FVECSDataLoader::generateQuery(std::string fname) {
 torch::Tensor CANDY_ALGO::FVECSDataLoader::tensorFromFVECS(std::string fname) {
   torch::Tensor ru;
   unsigned num, dim;
-  std::ifstream in(fname, std::ios::binary);    //以二进制的方式打开文件
+  std::ifstream in(fname, std::ios::binary);  //以二进制的方式打开文件
   if (!in.is_open()) {
-    INTELLI_ERROR(
-        "Double check your data path: " + fname);
+    INTELLI_ERROR("Double check your data path: " + fname);
     return ru;
   }
-  in.read((char *) &dim, 4);    //读取向量维度
-  in.seekg(0, std::ios::end);    //光标定位到文件末尾
-  std::ios::pos_type ss = in.tellg();    //获取文件大小（多少字节）
-  size_t fsize = (size_t) ss;
-  num = (unsigned) (fsize / (dim + 1) / 4);    //数据的个数
-  std::vector<float> dataVec((size_t) num * (size_t) dim);
-  float *data = reinterpret_cast<float *>(dataVec.data());
-  in.seekg(0, std::ios::beg);    //光标定位到起始处
+  in.read((char*)&dim, 4);             //读取向量维度
+  in.seekg(0, std::ios::end);          //光标定位到文件末尾
+  std::ios::pos_type ss = in.tellg();  //获取文件大小（多少字节）
+  size_t fsize = (size_t)ss;
+  num = (unsigned)(fsize / (dim + 1) / 4);  //数据的个数
+  std::vector<float> dataVec((size_t)num * (size_t)dim);
+  float* data = reinterpret_cast<float*>(dataVec.data());
+  in.seekg(0, std::ios::beg);  //光标定位到起始处
   for (size_t i = 0; i < num; i++) {
-    in.seekg(4, std::ios::cur);    //光标向右移动4个字节
-    in.read((char *) (data + i * dim), dim * 4);    //读取数据到一维数据data中
+    in.seekg(4, std::ios::cur);                 //光标向右移动4个字节
+    in.read((char*)(data + i * dim), dim * 4);  //读取数据到一维数据data中
   }
   in.close();
 
   torch::TensorOptions options(torch::kFloat32);
-  ru = torch::from_blob(data, {(int64_t) num, (int64_t) dim}, options).clone();
+  ru = torch::from_blob(data, {(int64_t)num, (int64_t)dim}, options).clone();
   return ru;
 }
 
@@ -82,8 +80,10 @@ bool CANDY_ALGO::FVECSDataLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
   seed = cfg->tryI64("seed", 7758258, true);
   queryNoiseFraction = cfg->tryDouble("queryNoiseFraction", 0, true);
   normalizeTensor = cfg->tryDouble("normalizeTensor", 1, true);
-  auto queryPath = cfg->tryString("queryPath", "datasets/fvecs/sift10K/siftsmall_query.fvecs", true);
-  auto dataPath = cfg->tryString("dataPath", "datasets/fvecs/sift10K/siftsmall_base.fvecs", true);
+  auto queryPath = cfg->tryString(
+      "queryPath", "datasets/fvecs/sift10K/siftsmall_query.fvecs", true);
+  auto dataPath = cfg->tryString(
+      "dataPath", "datasets/fvecs/sift10K/siftsmall_base.fvecs", true);
   useSeparateQuery = cfg->tryI64("useSeparateQuery", 1, true);
   if (queryNoiseFraction < 0) {
     queryNoiseFraction = 0;
@@ -102,9 +102,9 @@ bool CANDY_ALGO::FVECSDataLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
   if (generateQuery(queryPath) == false) {
     return false;
   }
-  INTELLI_INFO(
-      "Generating [" + to_string(A.size(0)) + "x" + to_string(A.size(1)) + "]" + ", query size "
-          + to_string(B.size(0)));
+  INTELLI_INFO("Generating [" + to_string(A.size(0)) + "x" +
+               to_string(A.size(1)) + "]" + ", query size " +
+               to_string(B.size(0)));
   if (useSeparateQuery) {
     INTELLI_INFO("Query is loaded from separate file");
   } else {
