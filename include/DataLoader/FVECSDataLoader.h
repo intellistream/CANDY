@@ -11,7 +11,7 @@
 #include <memory>
 #include <DataLoader/AbstractDataLoader.hpp>
 
-namespace CANDY {
+namespace CANDY_ALGO {
 
     class FVECSDataLoader : public AbstractDataLoader {
         protected:
@@ -56,9 +56,10 @@ namespace CANDY {
             static torch::Tensor tensorFromFVECS(std::string fname);
         };
 
-    typedef std::shared_ptr<class CANDY::FVECSDataLoader> FVECSDataLoaderPtr;
+    typedef std::shared_ptr<class CANDY_ALGO::FVECSDataLoader> FVECSDataLoaderPtr;
 
-#define newFVECSDataLoader std::make_shared<CANDY::FVECSDataLoader>
-}
+#define newFVECSDataLoader std::make_shared<CANDY_ALGO::FVECSDataLoader>
+
+}    //    namespace CANDY_ALGO
 
 #endif //CANDY_INCLUDE_DataLOADER_FVECSDATALOADER_H
