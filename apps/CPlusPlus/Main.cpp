@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
      */
   ConfigMapPtr inMap = newConfigMap();
   std::string fileName =
-      (argc >= 2) ? argv[1] : candy_path + "/config/configFvecs.csv";
+      (argc >= 2) ? argv[1] : candy_path + "/config/config.csv";
   if (inMap->fromFile(fileName)) {
     INTELLI_INFO("Config loaded from file: " + fileName);
   } else {
