@@ -54,6 +54,10 @@ contact_links:
     url: "/intellistream/CANDY/issues/new?template=research_collaboration_request.md"
     about: "Request collaboration on a research topic, project, or experiment"
 
+  - name: "Research Paper Progress"
+    url: "/intellistream/CANDY/issues/new?template=research_paper_progress.md"
+    about: "Log and track the progress of an ongoing research paper"
+
   - name: "Literature Review Request"
     url: "/intellistream/CANDY/issues/new?template=literature_review_request.md"
     about: "Request a literature review on a specific research topic"
