@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: "Report a Bug"
+    url: "/intellistream/CANDY/issues/new?template=bug_report.md"
+    about: "Report a bug to help us improve."
+  - name: "Request a Feature"
+    url: "/intellistream/CANDY/issues/new?template=feature_request.md"
+    about: "Suggest a new feature or improvement."
