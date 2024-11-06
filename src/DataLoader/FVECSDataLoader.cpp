@@ -102,9 +102,9 @@ bool CANDY_ALGO::FVECSDataLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
   if (generateQuery(queryPath) == false) {
     return false;
   }
-  INTELLI_INFO("Generating [" + to_string(A.size(0)) + "x" +
-               to_string(A.size(1)) + "]" + ", query size " +
-               to_string(B.size(0)));
+  // INTELLI_INFO("Generating [" + to_string(A.size(0)) + "x" +
+  //              to_string(A.size(1)) + "]" + ", query size " +
+  //              to_string(B.size(0)));
   if (useSeparateQuery) {
     INTELLI_INFO("Query is loaded from separate file");
   } else {

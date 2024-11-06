@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
      */
   ConfigMapPtr inMap = newConfigMap();
   std::string fileName =
-      (argc >= 2) ? argv[1] : candy_path + "/config/config.csv";
+      (argc >= 2) ? argv[1] : candy_path + "/config/configFvecs.csv";
   if (inMap->fromFile(fileName)) {
     INTELLI_INFO("Config loaded from file: " + fileName);
   } else {
@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
   auto dataTensorStream = dataTensorAll;
 
   INTELLI_INFO(
-      "Data loaded: Dimension = " + std::to_string(dataTensorStream.size(1)) +
+      "1.0 Data loaded: Dimension = " + std::to_string(dataTensorStream.size(1)) +
       ", #data = " + std::to_string(dataTensorStream.size(0)));
 
   /**
