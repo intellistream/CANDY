@@ -6,13 +6,13 @@
 // Created by tony on 25/05/23.
 //
 
-#include <Utils/UtilityFunctions.h>
+#include <Utils/UtilityFunctions.hpp>
 
 #include <assert.h>
 #include <time.h>
 #include <Algorithms/FlatGPUIndex/FlatGPUIndex.hpp>
 #include <chrono>
-#include "Utils/UtilityFunctions.h"
+#include "Utils/UtilityFunctions.hpp"
 
 #include <algorithm>
 #include <utility>
