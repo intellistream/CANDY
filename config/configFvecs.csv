@@ -1,0 +1,13 @@
+key,value,type
+vecDim,128,I64
+vecVolume,100000,I64
+batchSize,10000,I64
+initialRows,50000,I64
+querySize,200,I64
+ANNK,10,I64
+metricType,IP,String
+indexTag,faiss,String
+faissIndexTag,HNSW,String
+dataLoaderTag,fvecs,String
+dataPath,/tmp/tmp.dd6j30RJIz/apps/CPlusPlus/datasets/fvecs/sift1M/sift/sift_base.fvecs,String
+queryPath,/tmp/tmp.dd6j30RJIz/apps/CPlusPlus/datasets/fvecs/sift1M/sift/sift_base.fvecs,String
