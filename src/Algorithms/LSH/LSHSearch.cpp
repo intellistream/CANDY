@@ -48,9 +48,9 @@ bool CANDY_ALGO::LshSearch::deleteTensor(torch::Tensor& t, int64_t k) {
       for (int j = 0; j < Indices.size(0); ++j) {
         size_t TensorId = Indices[j][0].item<int64_t>();
         BucketMap.erase(TensorId);
-        }
       }
     }
+  }
   return true;
 }
 
@@ -106,14 +106,16 @@ std::vector<torch::Tensor> CANDY_ALGO::LshSearch::searchTensor(
       // Sort and store k with the smallest distance
       std::sort(Distances.begin(), Distances.end());
 
-      for (int j = 0; j < std::min(k, static_cast<int64_t>(Distances.size())); ++j) {
+      for (int j = 0; j < std::min(k, static_cast<int64_t>(Distances.size()));
+           ++j) {
         Indices.push_back(Distances[j].second);
       }
     }
 
     // Modify the results to ensure the returned tensor has shape (K, 1)
     if (!Indices.empty()) {
-      torch::Tensor Tensor = torch::empty({static_cast<long>(Indices.size()), 1}, torch::dtype(torch::kLong));
+      torch::Tensor Tensor = torch::empty(
+          {static_cast<long>(Indices.size()), 1}, torch::dtype(torch::kLong));
 
       for (size_t j = 0; j < Indices.size(); ++j) {
         Tensor[j][0] = static_cast<long>(Indices[j]);
@@ -134,7 +136,8 @@ void CANDY_ALGO::LshSearch::GenerateRandomHyperplanes(size_t numPlanes) {
 
   RandomHyperplanes.resize(numPlanes);
   for (size_t i = 0; i < numPlanes; ++i) {
-    RandomHyperplanes[i] = torch::empty({static_cast<long>(Dimensions)}).uniform_(-1, 1);
+    RandomHyperplanes[i] =
+        torch::empty({static_cast<long>(Dimensions)}).uniform_(-1, 1);
   }
 }
 
@@ -148,4 +151,3 @@ size_t CANDY_ALGO::LshSearch::HashFunction(const torch::Tensor& t) {
 
   return HashValue;
 }
-
