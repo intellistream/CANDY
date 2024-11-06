@@ -37,12 +37,12 @@ void INTELLI::TimeStampGenerator::generateEvent() {
     // uint64_t tsGrow = 1000 * timeStepUs / eventRateKTps;
     eventS = md.genSmoothTimeStamp(testSize, maxTime);
   }
-  INTELLI_INFO("Finish the generation of event time");
+  // INTELLI_INFO("Finish the generation of event time");
 }
 
 void INTELLI::TimeStampGenerator::generateArrival() {
 
-  INTELLI_INFO("Finish the generation of arrival time");
+  // INTELLI_INFO("Finish the generation of arrival time");
 }
 
 std::vector<INTELLI::IntelliTimeStampPtr>

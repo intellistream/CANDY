@@ -7,4 +7,5 @@ add_sources(CANDY
         IntelliTimeStampGenerator.cpp
         timing.cpp
         thread_pool.cpp
+        UtilityFunction.cpp
 )

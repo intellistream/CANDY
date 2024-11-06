@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
   auto dataTensorStream = dataTensorAll;
 
   INTELLI_INFO(
-      "Data loaded: Dimension = " + std::to_string(dataTensorStream.size(1)) +
+      "1.0 Data loaded: Dimension = " + std::to_string(dataTensorStream.size(1)) +
       ", #data = " + std::to_string(dataTensorStream.size(0)));
 
   /**
