@@ -4,15 +4,13 @@
  * Description: ${DESCRIPTION}
  */
 
-#include <Utils/UtilityFunctions.hpp>
-#include <sched.h>
 #include <pthread.h>
+#include <sched.h>
+#include <Utils/UtilityFunctions.hpp>
 #include <cstdlib>
 
-
-
 int INTELLI::UtilityFunctions::bind2Core(int id) {
-  if (id == -1) //OS scheduling
+  if (id == -1)  //OS scheduling
   {
     return -1;
   }
@@ -31,12 +29,14 @@ int INTELLI::UtilityFunctions::bind2Core(int id) {
   return cpuId;
 }
 
-double INTELLI::UtilityFunctions::getLatencyPercentage(double fraction, std::vector<INTELLI::IntelliTimeStampPtr> &myTs) {
+double INTELLI::UtilityFunctions::getLatencyPercentage(
+    double fraction, std::vector<INTELLI::IntelliTimeStampPtr>& myTs) {
   size_t rLen = myTs.size();
   size_t nonZeroCnt = 0;
   std::vector<uint64_t> validLatency;
   for (size_t i = 0; i < rLen; i++) {
-    if (myTs[i]->processedTime >= myTs[i]->arrivalTime && myTs[i]->processedTime != 0) {
+    if (myTs[i]->processedTime >= myTs[i]->arrivalTime &&
+        myTs[i]->processedTime != 0) {
       validLatency.push_back(myTs[i]->processedTime - myTs[i]->arrivalTime);
       nonZeroCnt++;
     }
@@ -48,16 +48,16 @@ double INTELLI::UtilityFunctions::getLatencyPercentage(double fraction, std::vec
   std::sort(validLatency.begin(), validLatency.end());
   double t = nonZeroCnt;
   t = t * fraction;
-  size_t idx = (size_t) t + 1;
+  size_t idx = (size_t)t + 1;
   if (idx >= validLatency.size()) {
     idx = validLatency.size() - 1;
   }
   return validLatency[idx];
 }
 
-bool INTELLI::UtilityFunctions::saveTimeStampToFile(std::string fname,
-                              std::vector<INTELLI::IntelliTimeStampPtr> &myTs,
-                              bool skipZero) {
+bool INTELLI::UtilityFunctions::saveTimeStampToFile(
+    std::string fname, std::vector<INTELLI::IntelliTimeStampPtr>& myTs,
+    bool skipZero) {
   ofstream of;
   of.open(fname);
   if (of.fail()) {
@@ -70,17 +70,18 @@ bool INTELLI::UtilityFunctions::saveTimeStampToFile(std::string fname,
 
     } else {
       auto tp = myTs[i];
-      string line = to_string(tp->eventTime) + ","
-          + to_string(tp->arrivalTime) + "," + to_string(tp->processedTime) + "\n";
+      string line = to_string(tp->eventTime) + "," +
+                    to_string(tp->arrivalTime) + "," +
+                    to_string(tp->processedTime) + "\n";
       of << line;
     }
-
   }
   of.close();
   return true;
 }
 
-bool INTELLI::UtilityFunctions::existRow(torch::Tensor base, torch::Tensor row) {
+bool INTELLI::UtilityFunctions::existRow(torch::Tensor base,
+                                         torch::Tensor row) {
   for (int64_t i = 0; i < base.size(0); i++) {
     auto tensor1 = base[i].contiguous();
     auto tensor2 = row.contiguous();
@@ -91,7 +92,8 @@ bool INTELLI::UtilityFunctions::existRow(torch::Tensor base, torch::Tensor row) 
   return false;
 }
 
-double INTELLI::UtilityFunctions::calculateRecall(std::vector<torch::Tensor> groundTruth, std::vector<torch::Tensor> prob) {
+double INTELLI::UtilityFunctions::calculateRecall(
+    std::vector<torch::Tensor> groundTruth, std::vector<torch::Tensor> prob) {
   int64_t truePositives = 0;
   int64_t falseNegatives = 0;
   for (size_t i = 0; i < prob.size(); i++) {
@@ -105,21 +107,21 @@ double INTELLI::UtilityFunctions::calculateRecall(std::vector<torch::Tensor> gro
       }
     }
   }
-  double recall = static_cast<double>(truePositives) / (truePositives + falseNegatives);
+  double recall =
+      static_cast<double>(truePositives) / (truePositives + falseNegatives);
   return recall;
 }
 
-bool INTELLI::UtilityFunctions::tensorListToFile(std::vector<torch::Tensor> &tensorVec, std::string folderName) {
+bool INTELLI::UtilityFunctions::tensorListToFile(
+    std::vector<torch::Tensor>& tensorVec, std::string folderName) {
   try {
     std::filesystem::remove_all(folderName);
-  } catch (const std::filesystem::filesystem_error &e) {
-  }
+  } catch (const std::filesystem::filesystem_error& e) {}
 
   try {
     // Create the folder
     std::filesystem::create_directory(folderName);
-  } catch (const std::filesystem::filesystem_error &e) {
-  }
+  } catch (const std::filesystem::filesystem_error& e) {}
 
   for (size_t i = 0; i < tensorVec.size(); i++) {
     std::string fileName = folderName + "/" + std::to_string(i) + ".rbt";
@@ -128,8 +130,9 @@ bool INTELLI::UtilityFunctions::tensorListToFile(std::vector<torch::Tensor> &ten
   return true;
 }
 
-std::vector<torch::Tensor> INTELLI::UtilityFunctions::tensorListFromFile(std::string folderName, uint64_t tensors) {
-  std::vector<torch::Tensor> ru((size_t) tensors);
+std::vector<torch::Tensor> INTELLI::UtilityFunctions::tensorListFromFile(
+    std::string folderName, uint64_t tensors) {
+  std::vector<torch::Tensor> ru((size_t)tensors);
   for (uint64_t i = 0; i < tensors; i++) {
     std::string fileName = folderName + "/" + std::to_string(i) + ".rbt";
     TensorOP::tensorFromFile(&ru[i], fileName);

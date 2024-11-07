@@ -44,7 +44,8 @@ class LshSearch : public ANNSBase {
   size_t GlobalIndexCounter = 0;
 
   // Hash table (unordered_map) where each bucket corresponds to a map of tensors
-  std::unordered_map<std::string, std::unordered_map<int64_t, torch::Tensor>> Index;
+  std::unordered_map<std::string, std::unordered_map<int64_t, torch::Tensor>>
+      Index;
 
   // Store hyperplane information
   std::vector<torch::Tensor> RandomHyperplanes;
@@ -66,6 +67,4 @@ class LshSearch : public ANNSBase {
 
 typedef std::shared_ptr<CANDY_ALGO::LshSearch> LSHSearchPtr;
 
-
-#endif // LSHSEARCH_HPP
-
+#endif  // LSHSEARCH_HPP

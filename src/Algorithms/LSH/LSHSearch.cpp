@@ -5,11 +5,11 @@
  */
 
 #include <torch/torch.h>
-#include <Algorithms//LSH/LSHSearch.hpp>
+#include <Algorithms  //LSH/LSHSearch.hpp>
 #include <algorithm>
-#include <unordered_map>
 #include <iostream>
 #include <random>
+#include <unordered_map>
 
 namespace CANDY_ALGO {
 
@@ -75,7 +75,8 @@ bool LshSearch::deleteTensor(torch::Tensor& t, int64_t k) {
       if (Index.count(bucket) > 0) {
         auto& BucketMap = Index[bucket];
 
-        for (int64_t index = deletedCount; index < indicesToDelete.size(); ++index) {
+        for (int64_t index = deletedCount; index < indicesToDelete.size();
+             ++index) {
           auto id = indicesToDelete[index];
 
           if (BucketMap.count(id) > 0) {
@@ -85,7 +86,7 @@ bool LshSearch::deleteTensor(torch::Tensor& t, int64_t k) {
             if (deletedCount >= k) {
               break;
             }
-          }else {
+          } else {
             break;
           }
         }
@@ -127,7 +128,8 @@ bool LshSearch::reviseTensor(torch::Tensor& t, torch::Tensor& w) {
 }
 
 // Search for the k nearest neighbors of tensor q
-std::vector<torch::Tensor> LshSearch::searchTensor(const torch::Tensor& q, int64_t k) {
+std::vector<torch::Tensor> LshSearch::searchTensor(const torch::Tensor& q,
+                                                   int64_t k) {
   std::vector<torch::Tensor> Results;
   nearbyBuckets.clear();  // Clear nearbyBuckets before every search
 
@@ -190,7 +192,8 @@ std::vector<torch::Tensor> LshSearch::searchTensor(const torch::Tensor& q, int64
     }
 
     // Convert indices to a tensor and add to results
-    torch::Tensor Tensor = torch::empty({static_cast<long>(Indices.size()), 1}, torch::dtype(torch::kLong));
+    torch::Tensor Tensor = torch::empty({static_cast<long>(Indices.size()), 1},
+                                        torch::dtype(torch::kLong));
     for (size_t j = 0; j < Indices.size(); ++j) {
       Tensor[j][0] = static_cast<long>(Indices[j]);
     }
@@ -204,7 +207,8 @@ std::vector<torch::Tensor> LshSearch::searchTensor(const torch::Tensor& q, int64
 void LshSearch::GenerateRandomHyperplanes(size_t NumPlanes) {
   RandomHyperplanes.resize(NumPlanes);
   for (size_t i = 0; i < NumPlanes; ++i) {
-    RandomHyperplanes[i] = torch::empty({static_cast<long>(Dimensions)}).uniform_(-1, 1);
+    RandomHyperplanes[i] =
+        torch::empty({static_cast<long>(Dimensions)}).uniform_(-1, 1);
   }
 }
 
@@ -221,7 +225,8 @@ std::string LshSearch::HashFunction(const torch::Tensor& t) {
 }
 
 // Hamming distance between two binary strings
-int LshSearch::HammingDistance(const std::string& str1, const std::string& str2) {
+int LshSearch::HammingDistance(const std::string& str1,
+                               const std::string& str2) {
   int dist = 0;
   for (size_t i = 0; i < str1.size(); ++i) {
     if (str1[i] != str2[i]) {
@@ -232,6 +237,3 @@ int LshSearch::HammingDistance(const std::string& str1, const std::string& str2)
 }
 
 }  // namespace CANDY_ALGO
-
-
-
