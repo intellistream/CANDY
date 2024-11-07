@@ -12,7 +12,7 @@ if __name__ == "__main__":
         author_email="your_email@example.com",
         packages=find_packages(),
         package_data={
-            "lib": ["*.so"]  # Include all .so files in the candy package
+            "candy": ["*.so"]  # Include all .so files in the candy package
         },
         classifiers=[
             "Programming Language :: Python :: 3",

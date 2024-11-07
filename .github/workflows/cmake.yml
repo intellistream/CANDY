@@ -12,25 +12,24 @@ env:
 jobs:
   format:
     runs-on: ubuntu-22.04
-
     steps:
       - uses: actions/checkout@v4
-
       - name: Set Permission for clang-format Script
         run: chmod +x ./scripts/run-clang-format.sh
-
       - name: Install clang-format
         run: sudo apt-get install clang-format -y
-
       - name: Run clang-format
         run: ./scripts/run-clang-format.sh
-
       - name: Commit Changes
+        if: github.event.pull_request.head.repo.full_name == github.repository
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore: Automatically formatted code using clang-format"
-          branch: ${{ github.head_ref }}
+          branch: ${{ github.event.pull_request.head.ref }}
           file_pattern: '*.hpp *.cpp *.c *.h'
+      - name: Notify Formatting Changes
+        if: github.event.pull_request.head.repo.full_name != github.repository
+        run: echo "Please run clang-format locally and commit changes. Formatting check failed."
 
   build:
     runs-on: ubuntu-22.04
