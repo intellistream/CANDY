@@ -4,7 +4,6 @@
  * Description: ${DESCRIPTION}
  */
 
-
 #ifndef LSHSEARCH_HPP
 #define LSHSEARCH_HPP
 
@@ -18,10 +17,10 @@
 namespace CANDY_ALGO {
 
 class LshSearch : public ANNSBase {
-protected:
+ protected:
   INTELLI::ConfigMapPtr myCfg = nullptr;
 
-public:
+ public:
   ~LshSearch() override = default;
 
   // Constructor with vector dimensions and number of planes
@@ -37,9 +36,10 @@ public:
 
   bool reviseTensor(torch::Tensor& t, torch::Tensor& w) override;
 
-  std::vector<torch::Tensor> searchTensor(const torch::Tensor& q, int64_t k) override;
+  std::vector<torch::Tensor> searchTensor(const torch::Tensor& q,
+                                          int64_t k) override;
 
-private:
+ private:
   size_t Dimensions;
   size_t GlobalIndexCounter = 0;
 
@@ -65,6 +65,7 @@ private:
 }  // namespace CANDY_ALGO
 
 typedef std::shared_ptr<CANDY_ALGO::LshSearch> LSHSearchPtr;
+
 
 #endif // LSHSEARCH_HPP
 

@@ -4,12 +4,11 @@
  * Description: ${DESCRIPTION}
  */
 
-#include <catch2/catch_test_macros.hpp>
 #include <torch/torch.h>
 #include <Algorithms/LSH/LSHSearch.hpp>
+#include <catch2/catch_test_macros.hpp>
 
 using namespace CANDY_ALGO;
-
 
 TEST_CASE("LSH Search Tests") {
   // Set the dimensions and number of hyperplanes
@@ -95,5 +94,4 @@ TEST_CASE("LSH Search Tests") {
     REQUIRE(Results.size() == 3);
     REQUIRE(Results[0].size(0) == 5);
   }
-
 }
