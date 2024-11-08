@@ -12,6 +12,7 @@
 #include <chrono>
 #include <iostream>
 #include <string>
+#include "Algorithms/HNSW/hnsw.hpp"
 using namespace INTELLI;
 using namespace std;
 
@@ -67,7 +68,7 @@ int main(int argc, char** argv) {
      */
   size_t dimensions = dataTensorStream.size(1);
 
-  auto indexPtr = std::make_shared<CANDY_ALGO::KnnSearch>(dimensions);
+  auto indexPtr = std::make_shared<CANDY_ALGO::HNSW>();
 
   if (!indexPtr->setConfig(inMap)) {
     INTELLI_ERROR("Failed to configure ANNS index.");
@@ -120,7 +121,7 @@ int main(int argc, char** argv) {
 
     // Log progress for every 10% increment
     double processed = endRow * 100.0 / aRows;
-    if (processed - processedOld >= 10.0) {
+    if (processed - processedOld >= 1.0) {
       INTELLI_INFO("Done " + std::to_string(processed) + "% (" +
                    std::to_string(startRow) + "/" + std::to_string(aRows) +
                    ")");

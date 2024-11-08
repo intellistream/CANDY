@@ -31,25 +31,25 @@ class KnnSearch : public ANNSBase {
   // Constructor with vector dimensions
   KnnSearch(size_t dimensions);
 
-  virtual bool setConfig(INTELLI::ConfigMapPtr cfg) override;
+  bool setConfig(INTELLI::ConfigMapPtr cfg) override;
 
-  virtual void reset() override;
+  void reset() override;
 
-  virtual bool insertTensor(const torch::Tensor& t) override;
+  bool insertTensor(const torch::Tensor& t) override;
 
-  virtual bool deleteTensor(torch::Tensor& t, int64_t k = 1) override;
+  bool deleteTensor(torch::Tensor& t, int64_t k = 1) override;
 
-  virtual bool reviseTensor(torch::Tensor& t, torch::Tensor& w) override;
+  bool reviseTensor(torch::Tensor& t, torch::Tensor& w) override;
 
-  virtual std::vector<torch::Tensor> searchTensor(const torch::Tensor& q,
-                                                  int64_t k) override;
+  std::vector<torch::Tensor> searchTensor(const torch::Tensor& q,
+                                          int64_t k) override;
 
  private:
   size_t dimensions;
   std::unordered_map<size_t, torch::Tensor> index;
 };
 
-typedef std::shared_ptr<CANDY_ALGO::KnnSearch> KnnSearchPtr;
+typedef std::shared_ptr<KnnSearch> KnnSearchPtr;
 #define newKNNIndex std::make_shared<CANDY_ALGO::KnnSearch>
 }  // namespace CANDY_ALGO
 
