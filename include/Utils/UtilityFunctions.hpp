@@ -7,8 +7,8 @@
 #ifndef IntelliStream_SRC_UTILS_UTILITYFUNCTIONS_HPP_
 #define IntelliStream_SRC_UTILS_UTILITYFUNCTIONS_HPP_
 
-#include <barrier>
 #include <sys/time.h>
+#include <barrier>
 #include <experimental/filesystem>
 #include <functional>
 #include <string>
@@ -16,16 +16,12 @@
 //#include <ATen/ATen.h>
 //#include <Common/Types.h>
 #include <torch/torch.h>
-#include <filesystem>
-#include <vector>
 #include <Utils/TensorOP.hpp>
 #include <Utils/TimeStampGenerator.hpp>
-
-
+#include <filesystem>
+#include <vector>
 
 namespace INTELLI {
-
-
 
 #define TIME_LAST_UNIT_MS 1000
 #define TIME_LAST_UNIT_US 1000000
@@ -47,11 +43,9 @@ namespace INTELLI {
   *    getLatencyPercentage(); Calculates and returns the specified percentile latency.
   */
 
-
 class UtilityFunctions {
 
  public:
-
   UtilityFunctions();
 
   //bind to CPU
@@ -64,20 +58,23 @@ class UtilityFunctions {
     */
   static int bind2Core(int id);
 
-  static double getLatencyPercentage(double fraction, std::vector<INTELLI::IntelliTimeStampPtr> &myTs);
+  static double getLatencyPercentage(
+      double fraction, std::vector<INTELLI::IntelliTimeStampPtr>& myTs);
 
-  static bool saveTimeStampToFile(std::string fname,
-                                std::vector<INTELLI::IntelliTimeStampPtr> &myTs,
-                                bool skipZero = true);
+  static bool saveTimeStampToFile(
+      std::string fname, std::vector<INTELLI::IntelliTimeStampPtr>& myTs,
+      bool skipZero = true);
 
   static bool existRow(torch::Tensor base, torch::Tensor row);
 
-  static double calculateRecall(std::vector<torch::Tensor> groundTruth, std::vector<torch::Tensor> prob);
+  static double calculateRecall(std::vector<torch::Tensor> groundTruth,
+                                std::vector<torch::Tensor> prob);
 
-  static bool tensorListToFile(std::vector<torch::Tensor> &tensorVec, std::string folderName);
+  static bool tensorListToFile(std::vector<torch::Tensor>& tensorVec,
+                               std::string folderName);
 
-  static std::vector<torch::Tensor> tensorListFromFile(std::string folderName, uint64_t tensors);
-
+  static std::vector<torch::Tensor> tensorListFromFile(std::string folderName,
+                                                       uint64_t tensors);
 };
 
 }  // namespace INTELLI
