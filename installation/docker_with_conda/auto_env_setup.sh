@@ -5,7 +5,7 @@ source /opt/conda/bin/activate
 conda activate flow
 
 # Install Hugging Face dependencies
-RUN pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple/
+pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple/
 pip install torch==2.4.0 huggingface_hub
 
 # Update environment and install specific dependencies
