@@ -8,7 +8,7 @@
     pip show wheel >/dev/null 2>&1 || pip install wheel
 
      # Step 1: Define paths
-     BUILD_DIR="./lib"
+     BUILD_DIR="./candy"
      DIST_DIR="./dist"
      SITE_PACKAGES=$(python3 -c "import site; print(site.getusersitepackages())")
 
@@ -21,6 +21,10 @@
          echo "Error: No .so files found in $SITE_PACKAGES."
          exit 1
      }
+
+     # Step 3.5: Ensure the package has an __init__.py file
+    echo "Ensuring $BUILD_DIR/__init__.py exists..."
+    touch "$BUILD_DIR/__init__.py"
 
      # Step 4: Package the Python module
      echo "Building the Python package..."
