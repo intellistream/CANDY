@@ -7,5 +7,5 @@ The default workspace folder `/workspace` contains two loaded files `environment
 This script can be run after container is running with the following steps:
 
 1. Enter container `/bin/bash` CLI via Docker CLI `docker exec -it $container_name /bin/bash` or using SSH `ssh -p 2222 root@$CONTAINER_IP`.
-2. Before start, make sure to configure your `huggingface token` that can download associated model from HuggingFace.
+2. Before start, make sure to configure your `huggingface token` in `auto_env_setup.sh` that can download associated model from HuggingFace.
 3. After configuration, run `bash auto_env_setup.sh` to setup conda env `flow`, which can be used in PyCharm for FlowRAG.
