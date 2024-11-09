@@ -3,7 +3,7 @@
  * Created on: 24-10-30 上午10:50
  * Description: ${DESCRIPTION}
  */
-#include <DataLoader/FVECSDataLoader.h>
+#include <DataLoader/FVECSDataLoader.hpp>
 
 bool CANDY_ALGO::FVECSDataLoader::generateData(std::string fname) {
   auto dataTensor = CANDY_ALGO::FVECSDataLoader::tensorFromFVECS(fname);
