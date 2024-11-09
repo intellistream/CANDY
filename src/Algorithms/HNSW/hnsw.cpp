@@ -26,6 +26,7 @@ bool HNSW::setConfig(const INTELLI::ConfigMapPtr cfg) {
   initialVolume_ = cfg->tryI64("initialVolume", 1000, true);
   dim_ = cfg->tryI64("vecDim", 768, true);
   dbTensor_ = torch::zeros({initialVolume_, dim_});
+  size_ = -1;
   return true;
 }
 
@@ -216,7 +217,8 @@ idx_t HNSW::fetch_free_idx() {
 }
 
 void HNSW::insert(const torch::Tensor& tensor) {
-  const auto insert_pos = fetch_free_idx();
+  auto insert_pos = fetch_free_idx();
+  const long cur_level = random_level();
   if (insert_pos >= size_) {
     // make a container to store the tensor
     const torch::Tensor container = torch::zeros({1, dim_});
@@ -224,12 +226,13 @@ void HNSW::insert(const torch::Tensor& tensor) {
     INTELLI::TensorOP::appendRowsBufferMode(
         &dbTensor_, &container, &size_,
         expandStep);  // append t to dbTensor_
+    vertexes_.emplace_back(cur_level);
+    insert_pos = size_;
   } else {
     dbTensor_[insert_pos] = tensor;  // insert tensor to dbTensor_
+    vertexes_[insert_pos].neighbors_.resize(cur_level + 1);
   }
-  const long cur_level = random_level();
   auto curr_obj = entry_point_;
-  vertexes_.emplace_back(cur_level);
   if (entry_point_ != -1) {
     if (cur_level < max_level_) {
       float cur_dist =
@@ -332,7 +335,7 @@ bool HNSW::reviseTensor(torch::Tensor& t, torch::Tensor& w) {
 
 torch::Tensor HNSW::search(const torch::Tensor& tensor, int64_t k) {
   // Store the indices of top-k nearest neighbors for this query row
-  torch::Tensor result = torch::zeros({k});
+  torch::Tensor result = torch::zeros({k}, torch::kInt64);
   idx_t curr_obj = entry_point_;
   float curr_dist = CANDY::euclidean_distance(tensor, dbTensor_[entry_point_]);
   for (long level = max_level_; level > 0; --level) {

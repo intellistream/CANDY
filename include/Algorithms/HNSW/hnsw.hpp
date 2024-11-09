@@ -92,7 +92,7 @@ class HNSW final : public ANNSBase {
   int64_t efConstruction_{};
   int64_t efSearch_{};
 
-  long size_{};  // how many vectors in the db
+  long size_ = -1;  // how many vectors in the db
 
   long initialVolume_{};  //
   long dim_{};

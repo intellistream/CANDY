@@ -1,1 +1,4 @@
-add_catch_test(algo_tests KdTreeTests.cpp)
+# add candy_path definition
+add_definitions(-DCANDY_PATH="${PROJECT_SOURCE_DIR}")
+add_catch_test(KdTreeTests KdTreeTests.cpp)
+add_catch_test(HNSWTests HNSWTests.cpp)
