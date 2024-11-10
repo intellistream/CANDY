@@ -68,11 +68,9 @@ bool CANDY_ALGO::KnnSearch::reviseTensor(torch::Tensor& t, torch::Tensor& w) {
   // Ensure dbTensor and t are contiguous for compatibility with cdist
   torch::Tensor dbData = dbTensor.contiguous();
   torch::Tensor queryData = t.contiguous();
-
   // Compute pairwise distances between queryData (t) and dbData (dbTensor)
   torch::Tensor distances =
       torch::cdist(queryData, dbData);  // Shape: (rows, dbSize)
-
   // Iterate over each row in t to find and revise the nearest neighbor in dbTensor
   for (int64_t i = 0; i < t.size(0); ++i) {
     // Find the index of the nearest neighbor for the current row in t
@@ -90,23 +88,31 @@ bool CANDY_ALGO::KnnSearch::reviseTensor(torch::Tensor& t, torch::Tensor& w) {
 
   return true;
 }
-
+// NOTICE:ONLY USING AMM IN THIS FUNCTION FOR NOW
 std::vector<torch::Tensor> CANDY_ALGO::KnnSearch::searchTensor(
     const torch::Tensor& q, int64_t k) {
 
   // Ensure dbTensor is contiguous in memory
   torch::Tensor dbData = dbTensor.contiguous();
-  torch::Tensor queryData = q.contiguous();
-
+  torch::Tensor Tran_dbData = dbTensor.t().contiguous();
+  torch::Tensor queryData=q.contiguous();
   // Compute pairwise distances between the query tensor and dbTensor
-  torch::Tensor distances =
-      torch::cdist(queryData, dbData);  // Shape: (querySize, dbSize)
 
+  // Method 1:use torch::cdist to compute L2 distances
+  // torch::Tensor distances =
+  //     torch::cdist(queryData, dbData);  // Shape: (querySize, dbSize)
+
+  //Method 2: use AMM to compute L2 distances
+  //torch::Tensor distances = pairwise_euclidean_distance(queryData,dbData.t(),CANDY::AMM_SMPPCA,80);
+
+  //Method 3:use AMM to compute dot product distances
+
+  torch::Tensor distances = AMM_Compute_DotproductSimilarity(queryData,Tran_dbData,80,CANDY::AMM_CRS);
   // Prepare vector to hold results
   std::vector<torch::Tensor> results;
 
   // For each query, retrieve the top-k nearest neighbors
-  for (int64_t i = 0; i < queryData.size(0); ++i) {
+  for (int64_t i = 0; i < q.size(0); ++i) {
     // Find the indices of the top-k smallest distances for the current query row
     auto topk = std::get<1>(distances[i].topk(
         k, /*largest=*/false));  // Get indices of top-k closest neighbors

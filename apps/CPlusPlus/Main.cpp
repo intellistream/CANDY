@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
      */
   ConfigMapPtr inMap = newConfigMap();
   std::string fileName =
-      (argc >= 2) ? argv[1] : candy_path + "/config/configFvecs.csv";
+      (argc >= 2) ? argv[1] : candy_path + "/config/config.csv";
   if (inMap->fromFile(fileName)) {
     INTELLI_INFO("Config loaded from file: " + fileName);
   } else {
@@ -136,6 +136,28 @@ int main(int argc, char** argv) {
           .count();
   INTELLI_INFO("Streaming feed completed in " + std::to_string(duration) +
                " ms.");
+  /**
+ * @brief 7. Test ANNS Performance
+ */
+  INTELLI_INFO("Testing ANNS performance...");
+
+  size_t testQuerySize = inMap->tryI64("testQuerySize", 200, true);
+  if (testQuerySize > dataTensorAll.size(0)) {
+    testQuerySize = dataTensorAll.size(0);
+  }
+
+  auto queryTensor = dataTensorAll.slice(0, 0, testQuerySize);
+
+  auto queryStart = std::chrono::high_resolution_clock::now();
+  auto searchResults = indexPtr->searchTensor(queryTensor, 10); // now using AMM_CRS in knn search,see CANDY_ALGO::KnnSearch::searchTensor
+  auto queryEnd = std::chrono::high_resolution_clock::now();
+
+  auto queryDuration =
+      std::chrono::duration_cast<std::chrono::milliseconds>(queryEnd - queryStart)
+          .count();
+  INTELLI_INFO("Query completed in " + std::to_string(queryDuration) +
+               " ms for " + std::to_string(testQuerySize) + " queries.");
+
 
   return 0;
 }
