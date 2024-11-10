@@ -1,6 +1,6 @@
 # Build and run the Docker container
 docker-compose down --remove-orphans
-docker-compose build --no-cache
+docker-compose build
 docker-compose up -d
 
 # Display SSH connection information

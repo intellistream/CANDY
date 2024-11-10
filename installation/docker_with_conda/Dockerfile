@@ -1,9 +1,17 @@
-# Base image with CUDA 11.7 and Python 3.10
+# Base image with CUDA 11.7 and Python 3.11
 FROM nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.04
 
 # Environment variables
 ENV USER=candy
 ENV PASSWD=candy
+
+# 设置环境变量，防止apt-get进行交互式操作
+ENV DEBIAN_FRONTEND=noninteractive
+
+# 替换系统的sources.list文件为使用中国镜像
+RUN echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ jammy main restricted universe multiverse\n\
+deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ jammy-updates main restricted universe multiverse\n\
+deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ jammy-backports main restricted universe multiverse" > /etc/apt/sources.list
 
 # Install essential packages and dependencies
 RUN apt-get update && apt-get install -y --allow-change-held-packages \
@@ -31,9 +39,11 @@ RUN apt-get update && apt-get install -y --allow-change-held-packages \
     libgmp-dev \
     libmpfr-dev \
     libmpc-dev \
+    clang-format \
     && apt-get clean 
 
 # Install Python dependencies
+RUN pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple/
 RUN pip3 install torch matplotlib pandas==2.0.0
 
 # Set up a new user and configure password

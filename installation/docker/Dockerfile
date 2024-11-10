@@ -25,6 +25,7 @@ RUN apt-get update && apt-get install -y --allow-change-held-packages \
     liblog4cxx-dev \
     git \
     libcupti-dev \
+    clang-format \
     && apt-get clean 
 
 
