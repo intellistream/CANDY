@@ -5,7 +5,7 @@
  */
 
 #include <torch/torch.h>
-#include <Algorithms  //LSH/LSHSearch.hpp>
+#include <Algorithms/LSH/LSHSearch.hpp>
 #include <algorithm>
 #include <iostream>
 #include <random>

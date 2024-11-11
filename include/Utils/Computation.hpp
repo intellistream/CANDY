@@ -11,9 +11,26 @@
 #include <vector>
 
 namespace CANDY {
-inline float computeL2Distance(const float* a, const float* b, size_t size) {
-  return std::inner_product(a, a + size, b, 0.0f, std::plus<float>(),
-                            [](float x, float y) { return (x - y) * (x - y); });
+inline float computeL2Distance(const float* a, const float* b,
+                               const size_t size) {
+  return std::inner_product(
+      a, a + size, b, 0.0f, std::plus<float>(),
+      [](const float x, const float y) { return (x - y) * (x - y); });
+}
+
+inline float computeL2Distance(const std::vector<float>& a,
+                               const std::vector<float>& b) {
+  return computeL2Distance(a.data(), b.data(), a.size());
+}
+
+inline float euclidean_distance(const std::vector<float>& a,
+                                const std::vector<float>& b) {
+  return std::sqrt(computeL2Distance(a, b));
+}
+
+inline float euclidean_distance(const torch::Tensor& a,
+                                const torch::Tensor& b) {
+  return torch::norm(a - b).item<float>();
 }
 }  // namespace CANDY
 #endif  // COMPUTATION_H
