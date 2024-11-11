@@ -2,7 +2,7 @@ import os
 import sys
 from datasets import load_dataset
 from datasets.config import HF_DATASETS_TRUST_REMOTE_CODE
-#Adding embeddings for the COCO dataset, with the capability to extend embeddings to other datasets.
+
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from Embedding import flavaEmbedding
