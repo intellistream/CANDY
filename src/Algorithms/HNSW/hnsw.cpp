@@ -9,7 +9,12 @@
 #include <Utils/Computation.hpp>
 
 #include <Utils/TensorOP.hpp>
+#include <cassert>
+#include <cstdint>
 #include <cstdlib>
+#include <memory>
+#include <unordered_set>
+#include "Algorithms/Utils/metric_type.hpp"
 using namespace CANDY_ALGO;
 
 bool HNSW::setConfig(const INTELLI::ConfigMapPtr cfg) {
@@ -155,6 +160,37 @@ void HNSW::getNeighborsByHeuristic2(priority_of_distAndId_Less& top_candidates,
   }
 }
 
+void HNSW::create_link(const idx_t from, const idx_t to, const long level,
+                       const bool link_double) {
+  auto M_cur_max = level ? Mmax_ : Mmax0_;
+  if (auto& neighbors = vertexes_[from].neighbors_[level];
+      neighbors.size() < M_cur_max) {
+    neighbors.push_back(to);
+  } else {
+    throw std::runtime_error("neighbors.size() >= M_cur_max");
+  }
+  if (link_double) {
+    if (auto& neighbors = vertexes_[to].neighbors_[level];
+        neighbors.size() < M_cur_max) {
+      neighbors.push_back(from);
+    } else {
+      throw std::runtime_error("neighbors.size() >= M_cur_max");
+    }
+  }
+}
+
+void HNSW::remove_link(const idx_t from, const idx_t to, const long level,
+                       const bool link_double) {
+  if (auto& neighbors = vertexes_[from].neighbors_[level]; !neighbors.empty()) {
+    std::erase(neighbors, to);
+  }
+  if (link_double) {
+    if (auto& neighbors = vertexes_[to].neighbors_[level]; !neighbors.empty()) {
+      std::erase(neighbors, from);
+    }
+  }
+}
+
 long HNSW::mutually_connect_new_element(
     const torch::Tensor& tensor, int64_t id,
     priority_of_distAndId_Less& top_candidates, const long level,
@@ -170,8 +206,7 @@ long HNSW::mutually_connect_new_element(
     top_candidates.pop();
   }
   const idx_t next_nearest_ep = selected_neighbors.back();
-  vertexes_[id].neighbors_[level] = std::move(selected_neighbors);
-  for (const auto& neighbor : vertexes_[id].neighbors_[level]) {
+  for (const auto& neighbor : selected_neighbors) {
     bool exists = false;
     if (is_update) {
       for (const auto& n_n : vertexes_[neighbor].neighbors_[level]) {
@@ -184,22 +219,39 @@ long HNSW::mutually_connect_new_element(
     if (!exists) {
       if (auto& neighbors = vertexes_[neighbor].neighbors_[level];
           neighbors.size() < M_cur_max) {
-        neighbors.push_back(id);
+        create_link(id, neighbor, level, true);
       } else {
+        assert(neighbors.size() == M_cur_max);
+        /**
+          * here is the reason why the vertex is not double linked
+         */
         // find the farthest neighbor to replace
         float max_dist =
             CANDY::euclidean_distance(dbTensor_[id], dbTensor_[neighbor]);
         priority_of_distAndId_Less candidates;
         candidates.emplace(max_dist, id);
+        std::unordered_set<idx_t> set{id};
         for (const auto& n_n : neighbors) {
           candidates.emplace(CANDY::euclidean_distance(dbTensor_[n_n], tensor),
                              n_n);
+          set.insert(n_n);  // supposed neighbors
         }
         getNeighborsByHeuristic2(candidates, M_cur_max);
+        assert(neighbors.size() >= candidates.size());
         int index = 0;
         while (!candidates.empty()) {
+          set.erase(
+              candidates.top().id);  // the rest of the unselected neighbors
           neighbors[index++] = candidates.top().id;
           candidates.pop();
+        }
+        if (auto it = set.find(id);
+            it ==
+            set.end()) {  // new element is the closer one, so it could insert into the neighbors
+          create_link(id, neighbor, level, false);
+        }
+        for (const auto& n : set) {
+          remove_link(n, neighbor, level);
         }
       }
     }
@@ -279,16 +331,42 @@ bool HNSW::insertTensor(const torch::Tensor& t) {
 
 void HNSW::remove(const idx_t idx) {
   free_list_.push_back(idx);
-  auto& neighbors = vertexes_[idx].neighbors_;
-  for (auto& neighbor : neighbors) {
-    for (const auto& n : neighbor) {
-      for (auto& n_neighbor = vertexes_[n].neighbors_; auto& n_n : n_neighbor) {
-        std::erase(n_n, idx);
+  //TODO: if the vertex is the entry point, we need to update the entry point
+  const bool is_entry_point = idx == entry_point_;
+  idx_t new_entry_point = -1;
+  auto& top_neighbors =
+      vertexes_[idx].neighbors_[max_level_];  // size should not be 0
+  while (is_entry_point && max_level_ > 0) {
+    for (const auto& neighbor : top_neighbors) {
+      if (new_entry_point == -1) {
+        new_entry_point = neighbor;  // neighbor will bot be -1;
+      } else {
+        if (CANDY::euclidean_distance(dbTensor_[neighbor], dbTensor_[idx]) <
+            CANDY::euclidean_distance(dbTensor_[new_entry_point],
+                                      dbTensor_[idx])) {
+          new_entry_point = neighbor;
+        }
       }
     }
-    neighbor.clear();
+    if (new_entry_point != -1) {
+      break;
+    }
+    top_neighbors = vertexes_[new_entry_point].neighbors_[--max_level_];
   }
-  neighbors.clear();
+  if (is_entry_point) {
+    entry_point_ = new_entry_point;
+  }
+  auto& all_neighbors = vertexes_[idx].neighbors_;
+  for (auto& neighbors_level : all_neighbors) {
+    for (const auto& neighbor : neighbors_level) {
+      for (auto& n_neighbors = vertexes_[neighbor].neighbors_;
+           auto& n_neighbor : n_neighbors) {
+        std::erase(n_neighbor, idx);
+      }
+    }
+    neighbors_level.clear();
+  }
+  all_neighbors.clear();
 }
 
 bool HNSW::deleteTensor(torch::Tensor& t, const int64_t k) {

@@ -64,6 +64,11 @@ class HNSW final : public ANNSBase {
 
   void getNeighborsByHeuristic2(priority_of_distAndId_Less& top_candidates,
                                 int64_t M) const;
+
+  void create_link(idx_t from, idx_t to, long level, bool link_double = true);
+
+  void remove_link(idx_t from, idx_t to, long level, bool link_double = false);
+
   long mutually_connect_new_element(const torch::Tensor& tensor, int64_t id,
                                     priority_of_distAndId_Less& top_candidates,
                                     long level, bool is_update);
