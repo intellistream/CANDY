@@ -16,10 +16,11 @@ namespace CANDY_ALGO {
 // Set configuration
 bool LSHSearch::setConfig(INTELLI::ConfigMapPtr cfg) {
   // ANNSBase::setConfig(cfg);
-  if (cfg == nullptr) return false;
+  if (cfg == nullptr)
+    return false;
 
-  Dimensions = cfg->tryI64("vecDim",768,true);
-  NumofHyperplanes = cfg->tryI64("NumofHyperplanes",10,true);
+  Dimensions = cfg->tryI64("vecDim", 768, true);
+  NumofHyperplanes = cfg->tryI64("NumofHyperplanes", 10, true);
 
   // Generate random hyperplanes
   GenerateRandomHyperplanes(NumofHyperplanes);
@@ -207,7 +208,8 @@ std::vector<torch::Tensor> LSHSearch::searchTensor(const torch::Tensor& q,
 void LSHSearch::GenerateRandomHyperplanes(size_t NumPlanes) {
   RandomHyperplanes.resize(NumPlanes);
   for (size_t i = 0; i < NumPlanes; ++i) {
-    RandomHyperplanes[i] = torch::empty({static_cast<long>(Dimensions)}).uniform_(-1, 1);
+    RandomHyperplanes[i] =
+        torch::empty({static_cast<long>(Dimensions)}).uniform_(-1, 1);
   }
 }
 

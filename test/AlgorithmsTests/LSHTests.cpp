@@ -11,7 +11,6 @@
 using namespace CANDY_ALGO;
 const std::string candy_path = CANDY_PATH;
 
-
 TEST_CASE("LSH Search Tests") {
 
   INTELLI::ConfigMapPtr inMap = newConfigMap();
@@ -23,15 +22,16 @@ TEST_CASE("LSH Search Tests") {
   }
 
   // Set up dimensions for the generation of test data
-  size_t Dimensions = inMap->tryI64("vecDim",10,true);
-  size_t InitialRows = 20000;   // Easy to test so take the initiative to set up
+  size_t Dimensions = inMap->tryI64("vecDim", 10, true);
+  size_t InitialRows = 20000;  // Easy to test so take the initiative to set up
 
   // Insert/Search/Delete test
   SECTION("Insert/Search/Delete Tensor") {
     LSHSearch lsh{};
     lsh.setConfig(inMap);
 
-    torch::Tensor Data = torch::randn({static_cast<long>(InitialRows), static_cast<long>(Dimensions)});
+    torch::Tensor Data = torch::randn(
+        {static_cast<long>(InitialRows), static_cast<long>(Dimensions)});
     REQUIRE(lsh.insertTensor(Data));
 
     torch::Tensor SearchQuery = Data.slice(0, 0, 2);
@@ -79,7 +79,8 @@ TEST_CASE("LSH Search Tests") {
     LSHSearch lsh{};
     lsh.setConfig(inMap);
 
-    torch::Tensor Data = torch::randn({static_cast<long>(InitialRows), static_cast<long>(Dimensions)});
+    torch::Tensor Data = torch::randn(
+        {static_cast<long>(InitialRows), static_cast<long>(Dimensions)});
     REQUIRE(lsh.insertTensor(Data));
 
     torch::Tensor reviseQuery = Data.slice(0, 0, 3);
