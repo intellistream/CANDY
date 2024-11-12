@@ -13,28 +13,28 @@
 
 namespace CANDY_ALGO {
 
-// Constructor with vector dimensions and number of planes
-LshSearch::LshSearch(size_t Dimensions, size_t NumPlanes)
-    : Dimensions(Dimensions) {
-  // Initialize the hyperplane
-  GenerateRandomHyperplanes(NumPlanes);
-}
-
 // Set configuration
-bool LshSearch::setConfig(INTELLI::ConfigMapPtr cfg) {
-  ANNSBase::setConfig(cfg);
+bool LSHSearch::setConfig(INTELLI::ConfigMapPtr cfg) {
+  // ANNSBase::setConfig(cfg);
+  if (cfg == nullptr) return false;
+
+  Dimensions = cfg->tryI64("vecDim",768,true);
+  NumofHyperplanes = cfg->tryI64("NumofHyperplanes",10,true);
+
+  // Generate random hyperplanes
+  GenerateRandomHyperplanes(NumofHyperplanes);
   return true;
 }
 
 // Reset the LSH data structure
-void LshSearch::reset() {
+void LSHSearch::reset() {
   Index.clear();
   nearbyBuckets.clear();
   GlobalIndexCounter = 0;
 }
 
 // Insert tensor into LSH
-bool LshSearch::insertTensor(const torch::Tensor& t) {
+bool LSHSearch::insertTensor(const torch::Tensor& t) {
   for (int64_t i = 0; i < t.size(0); ++i) {
     auto row = t[i];
     int64_t id = GlobalIndexCounter++;
@@ -45,7 +45,7 @@ bool LshSearch::insertTensor(const torch::Tensor& t) {
 }
 
 // Delete tensor from LSH
-bool LshSearch::deleteTensor(torch::Tensor& t, int64_t k) {
+bool LSHSearch::deleteTensor(torch::Tensor& t, int64_t k) {
   auto results = searchTensor(t, k);
 
   for (int64_t i = 0; i < t.size(0); ++i) {
@@ -97,7 +97,7 @@ bool LshSearch::deleteTensor(torch::Tensor& t, int64_t k) {
 }
 
 // Revise tensor (modify its value)
-bool LshSearch::reviseTensor(torch::Tensor& t, torch::Tensor& w) {
+bool LSHSearch::reviseTensor(torch::Tensor& t, torch::Tensor& w) {
   if (t.size(0) > w.size(0) || t.size(1) != w.size(1)) {
     return false;
   }
@@ -128,7 +128,7 @@ bool LshSearch::reviseTensor(torch::Tensor& t, torch::Tensor& w) {
 }
 
 // Search for the k nearest neighbors of tensor q
-std::vector<torch::Tensor> LshSearch::searchTensor(const torch::Tensor& q,
+std::vector<torch::Tensor> LSHSearch::searchTensor(const torch::Tensor& q,
                                                    int64_t k) {
   std::vector<torch::Tensor> Results;
   nearbyBuckets.clear();  // Clear nearbyBuckets before every search
@@ -204,16 +204,15 @@ std::vector<torch::Tensor> LshSearch::searchTensor(const torch::Tensor& q,
 }
 
 // Generate random hyperplanes for hashing
-void LshSearch::GenerateRandomHyperplanes(size_t NumPlanes) {
+void LSHSearch::GenerateRandomHyperplanes(size_t NumPlanes) {
   RandomHyperplanes.resize(NumPlanes);
   for (size_t i = 0; i < NumPlanes; ++i) {
-    RandomHyperplanes[i] =
-        torch::empty({static_cast<long>(Dimensions)}).uniform_(-1, 1);
+    RandomHyperplanes[i] = torch::empty({static_cast<long>(Dimensions)}).uniform_(-1, 1);
   }
 }
 
 // Hash function to map a tensor to a bucket (returns string hash)
-std::string LshSearch::HashFunction(const torch::Tensor& t) {
+std::string LSHSearch::HashFunction(const torch::Tensor& t) {
   std::string hashValue = "";
 
   for (const auto& plane : RandomHyperplanes) {
@@ -225,7 +224,7 @@ std::string LshSearch::HashFunction(const torch::Tensor& t) {
 }
 
 // Hamming distance between two binary strings
-int LshSearch::HammingDistance(const std::string& str1,
+int LSHSearch::HammingDistance(const std::string& str1,
                                const std::string& str2) {
   int dist = 0;
   for (size_t i = 0; i < str1.size(); ++i) {

@@ -9,16 +9,29 @@
 #include <catch2/catch_test_macros.hpp>
 
 using namespace CANDY_ALGO;
+const std::string candy_path = CANDY_PATH;
+
 
 TEST_CASE("LSH Search Tests") {
-  // Set the dimensions and number of hyperplanes
-  size_t Dimensions = 10;
-  size_t NumPlanes = 10;
+
+  INTELLI::ConfigMapPtr inMap = newConfigMap();
+  std::string fileName = candy_path + "/config/configLSH.csv";
+  if (inMap->fromFile(fileName)) {
+    INTELLI_INFO("Config loaded from file: " + fileName);
+  } else {
+    INTELLI_ERROR("Failed to load config from file: " + fileName);
+  }
+
+  // Set up dimensions for the generation of test data
+  size_t Dimensions = inMap->tryI64("vecDim",10,true);
+  size_t InitialRows = 20000;   // Easy to test so take the initiative to set up
 
   // Insert/Search/Delete test
   SECTION("Insert/Search/Delete Tensor") {
-    LshSearch lsh(Dimensions, NumPlanes);
-    torch::Tensor Data = torch::randn({20000, Dimensions});
+    LSHSearch lsh{};
+    lsh.setConfig(inMap);
+
+    torch::Tensor Data = torch::randn({static_cast<long>(InitialRows), static_cast<long>(Dimensions)});
     REQUIRE(lsh.insertTensor(Data));
 
     torch::Tensor SearchQuery = Data.slice(0, 0, 2);
@@ -49,7 +62,7 @@ TEST_CASE("LSH Search Tests") {
     for (int m = 0; m < Results.size(); ++m) {
       result = Results[m];
       std::cout << "Row[" << m
-                << "] The most similar 5 tensors after removing:" << std::endl;
+                << "] The most similar 5 tensors after deletion:" << std::endl;
       for (int j = 0; j < result.size(0); ++j) {
         int64_t id = result[j][0].item<int64_t>();
         torch::Tensor row = Data[id].unsqueeze(0);
@@ -63,12 +76,14 @@ TEST_CASE("LSH Search Tests") {
   }
 
   SECTION("Revise Tensor") {
-    LshSearch lsh(Dimensions, NumPlanes);
-    torch::Tensor Data = torch::randn({20000, Dimensions});
+    LSHSearch lsh{};
+    lsh.setConfig(inMap);
+
+    torch::Tensor Data = torch::randn({static_cast<long>(InitialRows), static_cast<long>(Dimensions)});
     REQUIRE(lsh.insertTensor(Data));
 
     torch::Tensor reviseQuery = Data.slice(0, 0, 3);
-    torch::Tensor NewTensor = torch::randn({3, Dimensions});
+    torch::Tensor NewTensor = torch::randn({3, static_cast<long>(Dimensions)});
 
     std::cout << "Primitive tensors: " << reviseQuery << std::endl;
     std::cout << "New Tensors: " << NewTensor << std::endl;
