@@ -36,3 +36,8 @@ Steps 1, 2, and 3 can be automatically executed by the install_pycandy.sh, and a
     ```
 
 5. **Try candy by** using `import candy.pycandy` in python.
+
+6. **To use pycandy remotely**, please use the following command afer pip install
+    ```
+    export LD_LIBRARY_PATH=$(python -c "import torch; import os; print(os.path.join(os.path.dirname(torch.__file__), 'lib'))"):$LD_LIBRARY_PATH
+    ```
