@@ -16,15 +16,14 @@
 
 namespace CANDY_ALGO {
 
-class LshSearch : public ANNSBase {
+class LSHSearch : public ANNSBase {
  protected:
   INTELLI::ConfigMapPtr myCfg = nullptr;
 
  public:
-  ~LshSearch() override = default;
+  LSHSearch() = default;
 
-  // Constructor with vector dimensions and number of planes
-  explicit LshSearch(size_t Dimensions, size_t NumPlanes);
+  ~LSHSearch() override = default;
 
   bool setConfig(INTELLI::ConfigMapPtr cfg) override;
 
@@ -41,6 +40,7 @@ class LshSearch : public ANNSBase {
 
  private:
   size_t Dimensions;
+  size_t NumofHyperplanes;
   size_t GlobalIndexCounter = 0;
 
   // Hash table (unordered_map) where each bucket corresponds to a map of tensors
@@ -65,6 +65,6 @@ class LshSearch : public ANNSBase {
 
 }  // namespace CANDY_ALGO
 
-typedef std::shared_ptr<CANDY_ALGO::LshSearch> LSHSearchPtr;
+typedef std::shared_ptr<CANDY_ALGO::LSHSearch> LSHSearchPtr;
 
 #endif  // LSHSEARCH_HPP
