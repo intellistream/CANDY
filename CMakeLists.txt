@@ -17,6 +17,13 @@ include(cmake/DefaultOptions.cmake)
 include(cmake/CompilerSetup.cmake)
 add_subdirectory(tools)
 # # Find python development files
+set(Python_EXECUTABLE "/usr/bin/python3.11")
+
+# Set Python include and library paths if required
+# NOTE: This python path only verified on Docker container, might not work for all environments.
+set(Python_INCLUDE_DIRS "/usr/include/python3.11")
+set(Python_LIBRARIES "/usr/lib/x86_64-linux-gnu/libpython3.11.so")
+
 find_package(Python REQUIRED COMPONENTS Interpreter Development)
 include_directories(${Python3_INCLUDE_DIRS})
 
