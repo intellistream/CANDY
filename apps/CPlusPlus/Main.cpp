@@ -9,9 +9,11 @@
 #include <DataLoader/DataLoaderTable.hpp>
 #include <Utils/ConfigMap.hpp>
 #include <Utils/TimeStampGenerator.hpp>
+#include <Utils/UtilityFunctions.hpp>
 #include <chrono>
 #include <iostream>
 #include <string>
+#include "Algorithms/HNSW/hnsw.hpp"
 using namespace INTELLI;
 using namespace std;
 
@@ -46,6 +48,7 @@ int main(int argc, char** argv) {
   dataLoader->setConfig(inMap);
   auto dataTensorAll = dataLoader->getData().nan_to_num(0);
   auto dataTensorStream = dataTensorAll;
+  auto queryTensor = dataLoader->getQuery().nan_to_num(0);
 
   INTELLI_INFO(
       "Data loaded: Dimension = " + std::to_string(dataTensorStream.size(1)) +
@@ -67,7 +70,7 @@ int main(int argc, char** argv) {
      */
   size_t dimensions = dataTensorStream.size(1);
 
-  auto indexPtr = std::make_shared<CANDY_ALGO::KnnSearch>(dimensions);
+  auto indexPtr = std::make_shared<CANDY_ALGO::HNSW>();
 
   if (!indexPtr->setConfig(inMap)) {
     INTELLI_ERROR("Failed to configure ANNS index.");
@@ -120,7 +123,7 @@ int main(int argc, char** argv) {
 
     // Log progress for every 10% increment
     double processed = endRow * 100.0 / aRows;
-    if (processed - processedOld >= 10.0) {
+    if (processed - processedOld >= 1.0) {
       INTELLI_INFO("Done " + std::to_string(processed) + "% (" +
                    std::to_string(startRow) + "/" + std::to_string(aRows) +
                    ")");
@@ -158,6 +161,49 @@ int main(int argc, char** argv) {
   INTELLI_INFO("Query completed in " + std::to_string(queryDuration) +
                " ms for " + std::to_string(testQuerySize) + " queries.");
 
+
+  INTELLI_INFO(
+      "Streaming feed is done! Let us search and validate the results!");
+  INTELLI_INFO("Insert is done, let us validate the results");
+  int64_t ANNK = inMap->tryI64("ANNK", 5, true);
+  auto startQuery = std::chrono::high_resolution_clock::now();
+  auto indexResults = indexPtr->searchTensor(queryTensor, ANNK);
+  uint64_t queryLatency = chronoElapsedTime(startQuery);
+  INTELLI_INFO("Query done in " + to_string(queryLatency / 1000) + "ms");
+  std::string groundTruthPrefix =
+      inMap->tryString("groundTruthPrefix", "onlineInsert_GroundTruth", true);
+
+  std::string probeName = groundTruthPrefix + "/" +
+                          std::to_string(indexResults.size() - 1) + ".rbt";
+  double recall = 0.0;
+
+  int64_t groundTruthRedo = inMap->tryI64("groundTruthRedo", 1, true);
+
+  if (std::ifstream(probeName).good() && (groundTruthRedo == 0)) {
+    INTELLI_INFO("Ground truth exists, so I load it");
+    auto gdResults = UtilityFunctions::tensorListFromFile(groundTruthPrefix,
+                                                          indexResults.size());
+    INTELLI_INFO("Ground truth is loaded");
+    recall = UtilityFunctions::calculateRecall(gdResults, indexResults);
+  } else {
+    INTELLI_INFO("Ground truth does not exist, so I'll create it");
+    auto gdMap = newConfigMap();
+    gdMap->loadFrom(*inMap);
+    auto gdIndex = std::make_shared<CANDY_ALGO::KnnSearch>(dimensions);
+    gdIndex->setConfig(gdMap);
+    if (initialRows > 0) {
+      gdIndex->loadInitialTensor(dataTensorInitial);
+    }
+    gdIndex->insertTensor(dataTensorStream);
+
+    auto gdResults = gdIndex->searchTensor(queryTensor, ANNK);
+    INTELLI_INFO("Ground truth is done");
+    recall = UtilityFunctions::calculateRecall(gdResults, indexResults);
+    //UtilityFunctions::tensorListToFile(gdResults, groundTruthPrefix);
+  }
+
+  INTELLI_INFO("RECALL = " + std::to_string(recall));
+  INTELLI_INFO("Query Latency = " + std::to_string(queryLatency));
 
   return 0;
 }
