@@ -122,7 +122,7 @@ int main(int argc, char** argv) {
     }
 
     // Log progress for every 10% increment
-    double processed = endRow * 100.0 / aRows;
+    double processed = startRow * 100.0 / aRows;
     if (processed - processedOld >= 1.0) {
       INTELLI_INFO("Done " + std::to_string(processed) + "% (" +
                    std::to_string(startRow) + "/" + std::to_string(aRows) +

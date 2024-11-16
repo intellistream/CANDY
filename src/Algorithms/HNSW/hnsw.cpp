@@ -12,8 +12,10 @@
 #include <cassert>
 #include <cstdint>
 #include <cstdlib>
+#include <future>
 #include <memory>
 #include <unordered_set>
+#include <vector>
 #include "Algorithms/Utils/metric_type.hpp"
 using namespace CANDY_ALGO;
 
@@ -48,7 +50,8 @@ priority_of_distAndId_Less HNSW::search_base_layer(idx_t ep_id,
                                                    const long layer) {
   priority_of_distAndId_Less top_candidates;
   priority_of_distAndId_Less candidates;
-  float lowerBound = CANDY::euclidean_distance(dbTensor_[ep_id], tensor);
+  float lowerBound = CANDY::euclidean_distance(dbTensor_[ep_id].contiguous(),
+                                               tensor.contiguous());
   top_candidates.emplace(lowerBound, ep_id);
   candidates.emplace(-lowerBound, ep_id);
   std::unordered_set<idx_t> visited;
@@ -63,7 +66,8 @@ priority_of_distAndId_Less HNSW::search_base_layer(idx_t ep_id,
       if (visited.contains(neighbor))
         continue;
       visited.insert(neighbor);
-      if (float dist = CANDY::euclidean_distance(dbTensor_[neighbor], tensor);
+      if (float dist = CANDY::euclidean_distance(
+              dbTensor_[neighbor].contiguous(), tensor.contiguous());
           top_candidates.size() < efConstruction_ || dist < lowerBound) {
         candidates.emplace(-dist, neighbor);
         top_candidates.emplace(dist, neighbor);
@@ -100,7 +104,8 @@ priority_of_distAndId_Less HNSW::search_base_layerST(idx_t ep,
       if (visited.contains(neighbor))
         continue;
       visited.insert(neighbor);
-      if (const auto dist = CANDY::euclidean_distance(dbTensor_[neighbor], q);
+      if (const auto dist = CANDY::euclidean_distance(
+              dbTensor_[neighbor].contiguous(), q.contiguous());
           top_candidates.size() < ef || dist < lowerBound) {
         candidates.emplace(-dist, neighbor);
         top_candidates.emplace(dist, neighbor);
@@ -130,6 +135,8 @@ void HNSW::getNeighborsByHeuristic2(priority_of_distAndId_Less& top_candidates,
   }
   priority_of_distAndId_Less candidates;
   std::vector<distAndId> needed;
+  needed.reserve(M);
+  auto db_tensor = dbTensor_.contiguous();
   while (!top_candidates.empty()) {
     auto [dist, idx] = top_candidates.top();
     candidates.emplace(-dist, idx);
@@ -144,8 +151,8 @@ void HNSW::getNeighborsByHeuristic2(priority_of_distAndId_Less& top_candidates,
     candidates.pop();
     bool good = true;
     for (auto& [d, i] : needed) {
-      if (const float cur_dist =
-              CANDY::euclidean_distance(dbTensor_[i], dbTensor_[idx]);
+      if (const float cur_dist = CANDY::euclidean_distance(
+              db_tensor[i].contiguous(), db_tensor[idx].contiguous());
           cur_dist < dist2query) {
         good = false;
         break;
@@ -207,53 +214,42 @@ long HNSW::mutually_connect_new_element(
   }
   const idx_t next_nearest_ep = selected_neighbors.back();
   for (const auto& neighbor : selected_neighbors) {
-    bool exists = false;
-    if (is_update) {
-      for (const auto& n_n : vertexes_[neighbor].neighbors_[level]) {
-        if (n_n == id) {
-          exists = true;
-          break;
-        }
-      }
-    }
-    if (!exists) {
-      if (auto& neighbors = vertexes_[neighbor].neighbors_[level];
-          neighbors.size() < M_cur_max) {
-        create_link(id, neighbor, level, true);
-      } else {
-        assert(neighbors.size() == M_cur_max);
-        /**
+    if (auto& neighbors = vertexes_[neighbor].neighbors_[level];
+        neighbors.size() < M_cur_max) {
+      create_link(id, neighbor, level, true);
+    } else {
+      assert(neighbors.size() == M_cur_max);
+      /**
           * here is the reason why the vertex is not double linked
          */
-        // find the farthest neighbor to replace
-        float max_dist =
-            CANDY::euclidean_distance(dbTensor_[id], dbTensor_[neighbor]);
-        priority_of_distAndId_Less candidates;
-        candidates.emplace(max_dist, id);
-        std::unordered_set<idx_t> set{id};
-        for (const auto& n_n : neighbors) {
-          candidates.emplace(CANDY::euclidean_distance(dbTensor_[n_n], tensor),
-                             n_n);
-          set.insert(n_n);  // supposed neighbors
-        }
-        getNeighborsByHeuristic2(candidates, M_cur_max);
-        assert(neighbors.size() >= candidates.size());
-        int index = 0;
-        while (!candidates.empty()) {
-          set.erase(
-              candidates.top().id);  // the rest of the unselected neighbors
-          neighbors[index++] = candidates.top().id;
-          candidates.pop();
-        }
-        if (auto it = set.find(id);
-            it ==
-            set.end()) {  // new element is the closer one, so it could insert into the neighbors
-          create_link(id, neighbor, level, false);
-        }
-        for (const auto& n : set) {
-          remove_link(n, neighbor, level);
-        }
+      // find the farthest neighbor to replace
+      float max_dist =
+          CANDY::euclidean_distance(dbTensor_[id], dbTensor_[neighbor]);
+      priority_of_distAndId_Less candidates;
+      candidates.emplace(max_dist, id);
+      std::unordered_set<idx_t> set{id};
+      for (const auto& n_n : neighbors) {
+        candidates.emplace(CANDY::euclidean_distance(dbTensor_[n_n], tensor),
+                           n_n);
+        set.insert(n_n);  // supposed neighbors
       }
+      getNeighborsByHeuristic2(candidates, M_cur_max);
+      assert(neighbors.size() >= candidates.size());
+      int index = 0;
+      while (!candidates.empty()) {
+        set.erase(candidates.top().id);  // the rest of the unselected neighbors
+        neighbors[index++] = candidates.top().id;
+        candidates.pop();
+      }
+      if (auto it = set.find(id);
+          it ==
+          set.end()) {  // new element is the closer one, so it could insert into the neighbors
+        create_link(id, neighbor, level, false);
+      }
+      // for (const auto& n : set) {
+      //   remove_link(n, neighbor, level);
+      // }
+      // #TODD: if add acc will be lower
     }
   }
   return next_nearest_ep;
@@ -268,12 +264,14 @@ idx_t HNSW::fetch_free_idx() {
   return idx;
 }
 
-void HNSW::insert(const torch::Tensor& tensor) {
+void HNSW::insert(const torch::Tensor& t) {
   auto insert_pos = fetch_free_idx();
   const long cur_level = random_level();
+  auto db_tensor = dbTensor_.contiguous();
+  auto tensor = t.contiguous();
   if (insert_pos >= size_) {
     // make a container to store the tensor
-    const torch::Tensor container = torch::zeros({1, dim_});
+    torch::Tensor container = torch::zeros({1, dim_});
     container[0] = tensor;
     INTELLI::TensorOP::appendRowsBufferMode(
         &dbTensor_, &container, &size_,
@@ -281,23 +279,30 @@ void HNSW::insert(const torch::Tensor& tensor) {
     vertexes_.emplace_back(cur_level);
     insert_pos = size_;
   } else {
-    dbTensor_[insert_pos] = tensor;  // insert tensor to dbTensor_
+    db_tensor[insert_pos] = tensor;  // insert tensor to dbTensor_
     vertexes_[insert_pos].neighbors_.resize(cur_level + 1);
   }
+
   auto curr_obj = entry_point_;
   if (entry_point_ != -1) {
     if (cur_level < max_level_) {
-      float cur_dist =
-          CANDY::euclidean_distance(dbTensor_[entry_point_], tensor);
+      float cur_dist = CANDY::euclidean_distance(
+          db_tensor[entry_point_].contiguous(), tensor.contiguous());
+      std::unordered_set<idx_t> visited;
       for (int level = static_cast<int>(max_level_); level > cur_level;
            level--) {
+        visited.clear();
+        visited.insert(curr_obj);
         bool changed = true;
         while (changed) {
           changed = false;
-          for (auto neighbors = vertexes_[curr_obj].neighbors_[level];
+          for (auto &neighbors = vertexes_[curr_obj].neighbors_[level];
                const auto& neighbor : neighbors) {
-            if (const float d =
-                    CANDY::euclidean_distance(dbTensor_[neighbor], tensor);
+            if (visited.contains(neighbor))
+              continue;
+            visited.insert(neighbor);
+            if (const float d = CANDY::euclidean_distance(
+                    db_tensor[neighbor].contiguous(), tensor.contiguous());
                 d < cur_dist) {
               cur_dist = d;
               curr_obj = neighbor;
@@ -309,7 +314,7 @@ void HNSW::insert(const torch::Tensor& tensor) {
     }
     for (long level = std::min(cur_level, max_level_); level >= 0; level--) {
       auto top_candidates = search_base_layer(curr_obj, tensor, level);
-      curr_obj = mutually_connect_new_element(tensor, insert_pos,
+      curr_obj = mutually_connect_new_element(tensor.contiguous(), insert_pos,
                                               top_candidates, level, false);
     }
   } else {
@@ -411,19 +416,22 @@ bool HNSW::reviseTensor(torch::Tensor& t, torch::Tensor& w) {
   return true;
 }
 
-torch::Tensor HNSW::search(const torch::Tensor& tensor, int64_t k) {
+torch::Tensor HNSW::search(const torch::Tensor& t, int64_t k) {
   // Store the indices of top-k nearest neighbors for this query row
   torch::Tensor result = torch::zeros({k}, torch::kInt64);
+  auto tensor = t.contiguous();
+  auto db_tensor = dbTensor_.contiguous();
   idx_t curr_obj = entry_point_;
-  float curr_dist = CANDY::euclidean_distance(tensor, dbTensor_[entry_point_]);
+  float curr_dist = CANDY::euclidean_distance(
+      tensor.contiguous(), db_tensor[entry_point_].contiguous());
   for (long level = max_level_; level > 0; --level) {
     bool changed = true;
     while (changed) {
       changed = false;
       for (auto& neighbors = vertexes_[curr_obj].neighbors_[level];
            const auto neighbor : neighbors) {
-        if (const float dist =
-                CANDY::euclidean_distance(tensor, dbTensor_[curr_obj]);
+        if (const float dist = CANDY::euclidean_distance(
+                tensor.contiguous(), db_tensor[neighbor].contiguous());
             dist < curr_dist) {
           curr_dist = dist;
           curr_obj = neighbor;
@@ -433,14 +441,14 @@ torch::Tensor HNSW::search(const torch::Tensor& tensor, int64_t k) {
     }
   }
   auto top_candidates =
-      search_base_layerST(curr_obj, tensor, std::max(efSearch_, k));
+      search_base_layerST(curr_obj, t, std::max(efSearch_, k));
   while (top_candidates.size() > k) {
     top_candidates.pop();
   }
   long index = k - 1;
   while (!top_candidates.empty()) {
     auto [_, id] = top_candidates.top();
-    result = result.index_put_({index--}, id);
+    result.index_put_({index--}, id);
     top_candidates.pop();
   }
   return result;
@@ -453,9 +461,14 @@ std::vector<torch::Tensor> HNSW::searchTensor(const torch::Tensor& q,
   to_return.reserve(to_search);
   if (size_ == 0)
     return {};
+  std::vector<std::future<torch::Tensor>> futures;
   for (int i = 0; i < to_search; ++i) {
-    auto result = search(q[i], k);
-    to_return.emplace_back(result);
+    auto future = std::async(std::launch::async,
+                             [this, &q, i, k]() { return search(q[i], k); });
+    futures.emplace_back(std::move(future));
+  }
+  for (auto& future : futures) {
+    to_return.push_back(future.get());
   }
   return to_return;
 }
