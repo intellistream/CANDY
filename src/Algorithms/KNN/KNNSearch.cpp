@@ -99,15 +99,15 @@ std::vector<torch::Tensor> CANDY_ALGO::KnnSearch::searchTensor(
   // Compute pairwise distances between the query tensor and dbTensor
 
   // Method 1:use torch::cdist to compute L2 distances
-  // torch::Tensor distances =
-  //     torch::cdist(queryData, dbData);  // Shape: (querySize, dbSize)
+  torch::Tensor distances =
+      torch::cdist(queryData, dbData);  // Shape: (querySize, dbSize)
 
   //Method 2: use AMM to compute L2 distances
   //torch::Tensor distances = pairwise_euclidean_distance(queryData,dbData.t(),CANDY::AMM_SMPPCA,80);
 
   //Method 3:use AMM to compute dot product distances
 
-  torch::Tensor distances = AMM_Compute_DotproductSimilarity(queryData,Tran_dbData,80,CANDY::AMM_CRS);
+  // torch::Tensor distances = AMM_Compute_DotproductSimilarity(queryData,Tran_dbData,80,CANDY::AMM_CRS);
   // Prepare vector to hold results
   std::vector<torch::Tensor> results;
 
@@ -115,7 +115,7 @@ std::vector<torch::Tensor> CANDY_ALGO::KnnSearch::searchTensor(
   for (int64_t i = 0; i < q.size(0); ++i) {
     // Find the indices of the top-k smallest distances for the current query row
     auto topk = std::get<1>(distances[i].topk(
-        k,/*dim=*/0,/*largest=*/true));  // Get indices of top-k closest neighbors
+        k,/*dim=*/0,/*largest=*/false));  // Get indices of top-k closest neighbors
     //when using dot product similarity largest=true;
     //when using L2 , largest=false
 

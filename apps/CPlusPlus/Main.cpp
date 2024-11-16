@@ -14,6 +14,9 @@
 #include <iostream>
 #include <string>
 #include "Algorithms/HNSW/hnsw.hpp"
+#include "Algorithms/KDTree/KDTree.hpp"
+#include "Algorithms/LSH/LSHSearch.hpp"
+#include "Algorithms/FlatGPUIndex/FlatGPUIndex.hpp"
 using namespace INTELLI;
 using namespace std;
 
@@ -168,7 +171,7 @@ int main(int argc, char** argv) {
     INTELLI_INFO("Ground truth does not exist, so I'll create it");
     auto gdMap = newConfigMap();
     gdMap->loadFrom(*inMap);
-    auto gdIndex = std::make_shared<CANDY_ALGO::KnnSearch>(dimensions);
+    auto gdIndex = std::make_shared<CANDY_ALGO::KnnSearch>();
     gdIndex->setConfig(gdMap);
     if (initialRows > 0) {
       gdIndex->loadInitialTensor(dataTensorInitial);
