@@ -46,7 +46,7 @@ TEST_CASE("LSH Search Tests") {
       std::cout << "Row[" << m
                 << "] The most similar 5 tensors before deletion:" << std::endl;
       for (int j = 0; j < result.size(0); ++j) {
-        int64_t id = result[j][0].item<int64_t>();
+        int64_t id = result[j].item<int64_t>();
         torch::Tensor row = Data[id].unsqueeze(0);
         std::cout << "id " << id << ": " << row << std::endl;
       }
@@ -64,7 +64,7 @@ TEST_CASE("LSH Search Tests") {
       std::cout << "Row[" << m
                 << "] The most similar 5 tensors after deletion:" << std::endl;
       for (int j = 0; j < result.size(0); ++j) {
-        int64_t id = result[j][0].item<int64_t>();
+        int64_t id = result[j].item<int64_t>();
         torch::Tensor row = Data[id].unsqueeze(0);
         std::cout << "id " << id << ": " << row << std::endl;
       }
@@ -99,7 +99,7 @@ TEST_CASE("LSH Search Tests") {
       std::cout << "Row[" << m << "] Query after modifying the tensors"
                 << std::endl;
       for (int j = 0; j < result.size(0); ++j) {
-        int64_t id = result[j][0].item<int64_t>();
+        int64_t id = result[j].item<int64_t>();
         torch::Tensor row = Data[id].unsqueeze(0);
         std::cout << "id " << id << ": " << row << std::endl;
       }

@@ -109,7 +109,7 @@ std::vector<torch::Tensor> CANDY_ALGO::KnnSearch::searchTensor(
   for (int64_t i = 0; i < queryData.size(0); ++i) {
     // Find the indices of the top-k smallest distances for the current query row
     auto topk = std::get<1>(distances[i].topk(
-        k, /*largest=*/false));  // Get indices of top-k closest neighbors
+        k,-1, /*largest=*/false));  // Get indices of top-k closest neighbors
 
     // Store the indices of top-k nearest neighbors for this query row
     results.push_back(topk);

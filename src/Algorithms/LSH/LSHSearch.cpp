@@ -20,7 +20,8 @@ bool LSHSearch::setConfig(INTELLI::ConfigMapPtr cfg) {
     return false;
 
   Dimensions = cfg->tryI64("vecDim", 768, true);
-  NumofHyperplanes = cfg->tryI64("NumofHyperplanes", 10, true);
+  NumofHyperplanes = cfg->tryI64("numberOfHyperplanes", 10, true);
+  //printf("NumofHyperplanes = %zu\n",NumofHyperplanes);
 
   // Generate random hyperplanes
   GenerateRandomHyperplanes(NumofHyperplanes);
@@ -62,7 +63,7 @@ bool LSHSearch::deleteTensor(torch::Tensor& t, int64_t k) {
     //for (int l = 0; l < 10; ++l) {
     //  std::cout << rowNearbyBuckets[l] << " ";
     //}
-    std::cout << std::endl;
+    //std::cout << std::endl;
 
     for (const auto& [dist, bucket] : rowNearbyBuckets) {
 
@@ -193,10 +194,10 @@ std::vector<torch::Tensor> LSHSearch::searchTensor(const torch::Tensor& q,
     }
 
     // Convert indices to a tensor and add to results
-    torch::Tensor Tensor = torch::empty({static_cast<long>(Indices.size()), 1},
+    torch::Tensor Tensor = torch::empty({static_cast<long>(Indices.size())},
                                         torch::dtype(torch::kLong));
     for (size_t j = 0; j < Indices.size(); ++j) {
-      Tensor[j][0] = static_cast<long>(Indices[j]);
+      Tensor[j] = static_cast<long>(Indices[j]);
     }
     Results.push_back(Tensor);
   }
@@ -210,6 +211,7 @@ void LSHSearch::GenerateRandomHyperplanes(size_t NumPlanes) {
   for (size_t i = 0; i < NumPlanes; ++i) {
     RandomHyperplanes[i] =
         torch::empty({static_cast<long>(Dimensions)}).uniform_(-1, 1);
+    RandomHyperplanes[i] = RandomHyperplanes[i] / RandomHyperplanes[i].norm();
   }
 }
 
@@ -219,7 +221,7 @@ std::string LSHSearch::HashFunction(const torch::Tensor& t) {
 
   for (const auto& plane : RandomHyperplanes) {
     float dotProduct = torch::dot(t, plane).item<float>();
-    hashValue += (dotProduct > 0) ? '1' : '0';
+    hashValue += (dotProduct > 0.001) ? '1' : '0';
   }
 
   return hashValue;
