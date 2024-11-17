@@ -296,7 +296,7 @@ void HNSW::insert(const torch::Tensor& t) {
         bool changed = true;
         while (changed) {
           changed = false;
-          for (auto &neighbors = vertexes_[curr_obj].neighbors_[level];
+          for (auto& neighbors = vertexes_[curr_obj].neighbors_[level];
                const auto& neighbor : neighbors) {
             if (visited.contains(neighbor))
               continue;
@@ -441,7 +441,7 @@ torch::Tensor HNSW::search(const torch::Tensor& t, int64_t k) {
     }
   }
   auto top_candidates =
-      search_base_layerST(curr_obj, t, std::max(efSearch_, k));
+      search_base_layerST(curr_obj, tensor, std::max(efSearch_, k));
   while (top_candidates.size() > k) {
     top_candidates.pop();
   }
@@ -471,4 +471,59 @@ std::vector<torch::Tensor> HNSW::searchTensor(const torch::Tensor& q,
     to_return.push_back(future.get());
   }
   return to_return;
+}
+
+bool HNSW::loadInitialTensor(torch::Tensor& t) {
+  auto preSize = size_ + 1;
+  INTELLI::TensorOP::appendRowsBufferMode(&dbTensor_, &t, &size_, expandStep);
+  // append t to dbTensor_
+  for (int64_t insert_pos = preSize; insert_pos <= size_; insert_pos++) {
+    long cur_level = random_level();
+    vertexes_.emplace_back(cur_level);
+    auto tensor = dbTensor_[insert_pos].contiguous();
+    auto db_tensor = dbTensor_.contiguous();
+    auto curr_obj = entry_point_;
+    if (entry_point_ != -1) {
+      if (cur_level < max_level_) {
+        float cur_dist = CANDY::euclidean_distance(
+            db_tensor[entry_point_].contiguous(), tensor.contiguous());
+        std::unordered_set<idx_t> visited;
+        for (int level = static_cast<int>(max_level_); level > cur_level;
+             level--) {
+          visited.clear();
+          visited.insert(curr_obj);
+          bool changed = true;
+          while (changed) {
+            changed = false;
+            for (auto neighbors = vertexes_[curr_obj].neighbors_[level];
+                 const auto& neighbor : neighbors) {
+              if (visited.contains(neighbor))
+                continue;
+              visited.insert(neighbor);
+              if (const float d = CANDY::euclidean_distance(
+                      db_tensor[neighbor].contiguous(), tensor.contiguous());
+                  d < cur_dist) {
+                cur_dist = d;
+                curr_obj = neighbor;
+                changed = true;
+              }
+            }
+          }
+        }
+      }
+      for (long level = std::min(cur_level, max_level_); level >= 0; level--) {
+        auto top_candidates = search_base_layer(curr_obj, tensor, level);
+        curr_obj = mutually_connect_new_element(tensor.contiguous(), insert_pos,
+                                                top_candidates, level, false);
+      }
+    } else {
+      entry_point_ = 0;
+      max_level_ = cur_level;
+    }
+    if (cur_level > max_level_) {
+      entry_point_ = insert_pos;
+      max_level_ = cur_level;
+    }
+  }
+  return true;
 }

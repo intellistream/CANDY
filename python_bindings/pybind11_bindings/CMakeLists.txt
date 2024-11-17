@@ -13,9 +13,10 @@ FetchContent_Declare(
         GIT_TAG v2.11.1  # Replace with the desired version
 )
 FetchContent_MakeAvailable(pybind11)
-
+find_library(TORCH_PYTHON_LIBRARY torch_python PATH "${TORCH_INSTALL_PREFIX}/lib")
 # Create a shared library for Python
 add_library(pycandy MODULE vectordb_pybind.cpp)
+target_link_libraries(pycandy PRIVATE ${LIBRARIES} CANDY ${TORCH_PYTHON_LIBRARY})
 set_target_properties(pycandy PROPERTIES PREFIX "")
 
 # Get the Python user site-packages directory using sysconfig
@@ -68,12 +69,5 @@ add_custom_command(TARGET pycandy
 )
 
 pybind11_add_module(PyCANDYAlgos algos_pybind.cpp)
-find_library(TORCH_PYTHON_LIBRARY torch_python PATH "${TORCH_INSTALL_PREFIX}/lib")
 target_link_libraries(PyCANDYAlgos PUBLIC ${LIBRARIES} CANDY ${TORCH_PYTHON_LIBRARY})
 set_property(TARGET PyCANDYAlgos  PROPERTY CXX_STANDARD 20)
-## Add a post-build custom command to automatically run `make install`
-#add_custom_command(TARGET pycandy
-#        POST_BUILD
-#        COMMAND ${CMAKE_COMMAND} --build . --target install
-#        COMMENT "Installing pycandy to Python user site-packages"
-#)

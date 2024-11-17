@@ -7,14 +7,16 @@
 #include <Core/vector_db.hpp>
 #include <iostream>
 #include <thread>
+#include <vector>
 
 // Constructor: Initialize the tensor database with a number of dimensions and a search algorithm
 
 VectorDB::VectorDB(size_t dimensions, CANDY_ALGO::ANNSBasePtr ann_algorithm)
-    : dimensions(dimensions), ann_algorithm(ann_algorithm), is_running(false) {
+    : ann_algorithm(ann_algorithm), is_running(false), dimensions(dimensions) {
   if (!this->ann_algorithm) {
     // Instantiate a default ANNS algorithm if none provided
     this->ann_algorithm = std::make_shared<CANDY_ALGO::KnnSearch>(dimensions);
+    this->ann_algorithm->setConfig(nullptr);
   }
 }
 
@@ -30,18 +32,13 @@ size_t VectorDB::generate_id() {
 
 // Insert a tensor directly into the tensor database (exclusive write access)
 bool VectorDB::insert_tensor(const torch::Tensor& tensor) {
-  if (tensor.size(0) != dimensions) {
-    INTELLI_ERROR("Error: Tensor dimensions do not match the expected size ("
-                  << dimensions << ").");
-    return false;
-  }
   {
     std::unique_lock<std::shared_mutex> lock(db_mutex);  // Exclusive write lock
-    size_t id = generate_id();
-    tensor_store[id] = tensor;  // Store the tensor in the database
+    auto insert_container = torch::zeros({1, tensor.size(0)});
+    insert_container[0] = tensor;
     if (ann_algorithm) {
       ann_algorithm->insertTensor(
-          tensor);  // Insert into the ANNS algorithm's index
+          insert_container);  // Insert into the ANNS algorithm's index
     }
   }
 
@@ -49,41 +46,31 @@ bool VectorDB::insert_tensor(const torch::Tensor& tensor) {
 }
 
 // Update an existing tensor (exclusive write access)
-bool VectorDB::update_tensor(size_t id, torch::Tensor& new_tensor) {
-  if (new_tensor.size(0) != dimensions) {
-    INTELLI_ERROR("Error: Tensor dimensions do not match the expected size ("
-                  << dimensions << ").");
-    return false;
-  }
+bool VectorDB::update_tensor(const torch::Tensor& old_tensor,
+                             torch::Tensor& new_tensor) {
   {
     std::unique_lock<std::shared_mutex> lock(db_mutex);  // Exclusive write lock
-    if (tensor_store.find(id) == tensor_store.end()) {
-      INTELLI_ERROR("Error: Tensor with ID " << id << " not found.");
-      return false;
-    }
-    tensor_store[id] = new_tensor;  // Update the tensor in the database
+    auto old_tensor_container = torch::zeros({1, old_tensor.size(0)});
+    old_tensor_container[0] = old_tensor;
+    auto new_tensor_container = torch::zeros({1, new_tensor.size(0)});
+    new_tensor_container[0] = new_tensor;
     if (ann_algorithm) {
       ann_algorithm->reviseTensor(
-          new_tensor, tensor_store[id]);  // Revise the tensor in the ANNS index
+          old_tensor_container,
+          new_tensor_container);  // Revise the tensor in the ANNS index
     }
   }
-
   return true;
 }
 
-// Delete a tensor by its ID (exclusive write access)
-bool VectorDB::remove_tensor(size_t id) {
+bool VectorDB::remove_tensor(const torch::Tensor& tensor) {
   {
     std::unique_lock<std::shared_mutex> lock(db_mutex);  // Exclusive write lock
-    auto it = tensor_store.find(id);
-    if (it == tensor_store.end()) {
-      INTELLI_ERROR("Error: Tensor with ID " << id << " not found.");
-      return false;
-    }
-    tensor_store.erase(it);  // Remove the tensor from the database
+    auto delete_container = torch::zeros({1, tensor.size(0)});
+    delete_container[0] = tensor;
     if (ann_algorithm) {
-      ann_algorithm->deleteTensor(it->second,
-                                  id);  // Remove from the ANNS index
+      ann_algorithm->deleteTensor(delete_container,
+                                  1);  // Delete the tensor from the ANNS index
     }
   }
 
@@ -93,23 +80,16 @@ bool VectorDB::remove_tensor(size_t id) {
 // Query the nearest tensors using the ANNS algorithm (shared read access)
 std::vector<torch::Tensor> VectorDB::query_nearest_tensors(
     const torch::Tensor& query_tensor, size_t k) const {
-  if (query_tensor.size(0) != dimensions) {
-    INTELLI_ERROR(
-        "Error: Query tensor dimensions do not match the expected size ("
-        << dimensions << ").")
-    return {};
-  }
-
   std::shared_lock<std::shared_mutex> lock(db_mutex);  // Shared read lock
   if (!ann_algorithm) {
     INTELLI_ERROR("Error: No ANNS algorithm available for querying.");
     return {};
   }
-
+  torch::Tensor query_container = torch::zeros({1, query_tensor.size(0)});
+  query_container[0] = query_tensor;
   // Query the nearest k tensors directly from the ANNS algorithm
   std::vector<torch::Tensor> nearest_tensors =
-      ann_algorithm->searchTensor(query_tensor, k);
-
+      ann_algorithm->searchTensor(query_container, k);
   return nearest_tensors;
 }
 
@@ -127,11 +107,6 @@ void VectorDB::stop_streaming() {
 
 // Insert a tensor into the streaming queue (exclusive write access)
 void VectorDB::insert_streaming_tensor(const torch::Tensor& tensor) {
-  if (tensor.size(0) != dimensions) {
-    INTELLI_ERROR("Error: Tensor dimensions do not match the expected size ("
-                  << dimensions << ").");
-    return;
-  }
   {
     std::unique_lock<std::shared_mutex> lock(
         db_mutex);               // Exclusive write lock for streaming insert

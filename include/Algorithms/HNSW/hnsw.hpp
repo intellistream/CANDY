@@ -89,6 +89,7 @@ class HNSW final : public ANNSBase {
 
   std::vector<torch::Tensor> searchTensor(const torch::Tensor& q,
                                           int64_t k) override;
+  bool loadInitialTensor(torch::Tensor& t) override;
 
  protected:
   int64_t M_{};
