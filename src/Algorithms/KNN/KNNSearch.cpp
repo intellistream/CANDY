@@ -103,13 +103,20 @@ std::vector<torch::Tensor> CANDY_ALGO::KnnSearch::searchTensor(
   //     torch::cdist(queryData, dbData);  // Shape: (querySize, dbSize)
 
   //Method 2: use AMM to compute L2 distances
-  //torch::Tensor distances = pairwise_euclidean_distance(queryData,dbData.t(),CANDY::AMM_SMPPCA,80);
+  torch::Tensor distances = pairwise_euclidean_distance(queryData,dbData.t(),CANDY::NONE_AMM,750);
 
   //Method 3:use AMM to compute dot product distances
 
-  torch::Tensor distances = AMM_Compute_DotproductSimilarity(queryData,Tran_dbData,80,CANDY::AMM_CRS);
+  //torch::Tensor distances = AMM_Compute_DotproductSimilarity(queryData,Tran_dbData,280,CANDY::AMM_CRS);
   // Prepare vector to hold results
   std::vector<torch::Tensor> results;
+
+  auto custom_distances = pairwise_euclidean_distance(queryData, dbData.t(), CANDY::NONE_AMM, 0);
+  auto cdist_distances = torch::cdist(queryData, dbData);
+
+  // 比较两者的差异
+  std::cout << "Max Absolute Error: " << (custom_distances - cdist_distances).abs().max().item<double>() << "\n";
+  std::cout << "Mean Absolute Error: " << (custom_distances - cdist_distances).abs().mean().item<double>() << "\n";
 
   // For each query, retrieve the top-k nearest neighbors
   for (int64_t i = 0; i < q.size(0); ++i) {

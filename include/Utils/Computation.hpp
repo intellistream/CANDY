@@ -126,7 +126,9 @@ inline torch::Tensor pairwise_euclidean_distance(torch::Tensor A, torch::Tensor 
   else {
     AB_dot=AMM_Compute_DotproductSimilarity(A,B,sketchsize,ammtype);
   }
-  std::cout<<"AB_dot:"<<AB_dot.sizes();
+  std::cout << "A_norm: " << A_norm.sizes() << "\n";
+  std::cout << "B_norm: " << B_norm.sizes() << "\n";
+  std::cout << "AB_dot: " << AB_dot.sizes() << "\n";
   // Step 3: calculate squared L2 distance
   torch::Tensor D_squared = A_norm + B_norm - 2 * AB_dot; // shape: n x m
 
@@ -134,11 +136,23 @@ inline torch::Tensor pairwise_euclidean_distance(torch::Tensor A, torch::Tensor 
   D_squared = torch::clamp(D_squared, 0);
 
   // Step 5: return L2 distance 2D-tensor
-  return torch::sqrt(D_squared); // matrix of l2-distance
+  //return D_squared;
+    return torch::sqrt(D_squared); // matrix of l2-distance
 }
-// inline torch::Tensor AMM_euclidean_distance(torch::Tensor A, torch::Tensor B, AMMTYPE ammtype,int64_t sketchsize) {
-//
-// }
+inline torch::Tensor compute_cluster_properties(const torch::Tensor& C) {
+  // 检查输入是否为2D张量
+  TORCH_CHECK(C.dim() == 2, "Input tensor must be 2-dimensional");
+
+  // 计算每个点的平方范数 ||c_j||_2^2
+  auto squared_norms = C.pow(2).sum(1); // 按行求和
+
+  // 检查每个点是否为单位向量 (归一化)
+  // 假设 1e-6 为浮点数比较的误差范围
+  // const float epsilon = 1e-6;
+  // auto is_normalized = (squared_norms - 1.0).abs().le(epsilon); // 检查 (||c_j||_2^2 - 1) 是否接近 0
+
+  return squared_norms;
+}
 
 }  // namespace CANDY
 #endif  // COMPUTATION_H

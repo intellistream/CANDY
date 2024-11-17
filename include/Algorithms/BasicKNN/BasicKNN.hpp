@@ -50,7 +50,7 @@ private:
 };
 
 typedef std::shared_ptr<BasicKNN> BasicKNNPtr;
-#define newKNNIndex std::make_shared<CANDY_ALGO::BasicKNN>
+#define newBasicKNNIndex std::make_shared<CANDY_ALGO::BasicKNN>
 }  // namespace CANDY_ALGO
 
 #endif
