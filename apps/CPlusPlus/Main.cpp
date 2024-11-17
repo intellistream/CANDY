@@ -16,6 +16,7 @@
 #include "Algorithms/HNSW/hnsw.hpp"
 #include "Algorithms/KDTree/KDTree.hpp"
 #include "Algorithms/LSH/LSHSearch.hpp"
+#include "Algorithms/BasicKNN/BasicKNN.hpp"
 #include "Algorithms/FlatGPUIndex/FlatGPUIndex.hpp"
 using namespace INTELLI;
 using namespace std;
@@ -73,7 +74,7 @@ int main(int argc, char** argv) {
      */
   size_t dimensions = dataTensorStream.size(1);
 
-  auto indexPtr = std::make_shared<CANDY_ALGO::HNSW>();
+  auto indexPtr = std::make_shared<CANDY_ALGO::KnnSearch>(dimensions);
 
   if (!indexPtr->setConfig(inMap)) {
     INTELLI_ERROR("Failed to configure ANNS index.");
@@ -171,7 +172,7 @@ int main(int argc, char** argv) {
     INTELLI_INFO("Ground truth does not exist, so I'll create it");
     auto gdMap = newConfigMap();
     gdMap->loadFrom(*inMap);
-    auto gdIndex = std::make_shared<CANDY_ALGO::KnnSearch>();
+    auto gdIndex = std::make_shared<CANDY_ALGO::BasicKNN>(dimensions);
     gdIndex->setConfig(gdMap);
     if (initialRows > 0) {
       gdIndex->loadInitialTensor(dataTensorInitial);
@@ -181,6 +182,7 @@ int main(int argc, char** argv) {
     auto gdResults = gdIndex->searchTensor(queryTensor, ANNK);
     INTELLI_INFO("Ground truth is done");
     recall = UtilityFunctions::calculateRecall(gdResults, indexResults);
+    std::cout<<gdResults;
     //UtilityFunctions::tensorListToFile(gdResults, groundTruthPrefix);
   }
 

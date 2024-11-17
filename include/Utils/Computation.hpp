@@ -136,6 +136,9 @@ inline torch::Tensor pairwise_euclidean_distance(torch::Tensor A, torch::Tensor 
   // Step 5: return L2 distance 2D-tensor
   return torch::sqrt(D_squared); // matrix of l2-distance
 }
+// inline torch::Tensor AMM_euclidean_distance(torch::Tensor A, torch::Tensor B, AMMTYPE ammtype,int64_t sketchsize) {
+//
+// }
 
 }  // namespace CANDY
 #endif  // COMPUTATION_H

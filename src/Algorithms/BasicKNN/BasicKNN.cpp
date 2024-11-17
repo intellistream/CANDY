@@ -3,15 +3,15 @@
  * Created on: 2024/10/9
  * Description: [Provide description here]
  */
-#include <Algorithms/KNN/KNNSearch.hpp>
+#include "Algorithms/BasicKNN/BasicKNN.hpp"
 #include <Utils/Computation.hpp>
 #include <Utils/TensorOP.hpp>
 
 // Constructor with vector dimensions
 
-CANDY_ALGO::KnnSearch::KnnSearch(size_t dimensions) : dimensions(dimensions) {}
+CANDY_ALGO::BasicKNN::BasicKNN(size_t dimensions) : dimensions(dimensions) {}
 
-bool CANDY_ALGO::KnnSearch::setConfig(INTELLI::ConfigMapPtr cfg) {
+bool CANDY_ALGO::BasicKNN::setConfig(INTELLI::ConfigMapPtr cfg) {
   //ANNSBase::setConfig(cfg);
 
   vecDim = cfg->tryI64("vecDim", 768, true);
@@ -24,14 +24,14 @@ bool CANDY_ALGO::KnnSearch::setConfig(INTELLI::ConfigMapPtr cfg) {
 
 // Reset the current index
 
-void CANDY_ALGO::KnnSearch::reset() {
+void CANDY_ALGO::BasicKNN::reset() {
 
   index.clear();
 }
 
 // Insert tensor into the index
 
-bool CANDY_ALGO::KnnSearch::insertTensor(const torch::Tensor& t) {
+bool CANDY_ALGO::BasicKNN::insertTensor(const torch::Tensor& t) {
 
   return INTELLI::TensorOP::appendRowsBufferMode(&dbTensor, &t, &lastNNZ,
                                                  expandStep);
@@ -39,7 +39,7 @@ bool CANDY_ALGO::KnnSearch::insertTensor(const torch::Tensor& t) {
 
 // Delete tensor from the index
 
-bool CANDY_ALGO::KnnSearch::deleteTensor(torch::Tensor& t, int64_t k) {
+bool CANDY_ALGO::BasicKNN::deleteTensor(torch::Tensor& t, int64_t k) {
 
   // Use the searchTensor function to get the indices of k-nearest neighbors for each row in t
   std::vector<torch::Tensor> idxToDeleteTensors = searchTensor(t, k);
@@ -58,7 +58,7 @@ bool CANDY_ALGO::KnnSearch::deleteTensor(torch::Tensor& t, int64_t k) {
                                                  &lastNNZ);
 }
 
-bool CANDY_ALGO::KnnSearch::reviseTensor(torch::Tensor& t, torch::Tensor& w) {
+bool CANDY_ALGO::BasicKNN::reviseTensor(torch::Tensor& t, torch::Tensor& w) {
 
   // Check if dimensions match
   if (t.size(0) > w.size(0) || t.size(1) != w.size(1)) {
@@ -89,25 +89,25 @@ bool CANDY_ALGO::KnnSearch::reviseTensor(torch::Tensor& t, torch::Tensor& w) {
   return true;
 }
 // NOTICE:ONLY USING AMM IN THIS FUNCTION FOR NOW
-std::vector<torch::Tensor> CANDY_ALGO::KnnSearch::searchTensor(
+std::vector<torch::Tensor> CANDY_ALGO::BasicKNN::searchTensor(
     const torch::Tensor& q, int64_t k) {
 
   // Ensure dbTensor is contiguous in memory
   torch::Tensor dbData = dbTensor.contiguous();
-  torch::Tensor Tran_dbData = dbTensor.t().contiguous();
+  //torch::Tensor Tran_dbData = dbTensor.t().contiguous();
   torch::Tensor queryData=q.contiguous();
   // Compute pairwise distances between the query tensor and dbTensor
 
   // Method 1:use torch::cdist to compute L2 distances
-  // torch::Tensor distances =
-  //     torch::cdist(queryData, dbData);  // Shape: (querySize, dbSize)
+  torch::Tensor distances =
+      torch::cdist(queryData, dbData);  // Shape: (querySize, dbSize)
 
   //Method 2: use AMM to compute L2 distances
   //torch::Tensor distances = pairwise_euclidean_distance(queryData,dbData.t(),CANDY::AMM_SMPPCA,80);
 
   //Method 3:use AMM to compute dot product distances
 
-  torch::Tensor distances = AMM_Compute_DotproductSimilarity(queryData,Tran_dbData,80,CANDY::AMM_CRS);
+  // torch::Tensor distances = AMM_Compute_DotproductSimilarity(queryData,Tran_dbData,80,CANDY::AMM_CRS);
   // Prepare vector to hold results
   std::vector<torch::Tensor> results;
 
@@ -115,7 +115,7 @@ std::vector<torch::Tensor> CANDY_ALGO::KnnSearch::searchTensor(
   for (int64_t i = 0; i < q.size(0); ++i) {
     // Find the indices of the top-k smallest distances for the current query row
     auto topk = std::get<1>(distances[i].topk(
-        k,/*dim=*/0,/*largest=*/true));  // Get indices of top-k closest neighbors
+        k,/*dim=*/0,/*largest=*/false));  // Get indices of top-k closest neighbors
     //when using dot product similarity largest=true;
     //when using L2 , largest=false
 
