@@ -178,8 +178,9 @@ int main(int argc, char** argv) {
 
     auto gdResults = gdIndex->searchTensor(queryTensor, ANNK);
     INTELLI_INFO("Ground truth is done");
-    std::cout<<gdResults<<std::endl;
-    std::cout<<indexResults<<std::endl;
+
+
+
     recall = UtilityFunctions::calculateRecall(gdResults, indexResults);
     //UtilityFunctions::tensorListToFile(gdResults, groundTruthPrefix);
   }
