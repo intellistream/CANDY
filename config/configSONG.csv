@@ -1,0 +1,8 @@
+key,value,type
+vecDim,800,I64
+vecVolume,1000,I64
+querySize,1000,I64
+ANNK,5,I64
+indexTag,SONG,String
+metricType,L2,String
+dataLoaderTag,random,String

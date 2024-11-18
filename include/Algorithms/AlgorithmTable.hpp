@@ -3,8 +3,8 @@
 * Created on: 2024/11/12
 * Description: [Provide description here]
 */
-#ifndef CANDY_ALGORITHMTABLE_H
-#define CANDY_ALGORITHMTABLE_H
+#ifndef CANDY_ALGORITHMTABLE_HPP
+#define CANDY_ALGORITHMTABLE_HPP
 #include <Algorithms/ANNSBase.hpp>
 #include <map>
 #include <string>
@@ -41,4 +41,4 @@ class AlgorithmTable {
   }
 };
 };      // namespace CANDY_ALGO
-#endif  //CANDY_ALGORITHMTABLE_H
+#endif  //CANDY_ALGORITHMTABLE_HPP
