@@ -1,4 +1,12 @@
 key,value,type
-vecDim,10,I64
-NumofHyperplanes,10,I64
-initialRows,50000,I64
+vecDim,128,I64
+vecVolume,1000,I64
+batchSize,100,I64
+initialRows,100,I64
+querySize,2,I64
+ANNK,10,I64
+metricType,IP,String
+indexTag,LSH,String
+dataLoaderTag,fvecs,String
+dataPath,datasets/fvecs/sift1M/sift/sift_base.fvecs,String
+queryPath,datasets/fvecs/sift1M/sift/sift_base.fvecs,String
