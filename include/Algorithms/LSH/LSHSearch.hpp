@@ -50,8 +50,8 @@ class LSHSearch : public ANNSBase {
   // Store hyperplane information
   std::vector<torch::Tensor> RandomHyperplanes;
 
-  // Store nearby bucket information for each tensor
-  std::vector<std::vector<std::pair<float, std::string>>> nearbyBuckets;
+
+  std::unordered_map<int64_t, std::string> idToBucket;
 
   // Generate random hyperplanes for hashing
   void GenerateRandomHyperplanes(size_t NumPlanes);

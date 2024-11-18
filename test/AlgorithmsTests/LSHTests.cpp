@@ -23,7 +23,7 @@ TEST_CASE("LSH Search Tests") {
 
   // Set up dimensions for the generation of test data
   size_t Dimensions = inMap->tryI64("vecDim", 10, true);
-  size_t InitialRows = 20000;  // Easy to test so take the initiative to set up
+  size_t InitialRows = 100000;  // Easy to test so take the initiative to set up
 
   // Insert/Search/Delete test
   SECTION("Insert/Search/Delete Tensor") {

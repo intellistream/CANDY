@@ -31,7 +31,6 @@ bool LSHSearch::setConfig(INTELLI::ConfigMapPtr cfg) {
 // Reset the LSH data structure
 void LSHSearch::reset() {
   Index.clear();
-  nearbyBuckets.clear();
   GlobalIndexCounter = 0;
 }
 
@@ -48,61 +47,41 @@ bool LSHSearch::insertTensor(const torch::Tensor& t) {
 
 // Delete tensor from LSH
 bool LSHSearch::deleteTensor(torch::Tensor& t, int64_t k) {
+
   auto results = searchTensor(t, k);
 
   for (int64_t i = 0; i < t.size(0); ++i) {
-    std::vector<int64_t> indicesToDelete;
-    for (int j = 0; j < k; ++j) {
-      indicesToDelete.push_back(results[i][j].item<int64_t>());
-    }
 
-    auto& rowNearbyBuckets = nearbyBuckets[i];
-    int deletedCount = 0;
+    for (int64_t j = 0; j < k; ++j) {
+      int64_t id = results[i][j].item<int64_t>();
 
-    //std::cout << "搜索后第" << i <<"个张量的相邻桶的编号（前10个）：";
-    //for (int l = 0; l < 10; ++l) {
-    //  std::cout << rowNearbyBuckets[l] << " ";
-    //}
-    //std::cout << std::endl;
+      if (idToBucket.count(id) > 0) {
+        std::string bucket = idToBucket[id];
 
-    for (const auto& [dist, bucket] : rowNearbyBuckets) {
-
-      //std::cout << "**（正在删除）-当前所在桶号：" << bucket << endl;
-      //std::cout << "***当前已经删除个数：" << deletedCount <<endl;
-
-      if (deletedCount >= k) {
-        break;
-      }
-
-      if (Index.count(bucket) > 0) {
-        auto& BucketMap = Index[bucket];
-
-        for (int64_t index = deletedCount; index < indicesToDelete.size();
-             ++index) {
-          auto id = indicesToDelete[index];
+        if (Index.count(bucket) > 0) {
+          auto& BucketMap = Index[bucket];
 
           if (BucketMap.count(id) > 0) {
             BucketMap.erase(id);
-            deletedCount++;
-
-            if (deletedCount >= k) {
-              break;
-            }
-          } else {
-            break;
+            cout << "Delete: " << j <<endl;
           }
         }
       }
     }
   }
+
   return true;
 }
+
 
 // Revise tensor (modify its value)
 bool LSHSearch::reviseTensor(torch::Tensor& t, torch::Tensor& w) {
   if (t.size(0) > w.size(0) || t.size(1) != w.size(1)) {
     return false;
   }
+
+  t = t.contiguous();
+  w = w.contiguous();
 
   for (int64_t i = 0; i < t.size(0); ++i) {
     auto Row = t[i];
@@ -111,16 +90,14 @@ bool LSHSearch::reviseTensor(torch::Tensor& t, torch::Tensor& w) {
     if (Index.count(Bucket) > 0) {
       auto& BucketMap = Index[Bucket];
 
-      for (auto [TensorId, Tensor] : BucketMap) {
-        if (torch::equal(Tensor, Row)) {
-          BucketMap.erase(TensorId);
-          std::string NewBucket = HashFunction(w[i]);
+      for (auto it = BucketMap.begin(); it != BucketMap.end(); ++it) {
+        auto TensorId = it->first;
+        auto Tensor = it->second;
 
-          if (NewBucket != Bucket) {
-            Index[NewBucket][TensorId] = w[i];
-          } else {
-            BucketMap[TensorId] = w[i];
-          }
+        if (torch::equal(Tensor, Row)) {
+          BucketMap.erase(it);
+          std::string NewBucket = HashFunction(w[i]);
+          Index[NewBucket][TensorId] = w[i];
           break;
         }
       }
@@ -129,81 +106,57 @@ bool LSHSearch::reviseTensor(torch::Tensor& t, torch::Tensor& w) {
   return true;
 }
 
+
 // Search for the k nearest neighbors of tensor q
-std::vector<torch::Tensor> LSHSearch::searchTensor(const torch::Tensor& q,
-                                                   int64_t k) {
+
+std::vector<torch::Tensor> LSHSearch::searchTensor(const torch::Tensor& q, int64_t k) {
   std::vector<torch::Tensor> Results;
-  nearbyBuckets.clear();  // Clear nearbyBuckets before every search
+  idToBucket.clear();
 
   for (int64_t i = 0; i < q.size(0); ++i) {
     auto Row = q[i];
     std::string Bucket = HashFunction(Row);
 
-    std::vector<size_t> Indices;
-    std::vector<std::pair<float, size_t>> Distances;
+    std::map<float, std::vector<std::string>> rowNearbyBuckets;
 
-    // Use Hamming distance to get nearby buckets
-    std::vector<std::pair<float, std::string>> rowNearbyBuckets;
-
+    // 遍历所有桶计算哈希距离
     for (const auto& [otherBucket, _] : Index) {
-      int dist = HammingDistance(Bucket, otherBucket);
-      rowNearbyBuckets.push_back({static_cast<float>(dist), otherBucket});
+      float dist = static_cast<float>(HammingDistance(Bucket, otherBucket));
+      rowNearbyBuckets[dist].push_back(otherBucket);
     }
 
-    std::sort(rowNearbyBuckets.begin(), rowNearbyBuckets.end());
-    nearbyBuckets.push_back(rowNearbyBuckets);
-
-    //std::cout << "搜索后第" << i <<"个张量的相邻桶的编号（前10个）：";
-    //for (int l = 0; l < 10; ++l) {
-    //  std::cout << rowNearbyBuckets[l] << " " ;
-    //}
-    //std::cout << std::endl;
-
-    // Traverse all the buckets and compute distances, until we find k closest tensors
-    for (const auto& [dist, nBucket] : rowNearbyBuckets) {
-
-      //std::cout << "当前查询所在的桶号： " << nBucket << std::endl;
-
-      if (Indices.size() >= k) {
-        break;
-      }
-
-      if (Index.count(nBucket) > 0) {
-        auto& BucketMap = Index[nBucket];
-        for (const auto& [TensorId, Tensor] : BucketMap) {
-          float Distance = (Tensor - Row).norm().item<float>();
-          Distances.emplace_back(Distance, TensorId);
+    std::vector<std::pair<float, int64_t>> Distances; // 存储距离和 ID
+    for (const auto& [dist, buckets] : rowNearbyBuckets) {
+      for (const auto& nBucket : buckets) {
+        if (Index.count(nBucket) > 0) {
+          auto& BucketMap = Index[nBucket];
+          for (const auto& [TensorId, Tensor] : BucketMap) {
+            float Distance = (Tensor - Row).norm().item<float>();
+            Distances.emplace_back(Distance, TensorId);
+            idToBucket[TensorId] = nBucket; // 绑定 ID 和桶号
+          }
         }
-
-        // Sort the distances
-        std::sort(Distances.begin(), Distances.end());
-
-        // Add all elements from Distances to Indices
-        for (int j = 0; j < static_cast<int64_t>(Distances.size()); ++j) {
-          Indices.push_back(Distances[j].second);
-        }
-
-        // Clear the Distances for the next round
-        Distances.clear();
       }
+      if (Distances.size() >= k)  break;
     }
 
-    // If Indices size exceeds k, truncate it to the first k elements
-    if (Indices.size() > k) {
-      Indices.resize(k);
+    std::sort(Distances.begin(), Distances.end());
+    if (Distances.size() > k) {
+      Distances.resize(k);
     }
 
-    // Convert indices to a tensor and add to results
-    torch::Tensor Tensor = torch::empty({static_cast<long>(Indices.size())},
+    torch::Tensor Tensor = torch::empty({static_cast<long>(Distances.size())},
                                         torch::dtype(torch::kLong));
-    for (size_t j = 0; j < Indices.size(); ++j) {
-      Tensor[j] = static_cast<long>(Indices[j]);
+    for (size_t j = 0; j < Distances.size(); ++j) {
+      Tensor[j] = static_cast<long>(Distances[j].second);
     }
     Results.push_back(Tensor);
   }
 
   return Results;
 }
+
+
 
 // Generate random hyperplanes for hashing
 void LSHSearch::GenerateRandomHyperplanes(size_t NumPlanes) {
