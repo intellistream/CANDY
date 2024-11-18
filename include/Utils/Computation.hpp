@@ -10,12 +10,18 @@
 #include <numeric>
 #include <vector>
 
+#include <torch/torch.h>
+
 namespace CANDY {
 inline float computeL2Distance(const float* a, const float* b,
                                const size_t size) {
+  static auto func = [](float x, float y) {
+    float diff = x - y;
+    return diff * diff;
+  };
   return std::inner_product(
       a, a + size, b, 0.0f, std::plus<float>(),
-      [](const float x, const float y) { return (x - y) * (x - y); });
+      func);  // std::plus<float>() is the binary function object that will be applied.
 }
 
 inline float computeL2Distance(const std::vector<float>& a,
@@ -30,7 +36,7 @@ inline float euclidean_distance(const std::vector<float>& a,
 
 inline float euclidean_distance(const torch::Tensor& a,
                                 const torch::Tensor& b) {
-  return torch::norm(a - b).item<float>();
+  return computeL2Distance(a.data_ptr<float>(), b.data_ptr<float>(), a.size(0));
 }
 }  // namespace CANDY
 #endif  // COMPUTATION_H

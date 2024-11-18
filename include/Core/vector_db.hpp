@@ -31,9 +31,10 @@ class VectorDB {
   // Insert, update, and remove tensor-based operations for the database
   bool insert_tensor(const torch::Tensor& tensor);
 
-  bool update_tensor(size_t id, torch::Tensor& new_tensor);
+  bool update_tensor(const torch::Tensor& old_tensor,
+                     torch::Tensor& new_tensor);
 
-  bool remove_tensor(size_t id);
+  bool remove_tensor(const torch::Tensor& tensor);
 
   // Query using a k-NN search or other specified search algorithms
   std::vector<torch::Tensor> query_nearest_tensors(
@@ -52,9 +53,6 @@ class VectorDB {
   int get_dimensions() const;
 
  private:
-  // Internal storage for tensors (indexed by ID)
-  std::unordered_map<size_t, torch::Tensor> tensor_store;
-
   // ANNS algorithm for querying (e.g., k-NN, Approximate NN)
 
   CANDY_ALGO::ANNSBasePtr ann_algorithm;
