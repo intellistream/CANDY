@@ -13,7 +13,11 @@ CANDY_ALGO::KnnSearch::KnnSearch(size_t dimensions) : dimensions(dimensions) {}
 
 bool CANDY_ALGO::KnnSearch::setConfig(INTELLI::ConfigMapPtr cfg) {
   //ANNSBase::setConfig(cfg);
-
+  if (cfg == nullptr) {
+    dbTensor = torch::zeros({initialVolume, vecDim});
+    lastNNZ = -1;
+    return false;
+  }
   vecDim = cfg->tryI64("vecDim", 768, true);
   initialVolume = cfg->tryI64("initialVolume", 1000, true);
   expandStep = cfg->tryI64("expandStep", 100, true);
@@ -97,10 +101,14 @@ std::vector<torch::Tensor> CANDY_ALGO::KnnSearch::searchTensor(
   // Ensure dbTensor is contiguous in memory
   torch::Tensor dbData = dbTensor.contiguous();
   torch::Tensor queryData = q.contiguous();
-
+  // 获取dbData 的有效数据
+  long index = lastNNZ + 1;
+  if (index < dbData.size(0)) {
+    dbData = dbData.slice(0, 0, index);
+  }
   // Compute pairwise distances between the query tensor and dbTensor
   torch::Tensor distances =
-      torch::cdist(queryData, dbData);  // Shape: (querySize, dbSize)
+      torch::cdist(queryData, dbData);  // Shape: (rows, dbSize)
 
   // Prepare vector to hold results
   std::vector<torch::Tensor> results;
@@ -109,8 +117,7 @@ std::vector<torch::Tensor> CANDY_ALGO::KnnSearch::searchTensor(
   for (int64_t i = 0; i < queryData.size(0); ++i) {
     // Find the indices of the top-k smallest distances for the current query row
     auto topk = std::get<1>(distances[i].topk(
-        k,-1, /*largest=*/false));  // Get indices of top-k closest neighbors
-
+        k, -1, /*largest=*/false));  // Get indices of top-k closest neighbors
     // Store the indices of top-k nearest neighbors for this query row
     results.push_back(topk);
   }

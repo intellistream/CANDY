@@ -20,7 +20,7 @@ class KnnSearch : public ANNSBase {
   INTELLI::ConfigMapPtr myCfg = nullptr;
   torch::Tensor dbTensor;
   int64_t lastNNZ = 0;
-  int64_t vecDim = 0, initialVolume = 1000, expandStep = 100;
+  int64_t vecDim = 128, initialVolume = 1000, expandStep = 100;
 
  public:
   // Destructor
