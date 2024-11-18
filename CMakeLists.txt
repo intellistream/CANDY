@@ -2,14 +2,14 @@ cmake_minimum_required(VERSION 3.15)
 project(CANDY CXX)
 # Logging setup (if needed)
 #include(cmake/LoggingSetup.cmake)
+if (NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release)
+endif ()
 include(cmake/FindCuda.cmake)
 include(cmake/FindTorch.cmake)
 find_package(Torch REQUIRED)
 # Add the cmake/ directory to CMAKE_MODULE_PATH
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
-if (NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Release)
-endif ()
 
 # Include necessary modules and options
 include(cmake/macros.cmake)
@@ -26,6 +26,7 @@ set(LIBRARIES ${LIBRARIES} ${TORCH_LIBRARIES})
 # Collect Source Files
 add_subdirectory(src)
 
+include(${PROJECT_SOURCE_DIR}/cmake/third-party.cmake)
 # Assume that all the source files under src/ will be included in the library
 get_sources(CANDY CANDY_SOURCE_FILES)
 message(STATUS "CANDY_SOURCE_FILES: ${CANDY_SOURCE_FILES}")
