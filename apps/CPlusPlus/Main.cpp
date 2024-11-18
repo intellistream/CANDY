@@ -14,6 +14,7 @@
 #include <iostream>
 #include <string>
 #include "Algorithms/HNSW/hnsw.hpp"
+#include <Algorithms/AlgorithmTable.h>
 using namespace INTELLI;
 using namespace std;
 
@@ -69,9 +70,10 @@ int main(int argc, char** argv) {
      * @brief 4. Create index (ANNS Index Initialization)
      */
   size_t dimensions = dataTensorStream.size(1);
+  auto algorithmTable = std::make_shared<CANDY_ALGO::AlgorithmTable>();
 
-  auto indexPtr = std::make_shared<CANDY_ALGO::HNSW>();
-
+  std::string indexTag = inMap->tryString("indexTag", "KNN", true);
+  auto indexPtr = algorithmTable->getIndex(indexTag);
   if (!indexPtr->setConfig(inMap)) {
     INTELLI_ERROR("Failed to configure ANNS index.");
     return -1;
@@ -122,7 +124,7 @@ int main(int argc, char** argv) {
     }
 
     // Log progress for every 10% increment
-    double processed = endRow * 100.0 / aRows;
+    double processed = startRow * 100.0 / aRows;
     if (processed - processedOld >= 1.0) {
       INTELLI_INFO("Done " + std::to_string(processed) + "% (" +
                    std::to_string(startRow) + "/" + std::to_string(aRows) +
@@ -176,6 +178,8 @@ int main(int argc, char** argv) {
 
     auto gdResults = gdIndex->searchTensor(queryTensor, ANNK);
     INTELLI_INFO("Ground truth is done");
+    std::cout<<gdResults<<std::endl;
+    std::cout<<indexResults<<std::endl;
     recall = UtilityFunctions::calculateRecall(gdResults, indexResults);
     //UtilityFunctions::tensorListToFile(gdResults, groundTruthPrefix);
   }
