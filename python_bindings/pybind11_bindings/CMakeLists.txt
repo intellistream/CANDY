@@ -5,14 +5,7 @@ if (POLICY CMP0148)
     cmake_policy(SET CMP0148 NEW)
 endif ()
 
-# Download and add pybind11
-include(FetchContent)
-FetchContent_Declare(
-        pybind11
-        GIT_REPOSITORY https://github.com/pybind/pybind11.git
-        GIT_TAG v2.11.1  # Replace with the desired version
-)
-FetchContent_MakeAvailable(pybind11)
+
 find_library(TORCH_PYTHON_LIBRARY torch_python PATH "${TORCH_INSTALL_PREFIX}/lib")
 # Create a shared library for Python
 add_library(pycandy MODULE vectordb_pybind.cpp)
