@@ -5,6 +5,7 @@
 */
 
 #include <Algorithms/KNN/KNNSearch.hpp>
+#include <Algorithms/FlatGPUIndex/FlatGPUIndex.hpp>
 #include <Core/vector_db.hpp>
 #include <DataLoader/DataLoaderTable.hpp>
 #include <Utils/ConfigMap.hpp>
