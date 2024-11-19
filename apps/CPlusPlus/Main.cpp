@@ -5,6 +5,7 @@
  */
 
 #include <Algorithms/KNN/KNNSearch.hpp>
+#include <Algorithms/FlatGPUIndex/FlatGPUIndex.hpp>
 #include <Core/vector_db.hpp>
 #include <DataLoader/DataLoaderTable.hpp>
 #include <Utils/ConfigMap.hpp>
@@ -49,7 +50,6 @@ int main(int argc, char** argv) {
   auto dataTensorAll = dataLoader->getData().nan_to_num(0);
   auto dataTensorStream = dataTensorAll;
   auto queryTensor = dataLoader->getQuery().nan_to_num(0);
-
   INTELLI_INFO(
       "Data loaded: Dimension = " + std::to_string(dataTensorStream.size(1)) +
       ", #data = " + std::to_string(dataTensorStream.size(0)));
@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
      */
   size_t dimensions = dataTensorStream.size(1);
 
-  auto indexPtr = std::make_shared<CANDY_ALGO::HNSW>();
+  auto indexPtr = std::make_shared<CANDY_ALGO::FlatGPUIndex>();
 
   if (!indexPtr->setConfig(inMap)) {
     INTELLI_ERROR("Failed to configure ANNS index.");
@@ -177,7 +177,7 @@ int main(int argc, char** argv) {
     auto gdResults = gdIndex->searchTensor(queryTensor, ANNK);
     INTELLI_INFO("Ground truth is done");
     recall = UtilityFunctions::calculateRecall(gdResults, indexResults);
-    //UtilityFunctions::tensorListToFile(gdResults, groundTruthPrefix);
+    // UtilityFunctions::tensorListToFile(gdResults, groundTruthPrefix);
   }
 
   INTELLI_INFO("RECALL = " + std::to_string(recall));

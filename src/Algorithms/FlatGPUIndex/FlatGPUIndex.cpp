@@ -23,6 +23,9 @@ bool CANDY_ALGO::FlatGPUIndex::setConfig(INTELLI::ConfigMapPtr cfg) {
   distanceFunc = distanceIP;
   INTELLI_INFO("I am able to use GPU");
   std::string metricType = cfg->tryString("metricType", "L2", true);
+  if (metricType == "L2") {
+    distanceFunc = distanceL2;
+  }
   vecDim = cfg->tryI64("vecDim", 768, true);
   int64_t vecVolume = cfg->tryI64("vecVolume", 1000, true);
   memBufferSize = cfg->tryI64("memBufferSize", vecVolume + 1000, true);
@@ -222,11 +225,24 @@ INTELLI::ConfigMapPtr CANDY_ALGO::FlatGPUIndex::getIndexStatistics() {
 }
 
 std::vector<torch::Tensor> CANDY_ALGO::FlatGPUIndex::searchTensor(
-    const torch::Tensor& q, int64_t k) {
+  const torch::Tensor& q, int64_t k) {
   auto idx = findTopKClosest(q, k, DCOBatchSize);
-  //std::cout<<"sorting idx"<<std::endl;
+  int query_size = q.size(0);
+  std::vector<torch::Tensor> results(query_size);
 
-  return getTensorByStdIdx(idx, k);
+  for (int i = 0 ; i < query_size; i++) {
+    auto options = torch::TensorOptions().dtype(torch::kInt64);
+    if (cudaDevice > -1 && torch::cuda::is_available()) {
+      options = options.device(torch::kCUDA, cudaDevice);
+    } else {
+      options = options.device(torch::kCPU);
+    }
+    results[i] = torch::from_blob(idx.data() + i * k, {k}, options).clone();
+    if (cudaDevice > -1 && torch::cuda::is_available()) {
+      results[i] = results[i].to(torch::kCPU);
+    }
+  }
+  return results;
 }
 
 std::vector<torch::Tensor> CANDY_ALGO::FlatGPUIndex::getTensorByStdIdx(
