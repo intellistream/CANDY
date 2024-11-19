@@ -20,27 +20,30 @@ bool LSHSearch::setConfig(INTELLI::ConfigMapPtr cfg) {
     return false;
 
   Dimensions = cfg->tryI64("vecDim", 768, true);
-  NumofHyperplanes = cfg->tryI64("numberOfHyperplanes", 10, true);
-  //printf("NumofHyperplanes = %zu\n",NumofHyperplanes);
+  NumofHyperplanes = cfg->tryI64("numberOfHyperplanes", 6, true);
+  lastNNZ = -1;
 
   // Generate random hyperplanes
-  GenerateRandomHyperplanes(NumofHyperplanes);
+  //GenerateRandomHyperplanes(NumofHyperplanes);
+  GenerateGaussianHyperplanes(NumofHyperplanes);
   return true;
 }
 
 // Reset the LSH data structure
 void LSHSearch::reset() {
   Index.clear();
-  GlobalIndexCounter = 0;
+  idToBucket.clear();
+  lastNNZ = -1;
 }
 
 // Insert tensor into LSH
 bool LSHSearch::insertTensor(const torch::Tensor& t) {
   for (int64_t i = 0; i < t.size(0); ++i) {
     auto row = t[i];
-    int64_t id = GlobalIndexCounter++;
+    int64_t id = ++lastNNZ;
     std::string hashValue = HashFunction(row);
     Index[hashValue][id] = row;
+    idToBucket[id] = hashValue;
   }
   return true;
 }
@@ -49,30 +52,54 @@ bool LSHSearch::insertTensor(const torch::Tensor& t) {
 bool LSHSearch::deleteTensor(torch::Tensor& t, int64_t k) {
 
   auto results = searchTensor(t, k);
+  std::set<int64_t> idxToDeleteSet;
 
+  // Record the IDs to be deleted and deduplicate
   for (int64_t i = 0; i < t.size(0); ++i) {
-
     for (int64_t j = 0; j < k; ++j) {
       int64_t id = results[i][j].item<int64_t>();
+      idxToDeleteSet.insert(id);
+    }
+  }
 
-      if (idToBucket.count(id) > 0) {
-        std::string bucket = idToBucket[id];
+  std::vector<int64_t> idxToDelete(idxToDeleteSet.begin(), idxToDeleteSet.end());
+  // Sort in reverse order
+  std::sort(idxToDelete.begin(), idxToDelete.end(), std::greater<int64_t>());
 
-        if (Index.count(bucket) > 0) {
-          auto& BucketMap = Index[bucket];
+  for (const auto& id : idxToDelete) {
+    if (idToBucket.count(id) > 0) {
+      std::string bucket = idToBucket[id];
 
-          if (BucketMap.count(id) > 0) {
-            BucketMap.erase(id);
-            cout << "Delete: " << j <<endl;
+      if (Index.count(bucket) > 0) {
+        auto& BucketMap = Index[bucket];
+
+        if (BucketMap.count(id) > 0) {
+          int64_t lastId = lastNNZ;
+
+          // The difference is in the last element and the other
+          if (id != lastId) {
+
+            std::string lastBucket = idToBucket[lastId];
+
+            auto& lastBucketMap = Index[lastBucket];
+            auto lastTensor = lastBucketMap[lastId];
+
+            lastBucketMap.erase(lastId);
+            lastBucketMap[id] = lastTensor;
+
+            idToBucket[id] = lastBucket;
           }
+
+          idToBucket.erase(lastId);
+          BucketMap.erase(id);
+
+          --lastNNZ;
         }
       }
     }
   }
-
   return true;
 }
-
 
 // Revise tensor (modify its value)
 bool LSHSearch::reviseTensor(torch::Tensor& t, torch::Tensor& w) {
@@ -108,24 +135,22 @@ bool LSHSearch::reviseTensor(torch::Tensor& t, torch::Tensor& w) {
 
 
 // Search for the k nearest neighbors of tensor q
-
 std::vector<torch::Tensor> LSHSearch::searchTensor(const torch::Tensor& q, int64_t k) {
   std::vector<torch::Tensor> Results;
-  idToBucket.clear();
 
   for (int64_t i = 0; i < q.size(0); ++i) {
     auto Row = q[i];
     std::string Bucket = HashFunction(Row);
 
+    // Record the Hammingdistance of all buckets from the current bucket
     std::map<float, std::vector<std::string>> rowNearbyBuckets;
 
-    // 遍历所有桶计算哈希距离
     for (const auto& [otherBucket, _] : Index) {
       float dist = static_cast<float>(HammingDistance(Bucket, otherBucket));
       rowNearbyBuckets[dist].push_back(otherBucket);
     }
 
-    std::vector<std::pair<float, int64_t>> Distances; // 存储距离和 ID
+    std::vector<std::pair<float, int64_t>> Distances;
     for (const auto& [dist, buckets] : rowNearbyBuckets) {
       for (const auto& nBucket : buckets) {
         if (Index.count(nBucket) > 0) {
@@ -133,7 +158,6 @@ std::vector<torch::Tensor> LSHSearch::searchTensor(const torch::Tensor& q, int64
           for (const auto& [TensorId, Tensor] : BucketMap) {
             float Distance = (Tensor - Row).norm().item<float>();
             Distances.emplace_back(Distance, TensorId);
-            idToBucket[TensorId] = nBucket; // 绑定 ID 和桶号
           }
         }
       }
@@ -144,6 +168,12 @@ std::vector<torch::Tensor> LSHSearch::searchTensor(const torch::Tensor& q, int64
     if (Distances.size() > k) {
       Distances.resize(k);
     }
+
+  //  for (const auto& distPair : Distances) {
+  //    float distance = distPair.first;
+  //    int64_t id = distPair.second;
+  //    std::cout << "Distance: " << distance << ", ID: " << id << std::endl;
+  //  }
 
     torch::Tensor Tensor = torch::empty({static_cast<long>(Distances.size())},
                                         torch::dtype(torch::kLong));
@@ -156,8 +186,6 @@ std::vector<torch::Tensor> LSHSearch::searchTensor(const torch::Tensor& q, int64
   return Results;
 }
 
-
-
 // Generate random hyperplanes for hashing
 void LSHSearch::GenerateRandomHyperplanes(size_t NumPlanes) {
   RandomHyperplanes.resize(NumPlanes);
@@ -165,6 +193,14 @@ void LSHSearch::GenerateRandomHyperplanes(size_t NumPlanes) {
     RandomHyperplanes[i] =
         torch::empty({static_cast<long>(Dimensions)}).uniform_(-1, 1);
     RandomHyperplanes[i] = RandomHyperplanes[i] / RandomHyperplanes[i].norm();
+  }
+}
+
+void LSHSearch::GenerateGaussianHyperplanes(size_t NumPlanes) {
+  RandomHyperplanes.resize(NumPlanes);
+  for (size_t i = 0; i < NumPlanes; ++i) {
+    torch::Tensor hyperplane = torch::normal(0, 1, {static_cast<long>(Dimensions)});
+    RandomHyperplanes[i] = hyperplane / hyperplane.norm();
   }
 }
 
@@ -190,6 +226,44 @@ int LSHSearch::HammingDistance(const std::string& str1,
     }
   }
   return dist;
+}
+
+std::vector<std::string> LSHSearch::BatchHashFunction(const torch::Tensor& batch) {
+  std::vector<std::string> hashValues;
+  hashValues.reserve(batch.size(0));
+
+  torch::Tensor batch_dot_products = torch::matmul(batch, torch::stack(RandomHyperplanes));
+
+  for (int64_t i = 0; i < batch.size(0); ++i) {
+    std::string hashValue = "";
+    auto row_dot_products = batch_dot_products[i];
+
+    for (int j = 0; j < RandomHyperplanes.size(); ++j) {
+      hashValue += (row_dot_products[j].item<float>() > 0.001) ? '1' : '0';
+    }
+    hashValues.push_back(hashValue);
+  }
+
+  return hashValues;
+}
+
+bool LSHSearch::loadInitialTensor(torch::Tensor& t) {
+  if (idToBucket.empty()) {
+    idToBucket.reserve(t.size(0));
+  }
+
+  std::vector<std::string> hashValues = BatchHashFunction(t);
+
+  for (int64_t i = 0; i < t.size(0); ++i) {
+    auto row = t[i];
+    int64_t id = ++lastNNZ;
+    std::string hashValue = hashValues[i];
+
+    Index[hashValue][id] = row;
+    idToBucket[id] = hashValue;
+  }
+
+  return true;
 }
 
 }  // namespace CANDY_ALGO

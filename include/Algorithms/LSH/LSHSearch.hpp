@@ -38,10 +38,12 @@ class LSHSearch : public ANNSBase {
   std::vector<torch::Tensor> searchTensor(const torch::Tensor& q,
                                           int64_t k) override;
 
+  bool loadInitialTensor(torch::Tensor& t) override;
+
  private:
   size_t Dimensions;
   size_t NumofHyperplanes;
-  size_t GlobalIndexCounter = 0;
+  size_t lastNNZ = 0;
 
   // Hash table (unordered_map) where each bucket corresponds to a map of tensors
   std::unordered_map<std::string, std::unordered_map<int64_t, torch::Tensor>>
@@ -55,9 +57,11 @@ class LSHSearch : public ANNSBase {
 
   // Generate random hyperplanes for hashing
   void GenerateRandomHyperplanes(size_t NumPlanes);
+  void GenerateGaussianHyperplanes(size_t NumPlanes);
 
   // Hash function to map tensors to hash buckets
   std::string HashFunction(const torch::Tensor& t);
+  std::vector<std::string> BatchHashFunction(const torch::Tensor& batch);
 
   // Hamming distance calculation for two binary strings
   int HammingDistance(const std::string& str1, const std::string& str2);
