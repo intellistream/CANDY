@@ -5,16 +5,20 @@
 */
 #ifndef CANDY_ALGORITHMTABLE_H
 #define CANDY_ALGORITHMTABLE_H
+#include <Algorithms/ANNSBase.hpp>
 #include <map>
 #include <string>
-#include <Algorithms/ANNSBase.hpp>
+
 namespace CANDY_ALGO {
-class AlgorithmTable{
+class AlgorithmTable {
  protected:
   std::map<std::string, CANDY_ALGO::ANNSBasePtr> indexMap;
+
  public:
   AlgorithmTable();
+
   ~AlgorithmTable() {}
+
   /**
    * @brief To register a new ALGO
    * @param anew The new algo
@@ -23,6 +27,7 @@ class AlgorithmTable{
   void addAlgorithm(CANDY_ALGO::ANNSBasePtr anew, std::string tag) {
     indexMap[tag] = anew;
   }
+
   /**
    * @brief find an index in the table according to its name
    * @param name The nameTag of index
@@ -35,5 +40,5 @@ class AlgorithmTable{
     return nullptr;
   }
 };
-};
+};      // namespace CANDY_ALGO
 #endif  //CANDY_ALGORITHMTABLE_H

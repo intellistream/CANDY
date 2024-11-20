@@ -225,12 +225,12 @@ INTELLI::ConfigMapPtr CANDY_ALGO::FlatGPUIndex::getIndexStatistics() {
 }
 
 std::vector<torch::Tensor> CANDY_ALGO::FlatGPUIndex::searchTensor(
-  const torch::Tensor& q, int64_t k) {
+    const torch::Tensor& q, int64_t k) {
   auto idx = findTopKClosest(q, k, DCOBatchSize);
   int query_size = q.size(0);
   std::vector<torch::Tensor> results(query_size);
 
-  for (int i = 0 ; i < query_size; i++) {
+  for (int i = 0; i < query_size; i++) {
     auto options = torch::TensorOptions().dtype(torch::kInt64);
     if (cudaDevice > -1 && torch::cuda::is_available()) {
       options = options.device(torch::kCUDA, cudaDevice);
