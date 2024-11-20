@@ -3,7 +3,13 @@
 This folder packages `.so` files into a Python `.whl` file, allowing easy installation into virtual environments via `pip install`.
 
 ## Prerequisites
-- Build the CANDY library, ensuring `.so` files are generated and available in the Python site-packages directory or the specified build directory.
+- Build the CANDY library, ensuring `.so` files are generated and available in the Python site-packages directory or the specified build directory:
+
+We have a one-click build script as follows:
+
+```
+bash candy_build.sh
+```
 
 ## Packaging Instructions
 
@@ -22,7 +28,7 @@ Steps 1, 2, and 3 can be automatically executed by the install_pycandy.sh, and a
     python setup.py sdist bdist_wheel
     ```
 
-3. **Install the package** into your virtual environment:
+3. **Install the package** into your local virtual environment:
 
     ```bash
     pip install dist/candy-0.1.0-py3-none-any.whl
@@ -36,3 +42,5 @@ Steps 1, 2, and 3 can be automatically executed by the install_pycandy.sh, and a
     ```
 
 5. **Try candy by** using `import candy.pycandy` in python.
+
+NOTE: Please make sure you are using a container with torch installed, if you want to install the `.whl` to a new machine.

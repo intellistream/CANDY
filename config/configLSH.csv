@@ -1,4 +1,5 @@
 key,value,type
 vecDim,10,I64
-numberOfHyperplanes,6,I64
+NumofHyperplanes,10,I64
 initialRows,50000,I64
+indexTag,LSH,String

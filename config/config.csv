@@ -1,7 +1,8 @@
 key,value,type
+indexTag,KNN,String
 vecDim,768,I64
-vecVolume,500000,I64
-batchSize,2000,I64
+vecVolume,10000,I64
+batchSize,4000,I64
 metricType,IP,String
 DCOBatchSize,5000,I64
 ammAlgo,crs,String
@@ -11,7 +12,7 @@ driftOffset,0,Double
 indexTag,congestionDrop,String
 congestionDropWorker_algoTag,faiss,String
 eventRateTps,4000,I64
-querySize,100,I64
+querySize,200,I64
 zipfAlpha,0,Double
 coarseGrainedClusters,96,I64
 maskReference,0,Double
@@ -47,4 +48,4 @@ M,24,I64
 Mmax,32,I64
 efConstruction,32,I64
 efSearch,200,I64
-numberOfHyperplanes,4,I64
+cudaDevice,0,I64

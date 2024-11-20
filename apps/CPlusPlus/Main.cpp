@@ -1,9 +1,11 @@
 /*
- * Copyright (C) 2024 by the INTELLI team
- * Created on: 2024/10/9
- * Description: Simplified main program for streaming insert of tensors, as an introductory entry point for new developers.
- */
+* Copyright (C) 2024 by the INTELLI team
+* Created on: 2024/10/9
+* Description: Simplified main program for streaming insert of tensors, as an introductory entry point for new developers.
+*/
 
+#include <Algorithms/AlgorithmTable.hpp>
+#include <Algorithms/FlatGPUIndex/FlatGPUIndex.hpp>
 #include <Algorithms/KNN/KNNSearch.hpp>
 #include <Core/vector_db.hpp>
 #include <DataLoader/DataLoaderTable.hpp>
@@ -14,7 +16,6 @@
 #include <iostream>
 #include <string>
 #include "Algorithms/HNSW/hnsw.hpp"
-#include <Algorithms/LSH/LSHSearch.hpp>
 using namespace INTELLI;
 using namespace std;
 
@@ -22,8 +23,8 @@ const std::string candy_path = CANDY_PATH;
 
 int main(int argc, char** argv) {
   /**
-     * @brief 1. Load the configuration
-     */
+    * @brief 1. Load the configuration
+    */
   ConfigMapPtr inMap = newConfigMap();
   std::string fileName =
       (argc >= 2) ? argv[1] : candy_path + "/config/config.csv";
@@ -35,8 +36,8 @@ int main(int argc, char** argv) {
   }
 
   /**
-     * @brief 2. Load data
-     */
+    * @brief 2. Load data
+    */
 
   CANDY_ALGO::DataLoaderTable dataLoaderTable;
 
@@ -56,8 +57,8 @@ int main(int argc, char** argv) {
       ", #data = " + std::to_string(dataTensorStream.size(0)));
 
   /**
-     * @brief 3. Create timestamps
-     */
+    * @brief 3. Create timestamps
+    */
   TimeStampGenerator timeStampGen;
   inMap->edit("streamingTupleCnt",
               static_cast<int64_t>(dataTensorStream.size(0)));
@@ -67,21 +68,21 @@ int main(int argc, char** argv) {
                std::to_string(timeStamps.size()));
 
   /**
-     * @brief 4. Create index (ANNS Index Initialization)
-     */
+    * @brief 4. Create index (ANNS Index Initialization)
+    */
   size_t dimensions = dataTensorStream.size(1);
+  auto algorithmTable = std::make_shared<CANDY_ALGO::AlgorithmTable>();
 
-  //auto indexPtr = std::make_shared<CANDY_ALGO::HNSW>();
-  auto indexPtr = std::make_shared<CANDY_ALGO::LSHSearch>();
-
+  std::string indexTag = inMap->tryString("indexTag", "KNN", true);
+  auto indexPtr = algorithmTable->getIndex(indexTag);
   if (!indexPtr->setConfig(inMap)) {
     INTELLI_ERROR("Failed to configure ANNS index.");
     return -1;
   }
 
   /**
-     * @brief 5. Feed streaming data
-     */
+    * @brief 5. Feed streaming data
+    */
   INTELLI_INFO("Feeding streaming data...");
   auto start = std::chrono::high_resolution_clock::now();
 
@@ -105,8 +106,8 @@ int main(int argc, char** argv) {
   double processedOld = 0;
   while (startRow < aRows) {
     /**
-         * @brief The whole batch is ready, proceed with insertion
-         */
+        * @brief The whole batch is ready, proceed with insertion
+        */
     auto subBatch = dataTensorStream.slice(0, startRow, endRow);
     if (!indexPtr->insertTensor(subBatch)) {
       INTELLI_ERROR("Failed to insert batch starting at row: " +
@@ -115,8 +116,8 @@ int main(int argc, char** argv) {
     }
 
     /**
-         * @brief Update the indexes
-         */
+        * @brief Update the indexes
+        */
     startRow += batchSize;
     endRow += batchSize;
     if (endRow >= aRows) {
@@ -133,8 +134,8 @@ int main(int argc, char** argv) {
     }
   }
   /**
-     * @brief 6. Wait until feed ends and display performance metrics
-     */
+    * @brief 6. Wait until feed ends and display performance metrics
+    */
   auto end = std::chrono::high_resolution_clock::now();
   auto duration =
       std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
@@ -178,6 +179,7 @@ int main(int argc, char** argv) {
 
     auto gdResults = gdIndex->searchTensor(queryTensor, ANNK);
     INTELLI_INFO("Ground truth is done");
+
     recall = UtilityFunctions::calculateRecall(gdResults, indexResults);
     //UtilityFunctions::tensorListToFile(gdResults, groundTruthPrefix);
   }
