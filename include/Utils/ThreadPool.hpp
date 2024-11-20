@@ -16,7 +16,7 @@
 #include <utility>
 #include <vector>
 
-#include "safe_queue.hpp"
+#include "SafeQueue.hpp"
 
 class ThreadPool {
  private:

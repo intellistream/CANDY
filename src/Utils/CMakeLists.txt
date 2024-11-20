@@ -6,6 +6,6 @@ add_sources(CANDY
         IntelliLog.cpp
         IntelliTimeStampGenerator.cpp
         timing.cpp
-        thread_pool.cpp
+        ThreadPool.cpp
         UtilityFunction.cpp
 )
