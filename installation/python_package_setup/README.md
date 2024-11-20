@@ -3,7 +3,13 @@
 This folder packages `.so` files into a Python `.whl` file, allowing easy installation into virtual environments via `pip install`.
 
 ## Prerequisites
-- Build the CANDY library, ensuring `.so` files are generated and available in the Python site-packages directory or the specified build directory.
+- Build the CANDY library, ensuring `.so` files are generated and available in the Python site-packages directory or the specified build directory:
+
+We have a one-click build script as follows:
+
+```
+bash candy_build.sh
+```
 
 ## Packaging Instructions
 
