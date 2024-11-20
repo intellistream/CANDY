@@ -11,7 +11,7 @@ driftPosition,0,I64
 driftOffset,0,Double
 congestionDropWorker_algoTag,faiss,String
 eventRateTps,4000,I64
-querySize,200,I64
+querySize,100,I64
 zipfAlpha,0,Double
 coarseGrainedClusters,96,I64
 maskReference,0,Double
