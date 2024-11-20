@@ -158,11 +158,18 @@ int main(int argc, char** argv) {
     uint64_t endRow = std::min(startRow + batchSize, totalRows);
 
     // Submit write tasks
-    thread_pool.submit(writeTask, startRow, endRow);
-
+    int64_t writeBatchSize = batchSize / writeThreadCount;
+    uint64_t writeStartRow = startRow;
+    for (int i = 0; i < writeThreadCount; i++) {
+      startRow += taskBatchSize;
+      pool.submit(writeTask, startRow, endRow);
+    }
+    
     // Submit read tasks intermittently
-    if (startRow % (batchSize * 2) == 0) {  
-      thread_pool.submit(readTask);
+    int64_t readBatchSize = (writeBatchSize * writeThreadCount) / readThreadCount;
+      for (int i = 0; i < readThreadCount; i++) {
+      startRow += taskBatchSize;
+      pool.submit(readTask, startRow, endRow);
     }
   }
 
