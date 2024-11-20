@@ -24,8 +24,8 @@ bool LSHSearch::setConfig(INTELLI::ConfigMapPtr cfg) {
   lastNNZ = -1;
 
   // Generate random hyperplanes
-  //GenerateRandomHyperplanes(NumofHyperplanes);
-  GenerateGaussianHyperplanes(NumofHyperplanes);
+  GenerateRandomHyperplanes(NumofHyperplanes);
+  //GenerateGaussianHyperplanes(NumofHyperplanes);
   return true;
 }
 
