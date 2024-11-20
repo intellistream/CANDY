@@ -3,12 +3,13 @@
 * Created on: 2024/11/12
 * Description: [Provide description here]
 */
+#include <Algorithms/AlgorithmTable.hpp>
 #include <Algorithms/FlatGPUIndex/FlatGPUIndex.hpp>
 #include <Algorithms/HNSW/hnsw.hpp>
 #include <Algorithms/KDTree/KDTree.hpp>
 #include <Algorithms/KNN/KNNSearch.hpp>
 #include <Algorithms/LSH/LSHSearch.hpp>
-#include <Algorithms/AlgorithmTable.hpp>
+
 namespace CANDY_ALGO {
 AlgorithmTable::AlgorithmTable() {
   indexMap["KNN"] = std::make_shared<KnnSearch>();
@@ -17,4 +18,4 @@ AlgorithmTable::AlgorithmTable() {
   indexMap["FlatGPU"] = std::make_shared<FlatGPUIndex>();
   indexMap["LSH"] = std::make_shared<LSHSearch>();
 }
-}
+}  // namespace CANDY_ALGO

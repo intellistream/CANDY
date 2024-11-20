@@ -37,7 +37,7 @@
      WHEEL_FILE="$DIST_DIR/${PACKAGE_NAME}-${PACKAGE_VERSION}-py3-none-any.whl"
      if [ -f "$WHEEL_FILE" ]; then
          echo "Installing $WHEEL_FILE..."
-         pip install "$WHEEL_FILE" || {
+         pip install --force-reinstall "$WHEEL_FILE" || {
              echo "Error: Failed to install the package."
              exit 1
          }
