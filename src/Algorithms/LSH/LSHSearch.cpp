@@ -62,7 +62,8 @@ bool LSHSearch::deleteTensor(torch::Tensor& t, int64_t k) {
     }
   }
 
-  std::vector<int64_t> idxToDelete(idxToDeleteSet.begin(), idxToDeleteSet.end());
+  std::vector<int64_t> idxToDelete(idxToDeleteSet.begin(),
+                                   idxToDeleteSet.end());
   // Sort in reverse order
   std::sort(idxToDelete.begin(), idxToDelete.end(), std::greater<int64_t>());
 
@@ -133,9 +134,9 @@ bool LSHSearch::reviseTensor(torch::Tensor& t, torch::Tensor& w) {
   return true;
 }
 
-
 // Search for the k nearest neighbors of tensor q
-std::vector<torch::Tensor> LSHSearch::searchTensor(const torch::Tensor& q, int64_t k) {
+std::vector<torch::Tensor> LSHSearch::searchTensor(const torch::Tensor& q,
+                                                   int64_t k) {
   std::vector<torch::Tensor> Results;
 
   for (int64_t i = 0; i < q.size(0); ++i) {
@@ -161,7 +162,8 @@ std::vector<torch::Tensor> LSHSearch::searchTensor(const torch::Tensor& q, int64
           }
         }
       }
-      if (Distances.size() >= k)  break;
+      if (Distances.size() >= k)
+        break;
     }
 
     std::sort(Distances.begin(), Distances.end());
@@ -169,11 +171,11 @@ std::vector<torch::Tensor> LSHSearch::searchTensor(const torch::Tensor& q, int64
       Distances.resize(k);
     }
 
-  //  for (const auto& distPair : Distances) {
-  //    float distance = distPair.first;
-  //    int64_t id = distPair.second;
-  //    std::cout << "Distance: " << distance << ", ID: " << id << std::endl;
-  //  }
+    //  for (const auto& distPair : Distances) {
+    //    float distance = distPair.first;
+    //    int64_t id = distPair.second;
+    //    std::cout << "Distance: " << distance << ", ID: " << id << std::endl;
+    //  }
 
     torch::Tensor Tensor = torch::empty({static_cast<long>(Distances.size())},
                                         torch::dtype(torch::kLong));
@@ -199,7 +201,8 @@ void LSHSearch::GenerateRandomHyperplanes(size_t NumPlanes) {
 void LSHSearch::GenerateGaussianHyperplanes(size_t NumPlanes) {
   RandomHyperplanes.resize(NumPlanes);
   for (size_t i = 0; i < NumPlanes; ++i) {
-    torch::Tensor hyperplane = torch::normal(0, 1, {static_cast<long>(Dimensions)});
+    torch::Tensor hyperplane =
+        torch::normal(0, 1, {static_cast<long>(Dimensions)});
     RandomHyperplanes[i] = hyperplane / hyperplane.norm();
   }
 }
@@ -228,11 +231,13 @@ int LSHSearch::HammingDistance(const std::string& str1,
   return dist;
 }
 
-std::vector<std::string> LSHSearch::BatchHashFunction(const torch::Tensor& batch) {
+std::vector<std::string> LSHSearch::BatchHashFunction(
+    const torch::Tensor& batch) {
   std::vector<std::string> hashValues;
   hashValues.reserve(batch.size(0));
 
-  torch::Tensor batch_dot_products = torch::matmul(batch, torch::stack(RandomHyperplanes));
+  torch::Tensor batch_dot_products =
+      torch::matmul(batch, torch::stack(RandomHyperplanes));
 
   for (int64_t i = 0; i < batch.size(0); ++i) {
     std::string hashValue = "";
