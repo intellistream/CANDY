@@ -22,13 +22,7 @@ You need to configure the environment and compile the entire project
 
 ---
 
-### 🐍 Step 2: Install CANDY`s Python Libraries
-
-Complete the installation of the packages provided to Python in the Candy C++section under **installation/pythonpackage_stup**
-
----
-
-### 📦 Step 3: Install Third-Party Libraries
+### 📦 Step 2: Install Third-Party Libraries
 
 Ensure you have all the dependencies by running:
 
