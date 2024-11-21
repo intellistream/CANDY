@@ -76,8 +76,6 @@ int main(int argc, char** argv) {
     return -1;
   }
 
-  exit(1);
-
   // 5. Set up the thread pool
   int writeThreadCount = inMap->tryI64("writeThreadCount", 2, true);
   int readThreadCount = inMap->tryI64("readThreadCount", 2, true);
