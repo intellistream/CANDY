@@ -76,6 +76,8 @@ int main(int argc, char** argv) {
     return -1;
   }
 
+  exit(1);
+
   // 5. Set up the thread pool
   int writeThreadCount = inMap->tryI64("writeThreadCount", 2, true);
   int readThreadCount = inMap->tryI64("readThreadCount", 2, true);
@@ -91,43 +93,19 @@ int main(int argc, char** argv) {
     inMap->tryString("groundTruthPrefix", "multiRW_GroundTruth", true);
   int64_t ANNK = inMap->tryI64("ANNK", 5, true);
 
-  std::string probeName = 
-    groundTruthPrefix + "/" + std::to_string(indexResults.size() - 1) + ".rbt";
-
-  if (std::ifstream(probeName).good() && (groundTruthRedo == 0)) {
-    auto gdResults = 
-      UtilityFunctions::tensorListFromFile(groundTruthPrefix, indexResults.size());
-    INTELLI_INFO("Ground truth is loaded");
-    recall = UtilityFunctions::calculateRecall(gdResults, indexResults);
-  } else {
-    INTELLI_INFO("Ground truth does not exist");
-    auto gdMap = newConfigMap();
-    gdMap->loadFrom（*inMap);
-    auto gdIndex = std::make_shared<CANDY_ALGO::KnnSearch>(dimensions);
-    gdIndex->setConfig(gdMap);
-    if (initialRows > 0) {
-      gdIndex->loadInitialTensor(dataTensorInitial);
-    }  
-  }
+  auto gdMap = newConfigMap();
+  gdMap->loadFrom(*inMap);
+  auto gdIndex = std::make_shared<CANDY_ALGO::KnnSearch>(dimensions);
+  gdIndex->setConfig(gdMap);
 
   // 7. Concurrently feed streaming data and read results
-  std::atomic<uint64_t> processedBatches{0};
-  std::vector<double> recallValues;
-  std::mutex recallMutex;
+  std::vector<std::vector<torch::Tensor>> indexResultsVec; 
+  std::mutex indexResultsMutex;
+  std::atomic<int> tasksCompleted{0};
+  std::condition_variable cv; 
+  std::mutex cvMutex;    
 
   int64_t totalRows = dataTensorStream.size(0);
-
-  // Function to calculate recall
-  auto calculateRecall = [&](const torch::Tensor& queryTensor, int64_t ANNK) {
-    double recall = 0.0;
-
-
-    
-    {
-      std::lock_guard<std::mutex> lock(recallMutex);
-      recallValues.push_back(recall);
-    }
-  };
 
   // Writing thread function
   auto writeTask = [&](uint64_t startRow, uint64_t endRow) {
@@ -136,8 +114,10 @@ int main(int argc, char** argv) {
       INTELLI_ERROR("Failed to insert batch starting at row: " +
                     std::to_string(startRow));
     }
-    processed_batches.fetch_add(1);
     INTELLI_INFO("Processed batch starting at row: " + std::to_string(startRow));
+
+    tasksCompleted.fetch_add(1); 
+    cv.notify_all();
   };
 
   // Reading thread function
@@ -147,29 +127,60 @@ int main(int argc, char** argv) {
     uint64_t queryLatency = chronoElapsedTime(startQuery);
     INTELLI_INFO("Query done in " + to_string(queryLatency / 1000) + "ms");
 
-    calculateRecall(queryTensor, ANNK);
-    INTELLI_INFO("Recall calculated during concurrent operations.");
+    { 
+      std::lock_guard<std::mutex> lock(indexResultsMutex);
+      indexResultsVec.emplace_back(indexResults);
+    }
+
+    tasksCompleted.fetch_add(1); 
+    cv.notify_all();
   };
+
+  INTELLI_INFO("Load initial tensor");
+  int64_t initialRows = inMap->tryI64("initialRows", 0, true);
+  auto dataTensorInitial = dataTensorAll.slice(0, 0, initialRows);
+  if (initialRows > 0) {
+    gdIndex->loadInitialTensor(dataTensorInitial);
+    indexPtr->loadInitialTensor(dataTensorInitial);
+  }  
 
   INTELLI_INFO("Starting concurrent read/write...");
   auto start = std::chrono::high_resolution_clock::now();
 
   for (uint64_t startRow = 0; startRow < totalRows; startRow += batchSize) {
-    uint64_t endRow = std::min(startRow + batchSize, totalRows);
+    uint64_t endRow = std::min(startRow + batchSize, static_cast<uint64_t>(totalRows));
+    tasksCompleted.store(0);
+    
+    // Insert into ground truth index batch by batch
+    auto subBatch = dataTensorStream.slice(0, startRow, endRow);
+    gdIndex->insertTensor(subBatch);
 
     // Submit write tasks
     int64_t writeBatchSize = batchSize / writeThreadCount;
     uint64_t writeStartRow = startRow;
     for (int i = 0; i < writeThreadCount; i++) {
-      startRow += taskBatchSize;
+      startRow += writeBatchSize;
       pool.submit(writeTask, startRow, endRow);
     }
     
     // Submit read tasks intermittently
-    int64_t readBatchSize = (writeBatchSize * writeThreadCount) / readThreadCount;
-      for (int i = 0; i < readThreadCount; i++) {
-      startRow += taskBatchSize;
-      pool.submit(readTask, startRow, endRow);
+    for (int i = 0; i < readThreadCount; i++) {
+      pool.submit(readTask);
+    }
+
+    {
+      std::unique_lock<std::mutex> lock(cvMutex);
+      cv.wait(lock, [&]() { 
+        return tasksCompleted.load() == writeThreadCount + readThreadCount; 
+      });
+    }
+
+    // Caculate recall each batch
+    for (auto& indexResults : indexResultsVec) { 
+      auto gdResults = gdIndex->searchTensor(queryTensor, ANNK);
+      double recall = UtilityFunctions::calculateRecall(gdResults, indexResults);
+      INTELLI_INFO("Recall = " + std::to_string(recall) + " at row " 
+        + std::to_string(startRow));
     }
   }
 
