@@ -2,7 +2,7 @@ import os
 import json
 import threading
 
-class RawDataStorage:
+class LocalRawDataStorage:
     def __init__(self, storage_file="/home/candy/CANDY/apps/Python/RawData/raw_data.json", data_dir="/home/candy/CANDY/apps/Python/RawData/raw_data_files"):
         self.storage_file = storage_file
         self.data_dir = data_dir
@@ -74,7 +74,7 @@ class RawDataStorage:
             return self.data.get(raw_id, None)
 
 if __name__ == "__main__":
-    storage = RawDataStorage()
+    storage = LocalRawDataStorage()
     while True:
         print("\nRawDataStorage Interactive Console")
         print("1. Add Text Data as RawData")

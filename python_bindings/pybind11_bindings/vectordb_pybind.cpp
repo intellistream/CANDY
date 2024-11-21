@@ -33,7 +33,8 @@ PYBIND11_MODULE(pycandy, m) {
            py::arg("dimensions"), py::arg("search_algorithm") = "knnsearch")
 
       .def("insert_tensor", &VectorDB::insert_tensor, py::arg("tensor"))
-
+      .def("insert_tensor_rawid", &VectorDB::insert_tensor_rawid, py::arg("tensor"), py::arg("rawid"))
+      .def("displayStore", &VectorDB::displayStore)
       .def(
           "query_nearest_tensors",
           [](const VectorDB& self, const torch::Tensor& query_tensor,

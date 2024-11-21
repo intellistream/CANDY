@@ -41,9 +41,21 @@ bool VectorDB::insert_tensor(const torch::Tensor& tensor) {
           insert_container);  // Insert into the ANNS algorithm's index
     }
   }
-
   return true;
 }
+bool VectorDB::insert_tensor_rawid(const torch::Tensor& tensor,int rawid) {
+  {
+    std::unique_lock<std::shared_mutex> lock(db_mutex);  // Exclusive write lock
+    auto insert_container = torch::zeros({1, tensor.size(0)});
+    insert_container[0] = tensor;
+    store.insertTensor(insert_container,rawid);
+  }
+  return true;
+}
+string VectorDB::displayStore(){
+  return store.display();
+}
+
 
 // Update an existing tensor (exclusive write access)
 bool VectorDB::update_tensor(const torch::Tensor& old_tensor,

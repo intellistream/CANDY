@@ -3,4 +3,5 @@ add_sources(CANDY
         data_loader.cpp
         s3_storage.cpp
         wal.cpp
+        storage.cpp
 )

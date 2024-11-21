@@ -2,6 +2,9 @@ import json
 import os
 import sys
 import torch
+
+from RawDataStorage.LocalRawDataStorage import LocalRawDataStorage
+
 # Add the project root directory to sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../Python')))
 
@@ -11,6 +14,7 @@ from Embedding.TextPreprocessor import TextPreprocessor
 # Initialize the tensor database and embedding models
 search_algorithm = 'knnsearch'
 db = VectorDB(128, search_algorithm)
+rawDataStorage = LocalRawDataStorage()
 text_preprocessor = TextPreprocessor()
 
 
@@ -31,7 +35,11 @@ class DBClient:
     def add_tensor(self, tensor_data):
         embedding = text_preprocessor.generate_embedding(tensor_data)
         tensor = torch.from_numpy(embedding)
-        db.insert_tensor(tensor.clone()) 
+        rowid = rawDataStorage.add_text_as_rawdata(tensor_data)
+        db.insert_tensor_rawid(tensor.clone(), rowid)
+        a = db.displayStore()
+        print(a)
+        #db.insert_tensor(tensor.clone())
 
     def update_tensor(self, old_data, new_data):
         old_embedding = text_preprocessor.generate_embedding(old_data)
