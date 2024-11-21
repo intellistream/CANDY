@@ -328,9 +328,11 @@ void HNSW::insert(const torch::Tensor& t) {
 }
 
 bool HNSW::insertTensor(const torch::Tensor& t) {
+  mtx.lock();
   for (int64_t i = 0; i < t.size(0); i++) {
     insert(t[i]);
   }
+  mtx.unlock();
   return true;
 }
 
@@ -454,22 +456,18 @@ torch::Tensor HNSW::search(const torch::Tensor& t, int64_t k) {
   return result;
 }
 
-std::vector<torch::Tensor> HNSW::searchTensor(const torch::Tensor& q,
+std::vector<torch::Tensor> HNSW::searchTensor(const torch::Tensor& q, 
                                               const int64_t k) {
+  mtx.lock();
   const auto to_search = q.size(0);
   std::vector<torch::Tensor> to_return;
   to_return.reserve(to_search);
   if (size_ == 0)
     return {};
-  std::vector<std::future<torch::Tensor>> futures;
-  for (int i = 0; i < to_search; ++i) {
-    auto future = std::async(std::launch::async,
-                             [this, &q, i, k]() { return search(q[i], k); });
-    futures.emplace_back(std::move(future));
+  for (int64_t i = 0; i < to_search; i++) {
+    to_return.emplace_back(search(q[i], k));
   }
-  for (auto& future : futures) {
-    to_return.push_back(future.get());
-  }
+  mtx.unlock();
   return to_return;
 }
 

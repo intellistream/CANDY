@@ -112,6 +112,8 @@ class HNSW final : public ANNSBase {
   std::vector<Vertex> vertexes_;
   std::vector<idx_t> free_list_;
   std::default_random_engine level_generator_;
+
+  std::mutex mtx;
 };
 }  // namespace CANDY_ALGO
 #endif

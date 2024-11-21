@@ -9,7 +9,7 @@ ammAlgo,crs,String
 sketchSize,128,I64
 driftPosition,0,I64
 driftOffset,0,Double
-indexTag,congestionDrop,String
+indexTag,KNN,String
 congestionDropWorker_algoTag,faiss,String
 eventRateTps,4000,I64
 querySize,200,I64

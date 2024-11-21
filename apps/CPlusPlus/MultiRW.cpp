@@ -20,6 +20,7 @@
 #include "Utils/ThreadPool.hpp"
 #include "Algorithms/HNSW/hnsw.hpp"
 #include <torch/torch.h>
+#include <iostream>
 
 using namespace INTELLI;
 using namespace std;
@@ -30,7 +31,7 @@ int main(int argc, char** argv) {
   // 1. Load the configuration
   ConfigMapPtr inMap = newConfigMap();
   std::string fileName =
-      (argc >= 2) ? argv[1] : candy_path + "/config/config.csv";
+      (argc >= 2) ? argv[1] : candy_path + "/config/configHNSW.csv";
   if (inMap->fromFile(fileName)) {
     INTELLI_INFO("Config loaded from file: " + fileName);
   } else {
@@ -78,7 +79,7 @@ int main(int argc, char** argv) {
 
   // 5. Set up the thread pool
   int writeThreadCount = inMap->tryI64("writeThreadCount", 2, true);
-  int readThreadCount = inMap->tryI64("readThreadCount", 2, true);
+  int readThreadCount = inMap->tryI64("readThreadCount", 1, true);
   int readTaskInterval = inMap->tryI64("readTaskInterval", 1, true); 
 
   ThreadPool pool(writeThreadCount + readThreadCount);
@@ -86,6 +87,7 @@ int main(int argc, char** argv) {
 
   // 6. Prepare ground truth index
   int64_t batchSize = inMap->tryI64("batchSize", dataTensorStream.size(0), true);
+
   int64_t groundTruthRedo = inMap->tryI64("groundTruthRedo", 1, true);
   std::string groundTruthPrefix =
     inMap->tryString("groundTruthPrefix", "multiRW_GroundTruth", true);
@@ -105,25 +107,35 @@ int main(int argc, char** argv) {
 
   int64_t totalRows = dataTensorStream.size(0);
 
+  INTELLI_INFO("Load initial tensor");
+  int64_t initialRows = inMap->tryI64("initialRows", 10, true);
+  auto dataTensorInitial = dataTensorAll.slice(0, 0, initialRows);
+
+  if (initialRows > 0) {
+    gdIndex->loadInitialTensor(dataTensorInitial);
+    indexPtr->loadInitialTensor(dataTensorInitial);
+  }  
+
   // Writing thread function
   auto writeTask = [&](uint64_t startRow, uint64_t endRow) {
+    INTELLI_INFO("Start processing write batch starting at row: " + std::to_string(startRow));
     auto subBatch = dataTensorStream.slice(0, startRow, endRow);
     if (!indexPtr->insertTensor(subBatch)) {
       INTELLI_ERROR("Failed to insert batch starting at row: " +
                     std::to_string(startRow));
     }
-    INTELLI_INFO("Processed batch starting at row: " + std::to_string(startRow));
-
+    INTELLI_INFO("Finish processing write batch starting at row: " + std::to_string(startRow));
     tasksCompleted.fetch_add(1); 
     cv.notify_all();
   };
 
   // Reading thread function
   auto readTask = [&]() {
+    INTELLI_INFO("Query start");
     auto startQuery = std::chrono::high_resolution_clock::now();
-    auto indexResults = indexPtr->searchTensor(queryTensor, ANNK);
     uint64_t queryLatency = chronoElapsedTime(startQuery);
     INTELLI_INFO("Query done in " + to_string(queryLatency / 1000) + "ms");
+    auto indexResults = indexPtr->searchTensor(queryTensor, ANNK);
 
     { 
       std::lock_guard<std::mutex> lock(indexResultsMutex);
@@ -133,14 +145,6 @@ int main(int argc, char** argv) {
     tasksCompleted.fetch_add(1); 
     cv.notify_all();
   };
-
-  INTELLI_INFO("Load initial tensor");
-  int64_t initialRows = inMap->tryI64("initialRows", 0, true);
-  auto dataTensorInitial = dataTensorAll.slice(0, 0, initialRows);
-  if (initialRows > 0) {
-    gdIndex->loadInitialTensor(dataTensorInitial);
-    indexPtr->loadInitialTensor(dataTensorInitial);
-  }  
 
   INTELLI_INFO("Starting concurrent read/write...");
   auto start = std::chrono::high_resolution_clock::now();
