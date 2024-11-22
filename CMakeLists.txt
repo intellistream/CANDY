@@ -37,6 +37,18 @@ get_headers(CANDY_HEADER_FILES)
 
 add_library(CANDY SHARED ${CANDY_SOURCE_FILES} ${CANDY_HEADER_FILES}
         include/DataLoader/DataLoaderTable.hpp
+        include/Algorithms/Manu/WriteAheadLog.hpp
+        include/Algorithms/Manu/BinLog.hpp
+        include/Algorithms/Manu/StateManager.hpp
+        include/Algorithms/Manu/HybridLogialClock.hpp
+        include/Algorithms/Manu/IndexManager.hpp
+        include/Algorithms/Manu/QueryManager.hpp
+        src/Algorithms/Manu/WriteAheadLog.cpp
+        src/Algorithms/Manu/BinLog.cpp
+        src/Algorithms/Manu/StateManager.cpp
+        src/Algorithms/Manu/HybridLogicalClock.cpp
+        src/Algorithms/Manu/IndexManager.cpp
+        src/Algorithms/Manu/QueryManager.cpp
 )
 
 # Add the include directory with absolute path
