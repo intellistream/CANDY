@@ -7,14 +7,18 @@
 #define SPEARATE_ANNS_ALGORITHM_BASE_HPP
 #include <torch/torch.h>
 #include <vector>
-#include "AbstractSeparateANNSAlgorithm.hpp"
+#include <Algorithms/AbstractSeparateANNSAlgorithm.hpp>
+#include <IO/BasicStorage.hpp>
 
 class SeparateANNSBase: public AbstractSeparateANNSAlgorithm{
  public:
+  BasicStorage storage_engine;
   SeparateANNSBase();
-  ~SeparateANNSBase();
-  std::vector<int> searchTensor(const torch::Tensor &t, int64_t k);
-  std::vector<int> deleteTensor(const torch::Tensor &t, int64_t k);
-  std::vector<int> findKnnTensor(const torch::Tensor &t, int64_t k);
+  ~SeparateANNSBase() override;
+  bool insertTensor(const torch::Tensor &t) override;
+  bool insertTensorWithRawId(const torch::Tensor &t, int rowId) override;
+  std::vector<int> searchTensor(const torch::Tensor &t, int64_t k) override;
+  std::vector<int> deleteTensor(const torch::Tensor &t, int64_t k) override;
+  std::vector<int> findKnnTensor(const torch::Tensor &t, int64_t k) override;
 };
 #endif  // SPEARATE_ANNS_ALGORITHM_BASE_HPP

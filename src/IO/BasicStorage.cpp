@@ -1,4 +1,4 @@
-#include <../include/IO/BasicStorage.hpp>
+#include <IO/BasicStorage.hpp>
 
 BasicStorage::BasicStorage(){
 
@@ -7,26 +7,33 @@ BasicStorage::~BasicStorage() {
 
 }
 
-
 int BasicStorage::getVid(){
   return nowVid++;
 }
 
 bool BasicStorage::insertTensorWithRawId(const torch::Tensor &vector, int rawId){
-  int myvid=getVid();
+  int myvid = getVid();
   vectorPair myvectorPair;
   myvectorPair.rawId=rawId;
   myvectorPair.vector=vector;
   storageVector.insert({myvid, myvectorPair});
   return true;
 }
-vector<int> BasicStorage::deleteTensor(vector<int> vids){
-  vector<int> result;
-  for(int i=0; i<vids.size(); i++){
+bool BasicStorage::insertTensor(const torch::Tensor &vector){
+  int myvid=getVid();
+  vectorPair myvectorPair;
+  myvectorPair.rawId=myvid;
+  myvectorPair.vector=vector;
+  storageVector.insert({myvid, myvectorPair});
+  return true;
+}
+std::vector<int> BasicStorage::deleteTensor(std::vector<int> vids){
+  std::vector<int> result;
+  for(int i = 0; i < vids.size(); i++){
     auto it = storageVector.find(vids[i]);
     if(it != storageVector.end()){
       storageVector.erase(it);
-      result.push_back(it->second.rawId);
+      result.push_back(it -> second.rawId);
     }
   }
   return result;
@@ -55,7 +62,7 @@ int BasicStorage::getRowIdByVid(int vid){
     return -1;
   }
 }
-string BasicStorage::display() {
+std::string BasicStorage::display() {
   string result;
   for(auto it = storageVector.begin(); it != storageVector.end(); it++) {
     result += "vid is " + to_string(it-> first) + "\n";

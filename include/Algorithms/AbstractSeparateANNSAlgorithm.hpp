@@ -8,13 +8,23 @@
 #include <torch/torch.h>
 #include <vector>
 
-#include "IO/AbstractStorageEngine.hpp"
-
 class AbstractSeparateANNSAlgorithm{
 public:
-  AbstractStorageEngine storage_engine;
   AbstractSeparateANNSAlgorithm() = default;
   virtual ~AbstractSeparateANNSAlgorithm() = default;
+  /**
+ * @brief insert a tensor with a rawId
+ * @param t the tensor, some index needs to be single row
+ * @param rowId the rawId
+ * @return bool whether the insertion is successful
+ */
+  virtual bool insertTensorWithRawId(const torch::Tensor &t, int rowId) = 0;
+    /**
+     * @brief insert a tensor
+     * @param t the tensor, some index needs to be single row
+     * @return bool whether the insertion is successful
+     */
+  virtual bool insertTensor(const torch::Tensor &t) = 0;
   /**
    * @brief search the k-NN of a query tensor, return the result rowIDs
    * @param t the tensor, allow multiple rows

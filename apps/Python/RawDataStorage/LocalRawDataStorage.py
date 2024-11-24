@@ -61,8 +61,6 @@ class LocalRawDataStorage:
             with self.lock:
                 self.data[raw_id] = file_path
                 self._save_storage()
-
-            print(f"Text saved as RawData with ID {raw_id}: {file_path}")
             return raw_id
         except Exception as e:
             print(f"Error saving text as RawData: {e}")
@@ -73,26 +71,97 @@ class LocalRawDataStorage:
         with self.lock:  # 确保读取操作线程安全
             return self.data.get(raw_id, None)
 
+    def delete_rawdata(self, raw_id):
+        """
+        删除指定 RawID 的文件及其记录
+        Args:
+            raw_id (int): 要删除的 RawID
+        Returns:
+            bool: 删除成功返回 True，失败返回 False
+        """
+        with self.lock:
+            file_path = self.data.get(raw_id)
+            if file_path:
+                try:
+                    if os.path.exists(file_path):
+                        os.remove(file_path)
+                        print(f"Deleted file for RawID {raw_id}: {file_path}")
+                    del self.data[raw_id]
+                    self._save_storage()
+                    return True
+                except Exception as e:
+                    print(f"Error deleting file for RawID {raw_id}: {e}")
+                    return False
+            else:
+                print(f"RawID {raw_id} not found.")
+                return False
+
+    def delete_all_data(self):
+        """
+        删除所有数据文件并清空存储记录
+        Returns:
+            bool: 删除成功返回 True，失败返回 False
+        """
+        with self.lock:
+            try:
+                # 删除数据目录中的所有文件
+                for file_name in os.listdir(self.data_dir):
+                    file_path = os.path.join(self.data_dir, file_name)
+                    os.remove(file_path)
+                    print(f"Deleted file: {file_path}")
+
+                # 清空数据记录
+                self.data.clear()
+                self.next_id = 0
+
+                # 删除数据目录
+                os.rmdir(self.data_dir)
+                print(f"Deleted data directory: {self.data_dir}")
+
+                # 保存清空后的状态
+                self._save_storage()
+                return True
+            except Exception as e:
+                print(f"Error deleting all data: {e}")
+                return False
+    def displayRawData(self):
+        print(self.data)
+
 if __name__ == "__main__":
     storage = LocalRawDataStorage()
     while True:
-        print("\nRawDataStorage Interactive Console")
-        print("1. Add Text Data as RawData")
+        print("\nLocalRawDataStorage Interactive Console")
+        print("1. Add Text Data")
         print("2. Get RawData by ID")
-        print("3. Exit")
+        print("3. Delete RawData by ID")
+        print("4. Delete All Data")
+        print("5. Exit")
         choice = input("\nEnter your choice: ")
 
         if choice == "1":
-            text = input("Enter text data: ")
+            text = input("Enter text data to add: ")
             storage.add_text_as_rawdata(text)
         elif choice == "2":
             raw_id = int(input("Enter RawData ID: "))
             file_path = storage.get_rawdata(raw_id)
             if file_path:
-                print(f"RawData file path: {file_path}")
+                print(f"RawData found at: {file_path}")
             else:
                 print(f"RawData with ID {raw_id} not found.")
         elif choice == "3":
+            raw_id = int(input("Enter RawData ID to delete: "))
+            success = storage.delete_rawdata(raw_id)
+            if success:
+                print(f"RawData with ID {raw_id} deleted successfully.")
+        elif choice == "4":
+            confirm = input("Are you sure you want to delete all data? (y/n): ")
+            if confirm.lower() == "y":
+                success = storage.delete_all_data()
+                if success:
+                    print("All data deleted successfully.")
+            else:
+                print("Operation cancelled.")
+        elif choice == "5":
             break
         else:
             print("Invalid choice. Please try again.")

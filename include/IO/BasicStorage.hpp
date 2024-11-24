@@ -1,11 +1,16 @@
+/*
+* Copyright (C) 2024 by the jjzhao
+ * Created on: 2024/11/24
+ * Description: [Provide description here]
+ */
+#ifndef BASIC_STORAGE_HPP
+#define BASIC_STORAGE_HPP
 #include <torch/torch.h>
 #include <Utils/ConfigMap.hpp>
-#include <Utils/Param.hpp>
 #include <map>
 #include <string>
 #include <vector>
-
-#include "AbstractStorageEngine.hpp"
+#include <IO/AbstractStorageEngine.hpp>
 
 struct vectorPair{
   torch::Tensor vector;
@@ -18,15 +23,16 @@ public:
   int nowVid=0;
 
   BasicStorage();
-  ~BasicStorage();
-  int getVid();
-  bool insertTensorWithRawId(const torch::Tensor &vector, int rawId);
-  bool insertTensor(const torch::Tensor &vector);
-  vector<int> deleteTensor(vector<int> vids);
-  float distanceCompute(int vid1, int vid2);
-  float distanceCompute(const torch::Tensor &vector, int vid);
-  torch::Tensor getVectorByVid(int vid);
-  int getRowIdByVid(int vid);
-  std::vector<torch::Tensor> getAll();
-  string display();
+  ~BasicStorage() override;
+  int getVid() override;
+  bool insertTensorWithRawId(const torch::Tensor &vector, int rawId) override;
+  bool insertTensor(const torch::Tensor &vector) override;
+  std::vector<int> deleteTensor(std::vector<int> vids) override;
+  float distanceCompute(int vid1, int vid2) override;
+  float distanceCompute(const torch::Tensor &vector, int vid) override;
+  torch::Tensor getVectorByVid(int vid) override;
+  int getRowIdByVid(int vid) override;
+  std::vector<torch::Tensor> getAll() override;
+  std::string display() override;
 };
+#endif  // BASIC_STORAGE_HPP
