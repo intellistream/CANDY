@@ -7,7 +7,7 @@ class LocalRawDataStorage:
         self.storage_file = storage_file
         self.data_dir = data_dir
         self.data = {}
-        self.next_id = 1
+        self.next_id = 0
         self.lock = threading.Lock()  # 锁对象
 
         # 确保数据文件目录存在

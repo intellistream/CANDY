@@ -33,12 +33,11 @@ class DBClient:
             return None
 
     def add_tensor(self, tensor_data):
+        rowid = rawDataStorage.add_text_as_rawdata(tensor_data)
         embedding = text_preprocessor.generate_embedding(tensor_data)
         tensor = torch.from_numpy(embedding)
-        rowid = rawDataStorage.add_text_as_rawdata(tensor_data)
         db.insert_tensor_rawid(tensor.clone(), rowid)
-        a = db.displayStore()
-        print(a)
+        print(db.displayStore())
         #db.insert_tensor(tensor.clone())
 
     def update_tensor(self, old_data, new_data):

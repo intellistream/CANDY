@@ -48,7 +48,7 @@ bool VectorDB::insert_tensor_rawid(const torch::Tensor& tensor,int rawid) {
     std::unique_lock<std::shared_mutex> lock(db_mutex);  // Exclusive write lock
     auto insert_container = torch::zeros({1, tensor.size(0)});
     insert_container[0] = tensor;
-    store.insertTensor(insert_container,rawid);
+    store.insertTensorWithRawId(insert_container,rawid);
   }
   return true;
 }
@@ -85,7 +85,6 @@ bool VectorDB::remove_tensor(const torch::Tensor& tensor) {
                                   1);  // Delete the tensor from the ANNS index
     }
   }
-
   return true;
 }
 

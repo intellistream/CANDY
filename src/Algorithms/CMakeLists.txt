@@ -9,4 +9,5 @@ add_subdirectory(FlatGPUIndex)
 add_sources(CANDY
         ANNSBase.cpp
         AlgorithmTable.cpp
+        SeparateANNSBase.cpp
 )

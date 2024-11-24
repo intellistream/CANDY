@@ -11,7 +11,7 @@
 #define VECTOR_DB_H
 
 #include <Algorithms/ANNSBase.hpp>
-#include <IO/storage.hpp>
+#include <IO/BasicStorage.hpp>
 #include <functional>
 #include <memory>
 #include <mutex>  // For std::mutex
@@ -72,7 +72,7 @@ class VectorDB {
 
 
   //add by ghr
-  storage store;
+  BasicStorage store;
 
   // Parallel processing: thread workers
   std::vector<std::thread> workers;
