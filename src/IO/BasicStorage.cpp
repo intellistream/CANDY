@@ -1,4 +1,5 @@
 #include <IO/BasicStorage.hpp>
+#include <ComputeEngine/BasicComputeEngine.hpp>
 
 BasicStorage::BasicStorage(){
 
@@ -40,7 +41,13 @@ std::vector<int> BasicStorage::deleteTensor(std::vector<int> vids){
 }
 
 float BasicStorage::distanceCompute(int vid1, int vid2){
-  return 0.0;
+    auto it1 = storageVector.find(vid1);
+    auto it2 = storageVector.find(vid2);
+    if(it1 != storageVector.end() && it2 != storageVector.end()){
+        return computeEngine.euclidean_distance(it1 -> second.vector, it2 -> second.vector);
+    } else {
+        return -1;
+    }
 }
 float BasicStorage::distanceCompute(const torch::Tensor &vector, int vid){
   return 0.0;
