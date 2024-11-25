@@ -36,6 +36,18 @@ PYBIND11_MODULE(pycandy, m) {
            }),
            py::arg("dimensions"), py::arg("search_algorithm") = "knnsearch")
 
+      .def(py::init([](size_t dimensions, const std::string& search_algorithm, INTELLI::ConfigMapPtr cfg) {
+           std::shared_ptr<CANDY_ALGO::ANNSBase> algorithm;
+           if (search_algorithm == "knnsearch") {
+               algorithm = std::make_shared<CANDY_ALGO::KnnSearch>(dimensions);
+               algorithm->setConfig(cfg); // 使用传入的配置
+           } else {
+               throw std::invalid_argument("Unsupported search algorithm: " + search_algorithm);
+           }
+           return std::make_unique<VectorDB>(dimensions, algorithm);
+          }),
+          py::arg("dimensions"), py::arg("search_algorithm") = "knnsearch", py::arg("config") = nullptr)
+
       .def("insert_tensor", &VectorDB::insert_tensor, py::arg("tensor"))
 
       .def(

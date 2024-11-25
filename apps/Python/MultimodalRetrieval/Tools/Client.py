@@ -8,10 +8,11 @@ from pycandy import VectorDB
 
 
 class DBClient:
-    def __init__(self, vec_dim, search_algorithm):
+    def __init__(self, vec_dim, search_algorithm, config):
         self.search_algorithm = search_algorithm
         self.vec_dim = vec_dim
-        self.db = VectorDB(vec_dim, search_algorithm)
+        self.config = config
+        self.db = VectorDB(vec_dim, search_algorithm, config)
 
     def add_tensor(self, tensor_data):
         self.db.insert_tensor(tensor_data.clone())
@@ -28,6 +29,7 @@ class DBClient:
         else:
             print(f"Error fetching tensor for query: '{query_text}'")
             return None
+
     def get_batch_tensors(self, query_texts):
         results = []
         for query_text in query_texts:

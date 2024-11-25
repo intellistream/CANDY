@@ -1,7 +1,7 @@
 import sys
 import torch
 
-from Tool.BenchmarkTool import DBClient
+from Tools.Client import DBClient
 
 from pycandy import ConfigMap
 from pycandy import DataLoaderTable
@@ -48,7 +48,7 @@ def main():
     print("=" * 50)
 
     # 2.1 Initialize vector database
-    client = DBClient(vecDim, 'knnsearch')
+    client = DBClient(vecDim, 'knnsearch', ConfigMap())
     print("[Python INFO] 2.1  The vector database has been successfully initialized")
 
     # 2.2 load initial vector
@@ -112,7 +112,7 @@ def main():
     groundTruthTag = 0
     if groundTruthTag == 0:
         print("[Python INFO] 3.4  Ground truth does not exist, so it`s time to create it")
-        client_gt = DBClient(vecDim, 'knnsearch')
+        client_gt = DBClient(vecDim, 'knnsearch', ConfigMap())
         client_gt.load_batch_tensor(dataTensorAll)
         gt = client_gt.get_batch_tensors(queryTensor)
 

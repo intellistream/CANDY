@@ -1,6 +1,6 @@
 key,value,type
 indexTag,KNN,String
-vecDim,128,I64
+vecDim,768,I64
 vecVolume,10000,I64
 batchSize,4000,I64
 metricType,IP,String
