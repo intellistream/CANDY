@@ -1,5 +1,5 @@
 key,value,type
-indexTag,KNN,String
+indexTag,HNSW,String
 vecDim,768,I64
 vecVolume,10000,I64
 batchSize,4000,I64
@@ -9,7 +9,6 @@ ammAlgo,crs,String
 sketchSize,128,I64
 driftPosition,0,I64
 driftOffset,0,Double
-indexTag,congestionDrop,String
 congestionDropWorker_algoTag,faiss,String
 eventRateTps,4000,I64
 querySize,200,I64

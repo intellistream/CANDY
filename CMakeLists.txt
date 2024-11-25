@@ -49,6 +49,14 @@ add_library(CANDY SHARED ${CANDY_SOURCE_FILES} ${CANDY_HEADER_FILES}
         src/Algorithms/Manu/HybridLogicalClock.cpp
         src/Algorithms/Manu/IndexManager.cpp
         src/Algorithms/Manu/QueryManager.cpp
+        include/Algorithms/Manu/ExecutorThread.hpp
+        include/Algorithms/Manu/InsertThread.hpp
+        include/Algorithms/Manu/SearchThread.hpp
+        src/Algorithms/Manu/ExecutorThread.cpp
+        src/Algorithms/Manu/InsertThread.cpp
+        src/Algorithms/Manu/SearchThread.cpp
+        include/Algorithms/Manu/DataStore.hpp
+        src/Algorithms/Manu/DataStore.cpp
 )
 
 # Add the include directory with absolute path

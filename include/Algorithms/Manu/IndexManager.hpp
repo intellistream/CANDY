@@ -12,16 +12,18 @@
 #include <mutex>
 #include "WriteAheadLog.hpp"
 #include "BinLog.hpp"
+#include "DataStore.hpp"
 
 class IndexManager {
 private:
-  std::map<std::string, std::vector<std::string>> indices;
   WriteAheadLog* wal;
   BinLog* binLog;
+  DataStore* dataStore;
   std::mutex indexMutex;
 
 public:
-  IndexManager(WriteAheadLog* wal, BinLog* binLog);
+  IndexManager(WriteAheadLog* wal, BinLog* binLog, DataStore* dataStore);
+
   void addIndex(const std::string& indexType, const std::string& config);
   void updateIndex(const std::vector<std::string>& segmentData);
   std::vector<std::string> searchQuery(const std::string& queryParams);

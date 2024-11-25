@@ -3,13 +3,16 @@
 //
 #include "Algorithms/Manu/BinLog.hpp"
 
+
 void BinLog::appendBatch(const std::vector<std::string>& batchData) {
   std::lock_guard<std::mutex> lock(binLogMutex);
-  // TODO: Serialize and store batchData into binlog.
+  batches.insert(batches.end(), batchData.begin(), batchData.end());
 }
 
 std::vector<std::string> BinLog::readBatch(uint64_t batchIndex) {
   std::lock_guard<std::mutex> lock(binLogMutex);
-  // TODO: Return the batch data for the given batchIndex.
+  if (batchIndex < batches.size()) {
+    return {batches[batchIndex]};
+  }
   return {};
 }
