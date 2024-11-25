@@ -1,0 +1,12 @@
+add_sources(CANDY
+        BinLog.cpp
+        DataStore.cpp
+        ExecutorThread.cpp
+        HybridLogicalClock.cpp
+        IndexManager.cpp
+        InsertThread.cpp
+        QueryManager.cpp
+        SearchThread.cpp
+        StateManager.cpp
+        WriteAheadLog.cpp
+)

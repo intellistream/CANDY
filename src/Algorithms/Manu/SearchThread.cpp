@@ -8,6 +8,10 @@
 SearchThread::SearchThread(QueryManager* queryManager, const std::string& queryParams)
     : queryManager(queryManager), queryParams(queryParams) {}
 
+SearchThread::~SearchThread() {
+  stop();
+}
+
 void SearchThread::execute() {
   while (isRunning.load()) {
     auto results = queryManager->executeQuery(queryParams);
