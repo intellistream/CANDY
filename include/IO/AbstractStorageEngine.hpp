@@ -59,11 +59,11 @@ class AbstractStorageEngine {
      */
     virtual torch::Tensor getVectorByVid(int vid) = 0;
     /**
-     * @brief Get the rowId by vid
+     * @brief Get the rawId by vid
      * @param vid the vid of the vector
      * @return torch::Tensor the rowId
      */
-    virtual int getRowIdByVid(int vid) = 0;
+    virtual int getRawIdByVid(int vid) = 0;
     /**
      * @brief Get all the vectors
      * @return std::vector<torch::Tensor> the vectors

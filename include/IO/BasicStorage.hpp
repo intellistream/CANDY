@@ -31,7 +31,7 @@ public:
   float distanceCompute(int vid1, int vid2) override;
   float distanceCompute(const torch::Tensor &vector, int vid) override;
   torch::Tensor getVectorByVid(int vid) override;
-  int getRowIdByVid(int vid) override;
+  int getRawIdByVid(int vid) override;
   std::vector<torch::Tensor> getAll() override;
   std::string display() override;
 };

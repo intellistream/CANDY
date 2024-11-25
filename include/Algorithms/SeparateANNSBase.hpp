@@ -3,8 +3,8 @@
  * Created on: 2024/11/24
  * Description: [Provide description here]
  */
-#ifndef SPEARATE_ANNS_ALGORITHM_BASE_HPP
-#define SPEARATE_ANNS_ALGORITHM_BASE_HPP
+#ifndef SEPEARATE_ANNS_ALGORITHM_BASE_HPP
+#define SEPEARATE_ANNS_ALGORITHM_BASE_HPP
 #include <torch/torch.h>
 #include <vector>
 #include <Algorithms/AbstractSeparateANNSAlgorithm.hpp>
@@ -21,4 +21,4 @@ class SeparateANNSBase: public AbstractSeparateANNSAlgorithm{
   std::vector<int> deleteTensor(const torch::Tensor &t, int64_t k) override;
   std::vector<int> findKnnTensor(const torch::Tensor &t, int64_t k) override;
 };
-#endif  // SPEARATE_ANNS_ALGORITHM_BASE_HPP
+#endif  // SEPEARATE_ANNS_ALGORITHM_BASE_HPP

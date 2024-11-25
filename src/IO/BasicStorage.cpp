@@ -54,7 +54,7 @@ torch::Tensor BasicStorage::getVectorByVid(int vid) {
     return torch::zeros({1, 1});
   }
 }
-int BasicStorage::getRowIdByVid(int vid){
+int BasicStorage::getRawIdByVid(int vid){
   auto it = storageVector.find(vid);
   if(it != storageVector.end()){
     return it -> second.rawId;

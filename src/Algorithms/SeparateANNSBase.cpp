@@ -22,7 +22,7 @@ std::vector<int> SeparateANNSBase::searchTensor(const torch::Tensor &t, int64_t 
   std::vector<int> rowIds(k, 0);
   std::vector<int> k_vectorId = findKnnTensor(t, k);
   for (int i = 0; i < k; i++) {
-    rowIds[i] = storage_engine.getRowIdByVid(k_vectorId[i]);
+    rowIds[i] = storage_engine.getRawIdByVid(k_vectorId[i]);
   }
   INTELLI_INFO("Search the tensors in vector storage successfully: " + std::to_string(k));
   return rowIds;
