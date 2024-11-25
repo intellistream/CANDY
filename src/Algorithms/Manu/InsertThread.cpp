@@ -9,6 +9,10 @@
 InsertThread::InsertThread(WriteAheadLog* wal, IndexManager* indexManager, BinLog* binLog, DataStore* dataStore, uint64_t startRow, uint64_t endRow)
     : wal(wal), indexManager(indexManager), binLog(binLog), dataStore(dataStore), startRow(startRow), endRow(endRow) {}
 
+InsertThread::~InsertThread() {
+  stop();
+}
+
 void InsertThread::execute() {
   std::vector<std::string> batch;
 
