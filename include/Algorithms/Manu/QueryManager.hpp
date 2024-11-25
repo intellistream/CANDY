@@ -18,9 +18,9 @@ private:
 
 public:
   QueryManager(IndexManager* indexManager, StateManager* stateManager);
+
   std::vector<std::string> executeQuery(const std::string& queryParams);
   void coordinateSources();
 };
 
 #endif
-

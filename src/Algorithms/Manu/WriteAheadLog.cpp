@@ -14,11 +14,16 @@ uint64_t WriteAheadLog::appendEntry(const std::string& vectorData) {
 }
 
 void WriteAheadLog::flushSegment() {
-  // TODO: Implement periodic flush to persistent storage.
+  // TODO: Integrate logic to persist log data to storage or binlog.
 }
 
 std::vector<WriteAheadLog::LogEntry> WriteAheadLog::scan(uint64_t startLSN, uint64_t endLSN) {
   std::lock_guard<std::mutex> lock(logMutex);
-  // TODO: Return log entries within the range [startLSN, endLSN].
-  return {};
+  std::vector<LogEntry> results;
+  for (const auto& entry : log) {
+    if (entry.lsn >= startLSN && entry.lsn < endLSN) {
+      results.push_back(entry);
+    }
+  }
+  return results;
 }

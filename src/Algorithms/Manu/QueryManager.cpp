@@ -10,20 +10,17 @@ QueryManager::QueryManager(IndexManager* indexManager, StateManager* stateManage
 std::vector<std::string> QueryManager::executeQuery(const std::string& queryParams) {
   uint64_t txnID = stateManager->startTransaction();
 
-  // Validate the transaction's consistency.
-  if (!stateManager->validateConsistency(0, 0, 1000)) {  // Example arguments.
+  if (!stateManager->validateConsistency(0, 0, 1000)) {
     stateManager->rollbackTransaction(txnID);
     return {};
   }
 
-  // Perform the query using IndexManager.
   auto results = indexManager->searchQuery(queryParams);
 
-  // Commit the transaction.
   stateManager->commitTransaction(txnID);
   return results;
 }
 
 void QueryManager::coordinateSources() {
-  // TODO: Ensure sources (WAL, BinLog, IndexManager) are synchronized.
+  // TODO: Synchronize updates between WAL, BinLog, and IndexManager.
 }
