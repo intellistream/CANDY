@@ -15,7 +15,7 @@
 #include <chrono>
 #include <iostream>
 #include <string>
-#include "Algorithms/HNSW/hnsw.hpp"
+#include "Algorithms/HNSW/HNSW.hpp"
 using namespace INTELLI;
 using namespace std;
 

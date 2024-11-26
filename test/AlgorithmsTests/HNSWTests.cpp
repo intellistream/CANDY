@@ -5,7 +5,7 @@
  */
 
 #include <torch/torch.h>
-#include <Algorithms/HNSW/hnsw.hpp>
+#include <Algorithms/HNSW/HNSW.hpp>
 #include <cassert>
 #include <catch2/catch_test_macros.hpp>
 

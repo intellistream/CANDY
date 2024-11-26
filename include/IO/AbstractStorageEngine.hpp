@@ -33,6 +33,13 @@ class AbstractStorageEngine {
      */
     virtual bool insertTensor(const torch::Tensor &vector) = 0;
     /**
+     * @brief Insert a tensor
+     * @param vector the tensor to be inserted
+     * @param vid the vid of the inserted vector to be returned 
+     * @return bool whether the insertion is successful
+     */
+    virtual bool insertTensor(const torch::Tensor &vector, int &vid) = 0;
+    /**
      * @brief Delete a tensor
      * @param vids the vids of the tensors to be deleted
      * @return vector<int> the rowIds of the deleted tensors

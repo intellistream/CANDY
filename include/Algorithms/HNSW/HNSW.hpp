@@ -58,13 +58,14 @@ class HNSW final : public ANNSBase {
   // Search layer on non-zero level
   priority_of_distAndId_Less search_base_layer(idx_t, const torch::Tensor&,
                                                long);
+
   priority_of_distAndId_Less search_base_layerST(idx_t, const torch::Tensor&,
                                                  long);
 
   int random_level();
 
-  void getNeighborsByHeuristic2(priority_of_distAndId_Less& top_candidates,
-                                int64_t M) const;
+  void get_neighbors_by_heuristic(priority_of_distAndId_Less& top_candidates,
+                                  int64_t M);
 
   void create_link(idx_t from, idx_t to, long level, bool link_double = true);
 
@@ -76,7 +77,7 @@ class HNSW final : public ANNSBase {
 
   idx_t fetch_free_idx();
 
-  void insert(const torch::Tensor& tensor);
+  void insert(const int vid);
 
   bool insertTensor(const torch::Tensor& t) override;
 
@@ -90,7 +91,12 @@ class HNSW final : public ANNSBase {
 
   std::vector<torch::Tensor> searchTensor(const torch::Tensor& q,
                                           int64_t k) override;
+                                  
   bool loadInitialTensor(torch::Tensor& t) override;
+
+  inline const torch::Tensor get_vector_by_vid(int id) {
+    return storage_engine.getVectorByVid(db_vids_[id]);
+  }
 
  protected:
   int64_t M_{};
@@ -101,11 +107,11 @@ class HNSW final : public ANNSBase {
 
   long size_ = -1;  // how many vectors in the db
 
-  long initialVolume_{};  //
+  long initialVolume_{};  
   long dim_{};
   static constexpr int expandStep = 1000;
 
-  torch::Tensor dbTensor_;
+  vector<int> db_vids_;
 
   long entry_point_ = -1;
   long max_level_ = 0;
