@@ -9,6 +9,7 @@
 #include <torch/extension.h>
 #include <Utils/ConfigMap.hpp>
 #include <Algorithms/KNN/KNNSearch.hpp>
+#include <Algorithms/HNSW/hnsw.hpp>
 #include <DataLoader/DataLoaderTable.hpp>
 #include <Core/vector_db.hpp>  // Corrected include to match header guard and existing header file
 namespace py = pybind11;
@@ -41,7 +42,10 @@ PYBIND11_MODULE(pycandy, m) {
            if (search_algorithm == "knnsearch") {
                algorithm = std::make_shared<CANDY_ALGO::KnnSearch>(dimensions);
                algorithm->setConfig(cfg); // 使用传入的配置
-           } else {
+           }  else if(search_algorithm == "hnswsearch") {
+               algorithm = std::make_shared<CANDY_ALGO::HNSW>();
+               algorithm->setConfig(cfg); // 使用传入的配置
+           }  else {
                throw std::invalid_argument("Unsupported search algorithm: " + search_algorithm);
            }
            return std::make_unique<VectorDB>(dimensions, algorithm);
