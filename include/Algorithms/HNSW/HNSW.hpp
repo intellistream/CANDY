@@ -15,7 +15,7 @@
 #include <vector>
 
 #include "Algorithms/ANNSBase.hpp"
-#include "Algorithms/HNSW/hnsw_base.hpp"
+#include "Algorithms/HNSW/HNSWBase.hpp"
 
 namespace CANDY_ALGO {
 class HNSW final : public ANNSBase {

@@ -5,7 +5,7 @@
 */
 #include <Algorithms/AlgorithmTable.hpp>
 #include <Algorithms/FlatGPUIndex/FlatGPUIndex.hpp>
-#include <Algorithms/HNSW/hnsw.hpp>
+#include <Algorithms/HNSW/HNSW.hpp>
 #include <Algorithms/KDTree/KDTree.hpp>
 #include <Algorithms/KNN/KNNSearch.hpp>
 #include <Algorithms/LSH/LSHSearch.hpp>

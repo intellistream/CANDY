@@ -7,7 +7,7 @@
 
 #include <Algorithms/HNSW/hnsw.hpp>
 #include <Utils/Computation.hpp>
-
+#include <IO/BasicStorage.hpp>
 #include <Utils/TensorOP.hpp>
 #include <cassert>
 #include <cstdint>
@@ -329,6 +329,9 @@ void HNSW::insert(const torch::Tensor& t) {
 
 bool HNSW::insertTensor(const torch::Tensor& t) {
   mtx.lock();
+  
+  int 
+
   for (int64_t i = 0; i < t.size(0); i++) {
     insert(t[i]);
   }
