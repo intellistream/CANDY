@@ -20,6 +20,7 @@ bool BasicStorage::insertTensorWithRawId(const torch::Tensor &vector, int rawId)
   storageVector.insert({myvid, myvectorPair});
   return true;
 }
+
 bool BasicStorage::insertTensor(const torch::Tensor &vector){
   int myvid=getVid();
   vectorPair myvectorPair;
@@ -28,6 +29,16 @@ bool BasicStorage::insertTensor(const torch::Tensor &vector){
   storageVector.insert({myvid, myvectorPair});
   return true;
 }
+
+bool BasicStorage::insertTensor(const torch::Tensor &vector, int &vid) {
+  vid = getVid();
+  vectorPair myvectorPair;
+  myvectorPair.rawId = vid;
+  myvectorPair.vector = vector;
+  storageVector.insert({vid, myvectorPair});
+  return true;
+}
+
 std::vector<int> BasicStorage::deleteTensor(std::vector<int> vids){
   std::vector<int> result;
   for(int i = 0; i < vids.size(); i++){

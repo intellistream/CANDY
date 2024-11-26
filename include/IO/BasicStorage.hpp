@@ -29,6 +29,7 @@ public:
   int getVid() override;
   bool insertTensorWithRawId(const torch::Tensor &vector, int rawId) override;
   bool insertTensor(const torch::Tensor &vector) override;
+  bool insertTensor(const torch::Tensor &vector, int &vid) override;
   std::vector<int> deleteTensor(std::vector<int> vids) override;
   float distanceCompute(int vid1, int vid2) override;
   float distanceCompute(const torch::Tensor &vector, int vid) override;
