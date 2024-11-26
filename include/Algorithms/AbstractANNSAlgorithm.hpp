@@ -82,12 +82,6 @@ class AbstractANNS {
    */
   virtual bool loadInitialTensor(torch::Tensor& t) = 0;
 
-  /**
-   * @brief Delete a tensor, also online function
-   * @param t the tensor, some index needs to be single row
-   * @param k the number of nearest neighbors
-   * @return bool whether the deleting is successful
-   */
   virtual bool deleteTensor(torch::Tensor& t, int64_t k = 1) = 0;
 
   /**

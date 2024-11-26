@@ -9,6 +9,8 @@
 #include <torch/extension.h>
 #include <Algorithms/KNN/KNNSearch.hpp>
 #include <Core/vector_db.hpp>  // Corrected include to match header guard and existing header file
+
+#include <Core/VectorDatabase.hpp>
 namespace py = pybind11;
 
 PYBIND11_MODULE(pycandy, m) {
@@ -33,7 +35,8 @@ PYBIND11_MODULE(pycandy, m) {
            py::arg("dimensions"), py::arg("search_algorithm") = "knnsearch")
 
       .def("insert_tensor", &VectorDB::insert_tensor, py::arg("tensor"))
-
+      .def("insert_tensor_rawid", &VectorDB::insert_tensor_rawid, py::arg("tensor"), py::arg("rawid"))
+      .def("displayStore", &VectorDB::displayStore)
       .def(
           "query_nearest_tensors",
           [](const VectorDB& self, const torch::Tensor& query_tensor,
@@ -53,4 +56,14 @@ PYBIND11_MODULE(pycandy, m) {
            py::arg("tensor"))
 
       .def("process_streaming_queue", &VectorDB::process_streaming_queue);
+
+  py::class_<VectorDatabase>(m, "VectorDatabase")
+      .def(py::init<>())
+      .def("insert_tensor_rawid", &VectorDatabase::insert_tensor_rawid,
+           py::arg("tensor"), py::arg("rawId"))
+      .def("displayStore", &VectorDatabase::displayStore)
+      .def("delete_tensor", &VectorDatabase::delete_tensor, py::arg("tensor"),
+           py::arg("k"))
+      .def("search_tensor", &VectorDatabase::search_tensor, py::arg("query_tensor"),
+           py::arg("k"));
 }

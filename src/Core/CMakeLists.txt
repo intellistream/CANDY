@@ -3,4 +3,5 @@ add_sources(CANDY
         transaction.cpp
         vector_db.cpp
         versioning.cpp
+        VectorDatabase.cpp
 )
