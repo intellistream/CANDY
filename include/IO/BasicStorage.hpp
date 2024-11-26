@@ -21,7 +21,7 @@ struct vectorPair{
 class BasicStorage: public AbstractStorageEngine{
 public:
   map <int, vectorPair> storageVector;
-  int nowVid=0;
+  int nowVid = 0;
   BasicComputeEngine computeEngine;
 
   BasicStorage();

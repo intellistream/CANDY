@@ -6,17 +6,15 @@
 #ifndef CANDY_INCLUDE_ComputeEngine_BasicComputeEngine_H_
 #define CANDY_INCLUDE_ComputeEngine_BasicComputeEngine_H_
 #include <torch/torch.h>
-#include <vector>
-#include <cmath>  // For std::sqrt
-#include <numeric>
+#include <Utils/Computation.hpp>
 #include <ComputeEngine/AbstractComputeEngine.hpp>
 class BasicComputeEngine: public AbstractComputeEngine {
   public:
    BasicComputeEngine();
    ~BasicComputeEngine() override;
    float euclidean_distance(const torch::Tensor& a, const torch::Tensor& b) override;
-   float computeL2Distance(const float* a, const float* b, const size_t size);
-   float computeL2Distance(const std::vector<float>& a, const std::vector<float>& b);
-   float euclidean_distance(const std::vector<float>& a, const std::vector<float>& b);
+   torch::Tensor pairwise_euclidean_distance(torch::Tensor A, torch::Tensor B,
+                                                      CANDY::AMMTYPE ammtype, int64_t sketchsize) override;
+   torch::Tensor pairwise_euclidean_distance(torch::Tensor A, torch::Tensor B, CANDY::AMMTYPE ammtype, int64_t sketchsize,torch::Tensor B_norm) override;
 };
 #endif  //CANDY_INCLUDE_ComputeEngine_BasicComputeEngine_H_
