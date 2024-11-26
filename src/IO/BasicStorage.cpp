@@ -61,7 +61,12 @@ float BasicStorage::distanceCompute(int vid1, int vid2){
     }
 }
 float BasicStorage::distanceCompute(const torch::Tensor &vector, int vid){
-  return 0.0;
+    auto it = storageVector.find(vid);
+    if(it != storageVector.end()){
+        return computeEngine.euclidean_distance(it -> second.vector, vector);
+    } else {
+        return -1;
+    }
 }
 torch::Tensor BasicStorage::getVectorByVid(int vid) {
   auto it = storageVector.find(vid);
