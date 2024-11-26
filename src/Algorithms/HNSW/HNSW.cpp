@@ -329,10 +329,9 @@ void HNSW::insert(const torch::Tensor& t) {
 
 bool HNSW::insertTensor(const torch::Tensor& t) {
   mtx.lock();
-  
-  int 
-
   for (int64_t i = 0; i < t.size(0); i++) {
+    storage_engine.insertTensor(t[i]);
+    int vid = storage_engine.getRawIdByVid(k_vectorId[i]);
     insert(t[i]);
   }
   mtx.unlock();

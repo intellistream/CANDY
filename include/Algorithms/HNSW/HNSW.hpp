@@ -13,6 +13,7 @@
 #include <random>
 #include <unordered_set>
 #include <vector>
+#include <IO/BasicStorage.hpp>
 
 #include "Algorithms/ANNSBase.hpp"
 #include "Algorithms/HNSW/HNSWBase.hpp"
@@ -112,6 +113,8 @@ class HNSW final : public ANNSBase {
   std::vector<Vertex> vertexes_;
   std::vector<idx_t> free_list_;
   std::default_random_engine level_generator_;
+
+  BasicStorage storage_engine;
 
   std::mutex mtx;
 };

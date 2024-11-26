@@ -102,94 +102,90 @@ int main(int argc, char** argv) {
   }
 
   INTELLI_INFO("3.1 STREAMING NOW!!!");
-  auto subBatch = dataTensorStream.slice(0, startRow, endRow);
-  // indexPtr->insertTensor(subBatch);
-  auto res = indexPtr->searchTensor(queryTensor, 3);
-  exit(1);
 
-  // double processedOld = 0;
-  // while (startRow < aRows) {
-  //   /**
-  //       * @brief The whole batch is ready, proceed with insertion
-  //       */
-  //   auto subBatch = dataTensorStream.slice(0, startRow, endRow);
-  //   if (!indexPtr->insertTensor(subBatch)) {
-  //     INTELLI_ERROR("Failed to insert batch starting at row: " +
-  //                   std::to_string(startRow));
-  //     return false;  // Optionally handle insertion failure
-  //   }
+  double processedOld = 0;
+  while (startRow < aRows) {
+    /**
+        * @brief The whole batch is ready, proceed with insertion
+        */
+    auto subBatch = dataTensorStream.slice(0, startRow, endRow);
+    if (!indexPtr->insertTensor(subBatch)) {
+      INTELLI_ERROR("Failed to insert batch starting at row: " +
+                    std::to_string(startRow));
+      return false;  // Optionally handle insertion failure
+    }
 
-  //   /**
-  //       * @brief Update the indexes
-  //       */
-  //   startRow += batchSize;
-  //   endRow += batchSize;
-  //   if (endRow >= aRows) {
-  //     endRow = aRows;
-  //   }
+    /**
+        * @brief Update the indexes
+        */
+    startRow += batchSize;
+    endRow += batchSize;
+    if (endRow >= aRows) {
+      endRow = aRows;
+    }
 
-  //   // Log progress for every 10% increment
-  //   double processed = startRow * 100.0 / aRows;
-  //   if (processed - processedOld >= 1.0) {
-  //     INTELLI_INFO("Done " + std::to_string(processed) + "% (" +
-  //                  std::to_string(startRow) + "/" + std::to_string(aRows) +
-  //                  ")");
-  //     processedOld = processed;
-  //   }
-  // }
-  // /**
-  //   * @brief 6. Wait until feed ends and display performance metrics
-  //   */
-  // auto end = std::chrono::high_resolution_clock::now();
-  // auto duration =
-  //     std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
-  //         .count();
-  // INTELLI_INFO("Streaming feed completed in " + std::to_string(duration) +
-  //              " ms.");
+    // Log progress for every 10% increment
+    double processed = startRow * 100.0 / aRows;
+    if (processed - processedOld >= 1.0) {
+      INTELLI_INFO("Done " + std::to_string(processed) + "% (" +
+                   std::to_string(startRow) + "/" + std::to_string(aRows) +
+                   ")");
+      processedOld = processed;
+    }
+  }
+  /**
+    * @brief 6. Wait until feed ends and display performance metrics
+    */
+  auto end = std::chrono::high_resolution_clock::now();
+  auto duration =
+      std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
+          .count();
+  INTELLI_INFO("Streaming feed completed in " + std::to_string(duration) +
+               " ms.");
 
-  // INTELLI_INFO(
-  //     "Streaming feed is done! Let us search and validate the results!");
-  // INTELLI_INFO("Insert is done, let us validate the results");
-  // int64_t ANNK = inMap->tryI64("ANNK", 5, true);
-  // auto startQuery = std::chrono::high_resolution_clock::now();
-  // auto indexResults = indexPtr->searchTensor(queryTensor, ANNK);
-  // uint64_t queryLatency = chronoElapsedTime(startQuery);
-  // INTELLI_INFO("Query done in " + to_string(queryLatency / 1000) + "ms");
-  // std::string groundTruthPrefix =
-  //     inMap->tryString("groundTruthPrefix", "onlineInsert_GroundTruth", true);
+  INTELLI_INFO(
+      "Streaming feed is done! Let us search and validate the results!");
+  INTELLI_INFO("Insert is done, let us validate the results");
+  int64_t ANNK = inMap->tryI64("ANNK", 5, true);
+  auto startQuery = std::chrono::high_resolution_clock::now();
+  auto indexResults = indexPtr->searchTensor(queryTensor, ANNK);
+  uint64_t queryLatency = chronoElapsedTime(startQuery);
+  INTELLI_INFO("Query done in " + to_string(queryLatency / 1000) + "ms");
+  std::string groundTruthPrefix =
+      inMap->tryString("groundTruthPrefix", "onlineInsert_GroundTruth", true);
 
-  // std::string probeName = groundTruthPrefix + "/" +
-  //                         std::to_string(indexResults.size() - 1) + ".rbt";
-  // double recall = 0.0;
+  std::string probeName = groundTruthPrefix + "/" +
+                          std::to_string(indexResults.size() - 1) + ".rbt";
+  double recall = 0.0;
 
-  // int64_t groundTruthRedo = inMap->tryI64("groundTruthRedo", 1, true);
+  int64_t groundTruthRedo = inMap->tryI64("groundTruthRedo", 1, true);
 
-  // if (std::ifstream(probeName).good() && (groundTruthRedo == 0)) {
-  //   INTELLI_INFO("Ground truth exists, so I load it");
-  //   auto gdResults = UtilityFunctions::tensorListFromFile(groundTruthPrefix,
-  //                                                         indexResults.size());
-  //   INTELLI_INFO("Ground truth is loaded");
-  //   recall = UtilityFunctions::calculateRecall(gdResults, indexResults);
-  // } else {
-  //   INTELLI_INFO("Ground truth does not exist, so I'll create it");
-  //   auto gdMap = newConfigMap();
-  //   gdMap->loadFrom(*inMap);
-  //   auto gdIndex = std::make_shared<CANDY_ALGO::KnnSearch>(dimensions);
-  //   gdIndex->setConfig(gdMap);
-  //   if (initialRows > 0) {
-  //     gdIndex->loadInitialTensor(dataTensorInitial);
-  //   }
-  //   gdIndex->insertTensor(dataTensorStream);
+  if (std::ifstream(probeName).good() && (groundTruthRedo == 0)) {
+    INTELLI_INFO("Ground truth exists, so I load it");
+    auto gdResults = UtilityFunctions::tensorListFromFile(groundTruthPrefix,
+                                                          indexResults.size());
+    INTELLI_INFO("Ground truth is loaded");
+    recall = UtilityFunctions::calculateRecall(gdResults, indexResults);
+  } else {
+    INTELLI_INFO("Ground truth does not exist, so I'll create it");
+    auto gdMap = newConfigMap();
+    gdMap->loadFrom(*inMap);
+    auto gdIndex = std::make_shared<CANDY_ALGO::KnnSearch>(dimensions);
+    gdIndex->setConfig(gdMap);
+    if (initialRows > 0) {
+      gdIndex->loadInitialTensor(dataTensorInitial);
+    }
+    gdIndex->insertTensor(dataTensorStream);
 
-  //   auto gdResults = gdIndex->searchTensor(queryTensor, ANNK);
-  //   INTELLI_INFO("Ground truth is done");
+    auto gdResults = gdIndex->searchTensor(queryTensor, ANNK);
+    INTELLI_INFO("Ground truth is done");
 
-  //   recall = UtilityFunctions::calculateRecall(gdResults, indexResults);
-  //   //UtilityFunctions::tensorListToFile(gdResults, groundTruthPrefix);
-  // }
+    recall = UtilityFunctions::calculateRecall(gdResults, indexResults);
+    //UtilityFunctions::tensorListToFile(gdResults, groundTruthPrefix);
+  }
 
-  // INTELLI_INFO("RECALL = " + std::to_string(recall));
-  // INTELLI_INFO("Query Latency = " + std::to_string(queryLatency));
+  INTELLI_INFO("RECALL = " + std::to_string(recall));
+  INTELLI_INFO("Query Latency = " + std::to_string(queryLatency));
 
   return 0;
 }

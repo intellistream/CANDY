@@ -2,14 +2,6 @@ cmake_minimum_required(VERSION 3.15)
 project(CANDY CXX)
 # Logging setup (if needed)
 #include(cmake/LoggingSetup.cmake)
-
-if(NOT CMAKE_BUILD_TYPE)
-set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build (Debug or Release)" FORCE)
-endif()
-
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -O0")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
-
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif ()
