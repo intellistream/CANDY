@@ -11,6 +11,7 @@
 #define VECTOR_DB_H
 
 #include <Algorithms/ANNSBase.hpp>
+#include <IO/BasicStorage.hpp>
 #include <functional>
 #include <memory>
 #include <mutex>  // For std::mutex
@@ -30,6 +31,10 @@ class VectorDB {
 
   // Insert, update, and remove tensor-based operations for the database
   bool insert_tensor(const torch::Tensor& tensor);
+
+  bool insert_tensor_rawid (const torch::Tensor&tensor, int rawId);
+
+  string displayStore();
 
   bool update_tensor(const torch::Tensor& old_tensor,
                      torch::Tensor& new_tensor);
@@ -62,6 +67,12 @@ class VectorDB {
   std::queue<torch::Tensor> stream_buffer;  // Holds input stream tensors
   size_t buffer_size;
   bool is_running;
+
+
+
+
+  //add by ghr
+  BasicStorage store;
 
   // Parallel processing: thread workers
   std::vector<std::thread> workers;

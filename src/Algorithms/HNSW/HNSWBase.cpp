@@ -5,4 +5,4 @@
  * Description:
  */
 
-#include <Algorithms/HNSW/hnsw_base.hpp>
+#include <Algorithms/HNSW/HNSWBase.hpp>

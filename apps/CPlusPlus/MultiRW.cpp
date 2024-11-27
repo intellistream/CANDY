@@ -18,7 +18,7 @@
 #include <atomic>
 #include <mutex>
 #include "Utils/ThreadPool.hpp"
-#include "Algorithms/HNSW/hnsw.hpp"
+#include "Algorithms/HNSW/HNSW.hpp"
 #include <torch/torch.h>
 #include <iostream>
 

@@ -15,7 +15,7 @@
 #include <chrono>
 #include <iostream>
 #include <string>
-#include "Algorithms/HNSW/hnsw.hpp"
+#include "Algorithms/HNSW/HNSW.hpp"
 using namespace INTELLI;
 using namespace std;
 
@@ -27,7 +27,7 @@ int main(int argc, char** argv) {
     */
   ConfigMapPtr inMap = newConfigMap();
   std::string fileName =
-      (argc >= 2) ? argv[1] : candy_path + "/config/config.csv";
+      (argc >= 2) ? argv[1] : candy_path + "/config/configHNSW.csv";
   if (inMap->fromFile(fileName)) {
     INTELLI_INFO("Config loaded from file: " + fileName);
   } else {
