@@ -1,12 +1,17 @@
 add_sources(CANDY
-        BinLog.cpp
-        DataStore.cpp
-        ExecutorThread.cpp
-        HybridLogicalClock.cpp
-        IndexManager.cpp
-        InsertThread.cpp
-        QueryManager.cpp
-        SearchThread.cpp
-        StateManager.cpp
-        WriteAheadLog.cpp
+        ./Coordination/DataCoordinator.cpp
+        ./Coordination/IndexCoordinator.cpp
+        ./Coordination/QueryCoordinator.cpp
+        ./Execution/DataNode.cpp
+        ./Execution/IndexNode.cpp
+        ./Execution/QueryNode.cpp
+        ./Log/Binlog.cpp
+        ./Log/ControlMessage.cpp
+        ./Log/HybridClock.cpp
+        ./Log/Log.cpp
+        ./Log/TimeTick.cpp
+        ./Log/WAL.cpp
+        ./Storage/DataStore.cpp
+        ./Storage/GrowingSegment.cpp
+        ./Storage/SealedSegment.cpp
 )
