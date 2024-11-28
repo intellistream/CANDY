@@ -174,20 +174,22 @@ void HNSW::create_link(const idx_t from, const idx_t to, const long level,
       neighbors.size() < M_cur_max) {
     neighbors.push_back(to);
   } else {
-    throw std::runtime_error("neighbors.size() >= M_cur_max");
+    throw std::runtime_error("neighbors.size() >= M_cur_max ");
   }
   if (link_double) {
     if (auto& neighbors = vertexes_[to].neighbors_[level];
         neighbors.size() < M_cur_max) {
       neighbors.push_back(from);
     } else {
-      throw std::runtime_error("neighbors.size() >= M_cur_max");
+      std::cout<<"neighbors.size():"<<neighbors.size()<<" M_MAX:"<<M_cur_max<<std::endl;
+      throw std::runtime_error("neighbors.size() >= M_cur_max ");
     }
   }
 }
 
 void HNSW::remove_link(const idx_t from, const idx_t to, const long level,
                        const bool link_double) {
+  auto M_cur_max = level ? Mmax_ : Mmax0_;
   if (auto& neighbors = vertexes_[from].neighbors_[level]; !neighbors.empty()) {
     std::erase(neighbors, to);
   }
@@ -326,7 +328,6 @@ void HNSW::insert(const torch::Tensor& t) {
     max_level_ = cur_level;
   }
 }
-
 bool HNSW::insertTensor(const torch::Tensor& t) {
   for (int64_t i = 0; i < t.size(0); i++) {
     insert(t[i]);
@@ -361,6 +362,56 @@ void HNSW::remove(const idx_t idx) {
   if (is_entry_point) {
     entry_point_ = new_entry_point;
   }
+  // //find the @top-1 neighbors of idx
+  // const auto remove_tensor = dbTensor_[idx];
+  // const auto result = search(remove_tensor, 2);
+  // // std::cout<<"idx："<<idx<<std::endl;
+  // idx_t  top1 = result[0].item<int64_t>();
+  // idx_t  top2 = result[1].item<int64_t>();
+  // // std::cout<<"top1:"<<top1<<" "<<"top2:"<<top2<<std::endl;
+  // idx_t rp = top1 == idx ? top2 : top1;
+  //
+  // for(long  level = max_level_ ; level >= 0 ; -- level) {
+  //   if(vertexes_[idx].neighbors_.size() <= level) {
+  //     continue;
+  //   }
+  //   vector<idx_t> neighborList = vertexes_[idx].neighbors_[level];
+  //   for (const auto & neighbor : vertexes_[idx].neighbors_[level]) {
+  //     remove_link(neighbor, idx, level,true);
+  //   }
+  //   vertexes_[idx].neighbors_[level].clear();
+  //   if(vertexes_[rp].neighbors_.size() <= level ) {
+  //     vertexes_[rp].neighbors_.resize(level + 1);
+  //   }else {
+  //     for(const auto & neighbor : vertexes_[rp].neighbors_[level]) {
+  //       remove_link(neighbor, rp, level,true);
+  //       neighborList.push_back(neighbor);
+  //     }
+  //     vertexes_[rp].neighbors_[level].clear();
+  //   }
+  //
+  //   const auto M_cur_max = level ? Mmax_ : Mmax0_;
+  //   priority_of_distAndId_Less top_candidates ;
+  //   for(auto & neighbor : neighborList) {
+  //     if(neighbor != rp) {
+  //       top_candidates.emplace(CANDY::euclidean_distance(dbTensor_[neighbor], dbTensor_[rp]), neighbor);
+  //     }
+  //   }
+  //   auto M_ = M_cur_max;
+  //   while(M_ -- && !top_candidates.empty()) {
+  //     auto [dist, id] = top_candidates.top();
+  //     top_candidates.pop();
+  //     if(vertexes_[id].neighbors_[level].size() >= M_cur_max) {
+  //       M_ ++ ;
+  //       continue ;
+  //     }
+  //     create_link(rp, id, level, true);
+  //   }
+  //   while(!top_candidates.empty()) {
+  //     top_candidates.pop();
+  //   }
+  //
+  // }
   auto& all_neighbors = vertexes_[idx].neighbors_;
   for (auto& neighbors_level : all_neighbors) {
     for (const auto& neighbor : neighbors_level) {
