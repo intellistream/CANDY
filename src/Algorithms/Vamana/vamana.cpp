@@ -228,51 +228,7 @@ void Vamana::greedy_search(idx_t s , const torch::Tensor& q, priority_of_distAnd
     }
 }
 
-void Vamana::robust_prune(idx_t p , unordered_map<idx_t,float>& V,float alpha,int64_t R){
-  for(auto& neighbor : index_[p]->neighbors_){
-		if(V.find(neighbor->id_) == V.end()){
-            float d = CANDY::euclidean_distance(index_[neighbor->id_]->vector_, index_[p]->vector_);
-            V[neighbor->id_] = d;
-        }
-    }
-    if(V.find(p) != V.end()){
-        V.erase(p);
-    }
-	index_[p]->neighbors_.clear();
 
-    vector<distAndId> V_;
-    for(auto& [id, d] : V){
-        V_.push_back({d, id});
-    }
-    std::sort(V_.begin(), V_.end(), [](const distAndId& a, const distAndId& b){
-        return a.dist > b.dist;
-    });
-
-    while(!V.empty() ){
-		idx_t q = V_.back().id;
-        V_.pop_back();
-        if(V.find(q) == V.end()){
-            continue;
-        }
-        V.erase(q);
-        index_[p]->neighbors_.push_back(index_[q]);
-        if(index_[p]->neighbors_.size() == R){
-            break;
-        }
-		for(auto & p_ : V_){
-			if(V.find(p_.id) == V.end()){
-                continue;
-            }
-            float d1 = CANDY::euclidean_distance(index_[p_.id]->vector_, index_[q]->vector_);
-            float d2 = CANDY::euclidean_distance(index_[p_.id]->vector_, index_[p]->vector_);
-            if(alpha * d1 < d2 ){
-                V.erase(p_.id);
-            }
-		}
-
-    }
-
-}
 
 bool Vamana::delete_(const idx_t idx){
     if(index_.find(idx) == index_.end()){
