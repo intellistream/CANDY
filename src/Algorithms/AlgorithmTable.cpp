@@ -17,5 +17,6 @@ AlgorithmTable::AlgorithmTable() {
   indexMap["HNSW"] = std::make_shared<HNSW>();
   indexMap["FlatGPU"] = std::make_shared<FlatGPUIndex>();
   indexMap["LSH"] = std::make_shared<LSHSearch>();
+  indexMap["Vamana"] = std::make_shared<Vamana>();
 }
 }  // namespace CANDY_ALGO
