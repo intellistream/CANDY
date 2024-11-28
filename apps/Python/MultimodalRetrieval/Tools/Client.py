@@ -8,13 +8,15 @@ from pycandy import VectorDB
 
 
 class DBClient:
-    def __init__(self, vec_dim, search_algorithm, config):
+    def __init__(self, vec_dim, search_algorithm, config,k=1):
         self.search_algorithm = search_algorithm
         self.vec_dim = vec_dim
         self.config = config
         self.db = VectorDB(vec_dim, search_algorithm, config)
+        self.k=k
 
     def add_tensor(self, tensor_data):
+
         self.db.insert_tensor(tensor_data.clone())
 
     def load_batch_tensor(self, tensor_data):
@@ -22,18 +24,20 @@ class DBClient:
             self.db.insert_tensor(tensor.clone())
         return True
 
-    def get_tensor(self, query_text):
-        results = self.db.query_nearest_tensors(query_text.clone(), k=1)
+    def get_tensor(self, query_text,k=None):
+        k = k or self.k
+        results = self.db.query_nearest_tensors(query_text.clone(), k)
         if results:
             return results[0]
         else:
             print(f"Error fetching tensor for query: '{query_text}'")
             return None
 
-    def get_batch_tensors(self, query_texts):
+    def get_batch_tensors(self, query_texts,k=None):
+        k = k or self.k
         results = []
         for query_text in query_texts:
-            result = self.db.query_nearest_tensors(query_text.clone(), k=1)
+            result = self.db.query_nearest_tensors(query_text.clone(), k)
             if result:
                 results.append(result)
             else:

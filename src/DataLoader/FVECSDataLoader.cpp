@@ -91,10 +91,10 @@ bool CANDY_ALGO::FVECSDataLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
   if (queryNoiseFraction > 1) {
     queryNoiseFraction = 1;
   }
-  if (querySize > vecVolume) {
-    INTELLI_ERROR("invalid size of query");
-    return false;
-  }
+  // if (querySize > vecVolume) {
+  //   INTELLI_ERROR("invalid size of query");
+  //   return false;
+  // }
   torch::manual_seed(seed);
   if (generateData(dataPath) == false) {
     return false;

@@ -16,6 +16,7 @@ class AlgorithmTable {
 
  public:
   AlgorithmTable();
+
   ~AlgorithmTable() {}
 
   /**
