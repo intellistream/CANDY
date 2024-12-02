@@ -6,10 +6,10 @@
 #include <Algorithms/AlgorithmTable.hpp>
 #include <Algorithms/FlatGPUIndex/FlatGPUIndex.hpp>
 #include <Algorithms/HNSW/hnsw.hpp>
+#include <Algorithms/Vamana/vamana.hpp>
 #include <Algorithms/KDTree/KDTree.hpp>
 #include <Algorithms/KNN/KNNSearch.hpp>
 #include <Algorithms/LSH/LSHSearch.hpp>
-#include <Algorithms/Vamana/vamana.hpp>
 
 namespace CANDY_ALGO {
 AlgorithmTable::AlgorithmTable() {
