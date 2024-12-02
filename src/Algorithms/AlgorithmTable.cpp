@@ -9,6 +9,7 @@
 #include <Algorithms/KDTree/KDTree.hpp>
 #include <Algorithms/KNN/KNNSearch.hpp>
 #include <Algorithms/LSH/LSHSearch.hpp>
+#include <Algorithms/Vamana/vamana.hpp>
 
 namespace CANDY_ALGO {
 AlgorithmTable::AlgorithmTable() {
