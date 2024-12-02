@@ -1,5 +1,4 @@
 import sys
-import numpy as np
 import torch
 
 from Tools.RWTool import Read_ivecs, Read_fvecs, Write_ivecs, Calculate_recall
@@ -20,10 +19,11 @@ def main():
         print(f"[Python INFO] 1.1  Config loaded from file: \033[1;32m{fileName}\033[0m")
     else:
         print("-" * 72)
-        print(str("1.1 Failed to load config from file: \"" + fileName + "\"").center(72));
+        print(str("1.1 Failed to load config from file: \"" + fileName + "\"").center(72))
         print("-" * 72)
         return -1
 
+    K=inMap.try_i64("ANNK", 1, True)
     # 1.2 load dataLoader and load data
     dataLoaderTable = DataLoaderTable()
     dataLoaderTag = inMap.try_string("dataLoaderTag", "random", True)
@@ -110,17 +110,10 @@ def main():
         if processed - processedOld >= 1.0:
             print(f"Done {processed:.2f}% ({startRow}/{aRows})")
             processedOld = processed
-    #     if startRow<endRow:
-    #         batch_count+=1
-    #         Gt = gt[startRow:endRow]
-    #         result = client.get_batch_tensors(batch_query,K)
-    #         average_recall += Calculate_recall(Gt, result, K)
-    # #
-    # print(f"Streaming recall@1: {average_recall/batch_count:.4f}")
-    # print("[Python INFO] 3.2  Streaming has ended")
+
 
     # 3.3 Input the query and get the result
-    result = client.get_batch_tensors(queryTensor,K)
+    result = client.get_batch_tensors(queryTensor)
 
     # 3.4 Get the gt
     groundTruthTag = inMap.try_i64("groundTruthTag", 0, True)
@@ -128,20 +121,18 @@ def main():
         print("[Python INFO] 3.4  Ground truth does not exist, so it`s time to create it")
         client_gt = DBClient(vecDim, 'knnsearch', inMap)
         client_gt.load_batch_tensor(dataTensorAll)
-        gt_path = "/mnt/f/New/CANDY/apps/Python/MultimodalRetrieval/Datasets/gt_features.fvecs" #根据数据集提供的GT去暴力搜索相似度高的vector
+        gt_path = inMap.try_string("groundtruthPath", "/gt_features.fvecs", True)
         gt_tensor=torch.tensor((Read_fvecs(gt_path)))
-        gt = client_gt.get_batch_tensors(gt_tensor,K)
+        gt = client_gt.get_batch_tensors(gt_tensor)
+        # result_path=f"/mnt/f/CANDY/apps/Python/MultimodalRetrieval/Datasets/recall{K}.fvecs"
+        # Write_ivecs(result_path, gt)
 
     else:
         print("[Python INFO] 3.4  Ground truth exists")
-        client_gt = DBClient(vecDim, 'knnsearch', inMap)
-        client_gt.load_batch_tensor(dataTensorAll)
-        file_path = inMap.try_string("groundtruthPath", "/Datasets/gt_features.fvecs",True)
-        vectors_gt = torch.tensor(Read_fvecs(file_path))
-        gt = client_gt.get_batch_tensors(vectors_gt, K)
+        file_path = inMap.try_string("OfflinegroundtruthPath", f"/mnt/f/CANDY/apps/Python/MultimodalRetrieval/Datasets/recall100.fvecs", True)
+        gt = Read_ivecs(file_path)
 
     print("=" * 50)
-
 
     # 4.1 Calculate metrics "Recall"
     # positiveNum = 0
@@ -153,14 +144,14 @@ def main():
     # (N, 1, K)
     # result: (N, K) gt[m] = K{indexID*K}
     # gt:(N, K) (gt[m] ∩ result[m])
-
-    print("gt[0]: ",gt[0])
+    print("gt type: ",type(gt))
+    print("gt[0]: ",gt[0][:K])
     print("result[0]: ", result[0])
     recall = Calculate_recall(gt, result, K)
-    print(f"[Python INFO] 4.1  RECALL = \033[1;32m{recall*100:.4f}%\033[0m")
+    print(f"[Python INFO] 4.1  RECALL@{K} = \033[1;32m{recall*100:.4f}%\033[0m")
 
     return 0
 
 if __name__ == "__main__":
-    K=1 #Top K
     main()
+

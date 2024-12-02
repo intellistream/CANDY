@@ -5,15 +5,13 @@ import sys
 import torch
 from pycandy import VectorDB
 
-
-
 class DBClient:
-    def __init__(self, vec_dim, search_algorithm, config,k=1):
+    def __init__(self, vec_dim, search_algorithm, config):
         self.search_algorithm = search_algorithm
         self.vec_dim = vec_dim
         self.config = config
         self.db = VectorDB(vec_dim, search_algorithm, config)
-        self.k=k
+
 
     def add_tensor(self, tensor_data):
 
@@ -24,20 +22,20 @@ class DBClient:
             self.db.insert_tensor(tensor.clone())
         return True
 
-    def get_tensor(self, query_text,k=None):
-        k = k or self.k
-        results = self.db.query_nearest_tensors(query_text.clone(), k)
+    def get_tensor(self, query_text):
+        K = self.config.try_i64("ANNK", 1, True)
+        results = self.db.query_nearest_tensors(query_text.clone(), K)
         if results:
             return results[0]
         else:
             print(f"Error fetching tensor for query: '{query_text}'")
             return None
 
-    def get_batch_tensors(self, query_texts,k=None):
-        k = k or self.k
+    def get_batch_tensors(self, query_texts):
         results = []
+        K=self.config.try_i64("ANNK", 1, True)
         for query_text in query_texts:
-            result = self.db.query_nearest_tensors(query_text.clone(), k)
+            result = self.db.query_nearest_tensors(query_text.clone(), K)
             if result:
                 results.append(result)
             else:

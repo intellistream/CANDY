@@ -84,22 +84,32 @@ def Write_ivecs(filename, vectors):
             f.write(struct.pack('i' * len(vec), *vec))
 
 def Calculate_recall(gt, result, K):
-
     total_recall = 0.0
     num_queries = len(gt)
 
     for i in range(num_queries):
-        if isinstance(result[i][0], np.ndarray):
-            gt_list=gt[i][:K]
-        if isinstance(result[i][0], torch.Tensor):
-            gt_list=gt[i][0][:K].tolist()
-        #  result[i] is a torch tensor array
-        if isinstance(result[i][0], torch.Tensor):
-            result_list = result[i][0][:K].tolist()
+        if isinstance(gt[i], list):
+            if isinstance(gt[i][0], torch.Tensor):
+                gt_list = gt[i][0][:K].tolist()
+            else:
+                gt_list = gt[i][:K]
+        elif isinstance(gt[i], np.ndarray):
+            gt_list = gt[i][:K].tolist()
+        elif isinstance(gt[i], torch.Tensor):
+            gt_list = gt[i][:K].tolist()
 
+        if isinstance(result[i], list):
+            if isinstance(result[i][0], torch.Tensor):
+                result_list = result[i][0][:K].tolist()
+            else:
+                result_list = result[i][:K]
+        elif isinstance(result[i], np.ndarray):
+            result_list = result[i][:K].tolist()
+        elif isinstance(result[i], torch.Tensor):
+            result_list = result[i][:K].tolist()
 
         gt_set, result_set = set(gt_list), set(result_list)
-        recall = len(gt_set & result_set)  / len(gt_set)
+        recall = len(gt_set & result_set) / len(gt_set)
         total_recall += recall
 
     average_recall = total_recall / num_queries
