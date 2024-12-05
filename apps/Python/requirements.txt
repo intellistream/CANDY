@@ -1,4 +1,4 @@
-# requirements.txt for the apps/Python folder
+# requirements.txt for the api/Python folder
 
 # Transformers library for working with models like BERT, GPT, etc.
 transformers

@@ -102,14 +102,6 @@ option(ENABLE_AUTO_GLOBAL_PYTHON_PKG
         "Enable automatically add and update global packages to python"
         ON
 )
-if (ENABLE_AUTO_GLOBAL_PYTHON_PKG)
-    # Add a post-build custom command to automatically run `make install`
-    add_custom_command(TARGET CANDY
-            POST_BUILD
-            COMMAND cd ${PROJECT_SOURCE_DIR} && python3 ${PROJECT_SOURCE_DIR}/installation/python_package_setup/setup.py install --user
-            COMMENT "Installing compiled  python packages"
-    )
-endif ()
 
 # check if the user is trying to build in the source directory
 file(TO_CMAKE_PATH "${PROJECT_BINARY_DIR}/CMakeLists.txt" PATH_TO_CMAKELISTS_TXT)

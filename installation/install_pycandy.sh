@@ -1,4 +1,4 @@
-     #!/bin/bash
+#!/bin/bash
 
      # Set package name and version
      PACKAGE_NAME="candy"

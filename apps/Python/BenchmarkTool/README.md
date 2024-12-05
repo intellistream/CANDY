@@ -12,7 +12,7 @@ Advanced features like congestion and drop in C++ is not supported yet. Please m
 
 #### Command line
 ```shell
-python3 main.py <your config file>
+python3 interactive_cli.py <your config file>
 ```
 ### GUI (experimental)
 You should install PyQT first, by 
