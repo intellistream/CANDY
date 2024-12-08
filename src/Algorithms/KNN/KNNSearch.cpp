@@ -101,11 +101,21 @@ std::vector<torch::Tensor> CANDY_ALGO::KnnSearch::searchTensor(
   // Ensure dbTensor is contiguous in memory
   torch::Tensor dbData = dbTensor.contiguous();
   torch::Tensor queryData = q.contiguous();
+
   // 获取dbData 的有效数据
   long index = lastNNZ + 1;
   if (index < dbData.size(0)) {
     dbData = dbData.slice(0, 0, index);
   }
+
+  // Check if the database contains any entries
+  if (dbData.size(0) == 0) {
+    // Return an empty vector if the database is empty
+    std::vector<torch::Tensor> results(queryData.size(0),
+                                       torch::empty({0}, torch::kInt64));
+    return results;
+  }
+
   // Compute pairwise distances between the query tensor and dbTensor
   torch::Tensor distances =
       torch::cdist(queryData, dbData);  // Shape: (rows, dbSize)
@@ -115,12 +125,16 @@ std::vector<torch::Tensor> CANDY_ALGO::KnnSearch::searchTensor(
 
   // For each query, retrieve the top-k nearest neighbors
   for (int64_t i = 0; i < queryData.size(0); ++i) {
+    // Clamp k to avoid exceeding the available number of neighbors
+    int64_t clamped_k = std::min(k, distances.size(1));
+
     // Find the indices of the top-k smallest distances for the current query row
-    auto topk = std::get<1>(distances[i].topk(
-        k, -1, /*largest=*/false));  // Get indices of top-k closest neighbors
+    auto topk =
+        std::get<1>(distances[i].topk(clamped_k, -1, /*largest=*/false));
     // Store the indices of top-k nearest neighbors for this query row
     results.push_back(topk);
   }
 
   return results;
 }
+
