@@ -97,7 +97,6 @@ bool CANDY_ALGO::KnnSearch::reviseTensor(torch::Tensor& t, torch::Tensor& w) {
 
 std::vector<torch::Tensor> CANDY_ALGO::KnnSearch::searchTensor(
     const torch::Tensor& q, int64_t k) {
-
   // Ensure dbTensor is contiguous in memory
   torch::Tensor dbData = dbTensor.contiguous();
   torch::Tensor queryData = q.contiguous();
@@ -111,9 +110,7 @@ std::vector<torch::Tensor> CANDY_ALGO::KnnSearch::searchTensor(
   // Check if the database contains any entries
   if (dbData.size(0) == 0) {
     // Return an empty vector if the database is empty
-    std::vector<torch::Tensor> results(queryData.size(0),
-                                       torch::empty({0}, torch::kFloat32));
-    return results;
+    return {};
   }
 
   // Compute pairwise distances between the query tensor and dbTensor
@@ -129,15 +126,15 @@ std::vector<torch::Tensor> CANDY_ALGO::KnnSearch::searchTensor(
     int64_t clamped_k = std::min(k, distances.size(1));
 
     // Find the indices of the top-k smallest distances for the current query row
-    auto topk = std::get<1>(distances[i].topk(clamped_k, -1, /*largest=*/false));
+    auto topk =
+        std::get<1>(distances[i].topk(clamped_k, -1, /*largest=*/false));
 
     // Retrieve the actual tensors for these indices
-    torch::Tensor neighbors = dbData.index_select(0, topk);
-
-    // Store the tensors of the top-k nearest neighbors for this query row
-    results.push_back(neighbors);
+    for (int64_t j = 0; j < clamped_k; ++j) {
+      results.push_back(dbData[topk[j]]);
+    }
   }
-
+  INTELLI_INFO(results.size());
   return results;
 }
 
