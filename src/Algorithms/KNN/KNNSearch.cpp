@@ -137,4 +137,3 @@ std::vector<torch::Tensor> CANDY_ALGO::KnnSearch::searchTensor(
   INTELLI_INFO(results.size());
   return results;
 }
-
