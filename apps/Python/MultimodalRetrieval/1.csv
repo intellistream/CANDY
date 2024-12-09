@@ -1,8 +1,8 @@
 key,value,type
-indexTag,Vamana,String
+indexTag,KNN,String
 vecDim,768,I64
 vecVolume,10000,I64
-batchSize,2000,I64
+batchSize,4000,I64
 metricType,IP,String
 DCOBatchSize,5000,I64
 ammAlgo,crs,String
@@ -45,7 +45,7 @@ singleWorkerOpt,1,I64
 flannIndexTag,1,I64
 expandStep,4000,I64
 M,24,I64
-Mmax,64,I64
-efConstruction,128,I64
-efSearch,400,I64
+Mmax,32,I64
+efConstruction,32,I64
+efSearch,200,I64
 cudaDevice,0,I64

@@ -11,7 +11,7 @@
 #include <Algorithms/LSH/LSHSearch.hpp>
 #ifdef ENABLE_CUDA
 #include <Algorithms/SONG/SONG.hpp>
-#endif
+#include <Algorithms/Vamana/vamana.hpp>
 
 namespace CANDY_ALGO {
 AlgorithmTable::AlgorithmTable() {
@@ -23,5 +23,6 @@ AlgorithmTable::AlgorithmTable() {
 #ifdef ENABLE_CUDA
   indexMap["SONG"] = std::make_shared<SONG>();
 #endif
+  indexMap["Vamana"] = std::make_shared<Vamana>();
 }
 }  // namespace CANDY_ALGO
