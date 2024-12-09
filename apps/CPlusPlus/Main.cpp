@@ -4,6 +4,10 @@
 * Description: Simplified main program for streaming insert of tensors, as an introductory entry point for new developers.
 */
 
+#ifdef ENABLE_CUDA
+#include <Algorithms/SONG/SONG.hpp>
+#endif
+
 #include <Algorithms/AlgorithmTable.hpp>
 #include <Algorithms/FlatGPUIndex/FlatGPUIndex.hpp>
 #include <Algorithms/KNN/KNNSearch.hpp>
@@ -16,6 +20,7 @@
 #include <iostream>
 #include <string>
 #include "Algorithms/HNSW/hnsw.hpp"
+
 using namespace INTELLI;
 using namespace std;
 

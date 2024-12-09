@@ -9,6 +9,8 @@
 #include <Algorithms/KDTree/KDTree.hpp>
 #include <Algorithms/KNN/KNNSearch.hpp>
 #include <Algorithms/LSH/LSHSearch.hpp>
+#ifdef ENABLE_CUDA
+#include <Algorithms/SONG/SONG.hpp>
 #include <Algorithms/Vamana/vamana.hpp>
 
 namespace CANDY_ALGO {
@@ -18,6 +20,9 @@ AlgorithmTable::AlgorithmTable() {
   indexMap["HNSW"] = std::make_shared<HNSW>();
   indexMap["FlatGPU"] = std::make_shared<FlatGPUIndex>();
   indexMap["LSH"] = std::make_shared<LSHSearch>();
+#ifdef ENABLE_CUDA
+  indexMap["SONG"] = std::make_shared<SONG>();
+#endif
   indexMap["Vamana"] = std::make_shared<Vamana>();
 }
 }  // namespace CANDY_ALGO
