@@ -51,5 +51,5 @@ macro(get_sources TARGET_NAME SOURCE_FILES)
 endmacro()
 
 macro(get_headers HEADER_FILES)
-    file(GLOB_RECURSE ${HEADER_FILES} "include/*.h" "include/*.hpp")
+    file(GLOB_RECURSE ${HEADER_FILES} "include/*.h" "include/*.hpp" "include/*.cuh")
 endmacro()

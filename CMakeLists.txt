@@ -1,10 +1,12 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.18)
 project(CANDY CXX)
 # Logging setup (if needed)
 #include(cmake/LoggingSetup.cmake)
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif ()
+option(ENABLE_CUDA "Enable cuda" ON)
+
 include(cmake/FindCuda.cmake)
 include(cmake/FindTorch.cmake)
 find_package(Torch REQUIRED)
@@ -19,6 +21,15 @@ add_subdirectory(tools)
 # # Find python development files
 find_package(Python REQUIRED COMPONENTS Interpreter Development)
 include_directories(${Python3_INCLUDE_DIRS})
+
+# Option to enable/disable CUDA
+message(STATUS "CUDA enabled: ${ENABLE_CUDA}")
+if (ENABLE_CUDA)
+    enable_language(CUDA)
+    set(CMAKE_CUDA_STANDARD 20)
+    set(CMAKE_CUDA_ARCHITECTURES OFF)
+    add_definitions(-DENABLE_CUDA=1)
+endif ()
 
 # Link with external libraries (e.g., Log4cxx)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS} -Wunused-function")
@@ -35,16 +46,36 @@ get_headers(CANDY_HEADER_FILES)
 
 # Create the CANDY library from all the source files
 
+if (ENABLE_CUDA)
+    set_source_files_properties(src/Algorithms/AlgorithmTable.cpp
+            PROPERTIES
+            LANGUAGE CUDA
+    )
+endif ()
+
 add_library(CANDY SHARED ${CANDY_SOURCE_FILES} ${CANDY_HEADER_FILES}
         include/DataLoader/DataLoaderTable.hpp
+        src/Algorithms/AlgorithmTable.cpp
 )
 
 # Add the include directory with absolute path
 target_include_directories(CANDY PUBLIC ${PROJECT_SOURCE_DIR}/include) # Include the "include/" directory as a system path
 target_include_directories(CANDY PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
 
+if (ENABLE_CUDA)
+    set(LIBRARIES ${LIBRARIES} cublas cudart)
+    set_target_properties(CANDY PROPERTIES
+            CUDA_STANDARD 20
+            CXX_STANDARD 20
+    )
+else ()
+    set_target_properties(CANDY PROPERTIES
+            CXX_STANDARD 20
+    )
+endif ()
+
 message(STATUS "Linked libs: ${LIBRARIES}")
-target_link_libraries(CANDY PUBLIC ${TORCH_LIBRARIES})
+target_link_libraries(CANDY PUBLIC ${LIBRARIES})
 
 # Set rpath for libCANDY.so to make it available to dependent libraries
 # Use Python to get the torch library path dynamically
