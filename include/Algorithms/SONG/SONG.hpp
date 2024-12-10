@@ -8,8 +8,8 @@
 #ifndef CANDY_INCLUDE_ALGORITHMS_SONG_SONG_HPP
 #define CANDY_INCLUDE_ALGORITHMS_SONG_SONG_HPP
 
-#include <Utils/ConfigMap.hpp>
 #include <Algorithms/ANNSBase.hpp>
+#include <Utils/ConfigMap.hpp>
 #include <memory>
 #include <vector>
 #include "config.hpp"
@@ -35,16 +35,17 @@ class SONG final : public ANNSBase {
    * @param[in] t the query tensor
    * @param[out] res the result vector
    */
-  static void convertTensorToVectorPair(torch::Tensor &t,
-                                        std::vector<std::pair<int,SONG_KERNEL::value_t>> &res);
+  static void convertTensorToVectorPair(
+      torch::Tensor& t, std::vector<std::pair<int, SONG_KERNEL::value_t>>& res);
 
   /**
    * @brief convert a batch of query tensors to a batch of vectors of pairs
    * @param[in] ts the query tensors
    * @param[out] res the result vector
    */
-  static void convertTensorToVectorPairBatch(torch::Tensor &ts,
-                                             std::vector<std::vector<std::pair<int,SONG_KERNEL::value_t>>> &res);
+  static void convertTensorToVectorPairBatch(
+      torch::Tensor& ts,
+      std::vector<std::vector<std::pair<int, SONG_KERNEL::value_t>>>& res);
 
  public:
   SONG() = default;
@@ -56,21 +57,20 @@ class SONG final : public ANNSBase {
 
   bool setConfig(INTELLI::ConfigMapPtr cfg) override;
 
-  bool insertTensor(const torch::Tensor &t) override;
+  bool insertTensor(const torch::Tensor& t) override;
 
-  bool deleteTensor(torch::Tensor &t, int64_t k = 1) override;
+  bool deleteTensor(torch::Tensor& t, int64_t k = 1) override;
 
-  bool reviseTensor(torch::Tensor &t, torch::Tensor &w) override;
+  bool reviseTensor(torch::Tensor& t, torch::Tensor& w) override;
 
-  std::vector<torch::Tensor> searchTensor(const torch::Tensor &q, int64_t k) override;
+  std::vector<torch::Tensor> searchTensor(const torch::Tensor& q,
+                                          int64_t k) override;
 
-   [[nodiscard]] int64_t size() const {
-    return idx;
-  }
+  [[nodiscard]] int64_t size() const { return idx; }
 
-   bool resetIndexStatistics() override;
+  bool resetIndexStatistics() override;
 
-   INTELLI::ConfigMapPtr getIndexStatistics() override;
+  INTELLI::ConfigMapPtr getIndexStatistics() override;
 };
 
 /**
@@ -80,6 +80,6 @@ class SONG final : public ANNSBase {
 
  */
 typedef std::shared_ptr<SONG> SONGPtr;
-}
+}  // namespace CANDY_ALGO
 
-#endif //CANDY_INCLUDE_CANDY_SONG_HPP
+#endif  //CANDY_INCLUDE_CANDY_SONG_HPP
