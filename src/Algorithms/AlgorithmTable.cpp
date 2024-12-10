@@ -11,6 +11,7 @@
 #include <Algorithms/LSH/LSHSearch.hpp>
 #ifdef ENABLE_CUDA
 #include <Algorithms/SONG/SONG.hpp>
+#endif
 #include <Algorithms/Vamana/vamana.hpp>
 
 namespace CANDY_ALGO {
