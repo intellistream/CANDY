@@ -124,7 +124,7 @@ def main():
         gt_path = inMap.try_string("groundtruthPath", "/gt_features.fvecs", True)
         gt_tensor=torch.tensor((Read_fvecs(gt_path)))
         gt = client_gt.get_batch_tensors(gt_tensor)
-        # result_path=f"/mnt/f/CANDY/apps/Python/MultimodalRetrieval/Datasets/recall{K}.fvecs"
+        # result_path=f"/mnt/f/CANDY/api/Python/MultimodalRetrieval/Datasets/recall{K}.fvecs"
         # Write_ivecs(result_path, gt)
 
     else:

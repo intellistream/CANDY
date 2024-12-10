@@ -66,3 +66,6 @@ commit_info
 /candy.egg-info
 
 /compile_commands.json
+/installation/candy.egg-info/
+/installation/candy/
+/installation/dist/

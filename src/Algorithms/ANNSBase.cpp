@@ -80,8 +80,7 @@ bool ANNSBase::deleteTensor(torch::Tensor& t, int64_t k) {
 
 std::vector<torch::Tensor> ANNSBase::searchTensor(const torch::Tensor& q,
                                                   int64_t k) {
-  assert(k > 0);
-  assert(q.size(1));
+  INTELLI_INFO("No specific searchTensor implementation provided.");
   std::vector<torch::Tensor> ru(1);
   ru[0] = torch::rand({1, 1});
   return ru;
