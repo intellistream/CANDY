@@ -24,7 +24,7 @@ cmake ..
 
 # Build the project with parallel jobs
 echo "Building the project..."
-make -j4
+make -j10
 
 # Optionally, install the project (e.g., to Python site-packages if specified in CMakeLists.txt)
 echo "Installing the project..."
