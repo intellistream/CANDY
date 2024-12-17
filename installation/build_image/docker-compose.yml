@@ -1,11 +1,11 @@
 services:
   candy:
-    build: ./
+    build: ..
     environment:
       - CUDACXX=/usr/local/cuda/bin/nvcc
       - NVIDIA_VISIBLE_DEVICES=all  # Expose all GPUs (optional)
-    volumes:
-      - "..:/workspace"
+#    volumes:
+#      - "../..:/workspace" # Disable mounting to avoid committing local project folder
     working_dir: /workspace
     entrypoint: /usr/sbin/sshd -D
     stdin_open: true
