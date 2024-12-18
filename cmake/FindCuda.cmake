@@ -51,4 +51,4 @@ function(find_valid_cuda MIN_CUDA_VERSION MAX_CUDA_VERSION)
 endfunction()
 
 # Call the function to find valid CUDA compilers with a specific version range
-find_valid_cuda("11.0" "12.5")
+find_valid_cuda("11.0" "12.6")
