@@ -1,5 +1,5 @@
 services:
-  llh:
+  candy:
     image: intellistream/llh:devel-ubuntu22.04
     environment:
       - CUDACXX=/usr/local/cuda/bin/nvcc

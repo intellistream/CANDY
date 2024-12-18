@@ -24,9 +24,9 @@ RUN apt-get update && apt-get install -y --fix-missing --allow-change-held-packa
     libboost-dev \
     rsync \
     nano \
+    vim \
     graphviz \
     openssh-server \
-    gdb \
     liblog4cxx-dev \
     git \
     libcupti-dev \
@@ -34,7 +34,9 @@ RUN apt-get update && apt-get install -y --fix-missing --allow-change-held-packa
     libmpfr-dev \
     libmpc-dev \
     clang-format \
-    software-properties-common && \
+    software-properties-common \
+    texinfo \
+    zlib1g-dev && \
     apt-get clean
 
 # Install latest CMake
@@ -47,12 +49,26 @@ RUN curl -o cmake.sh -L https://github.com/Kitware/CMake/releases/download/v3.27
 # Add deadsnakes PPA, remove Python 3.10, and install Python 3.11
 RUN add-apt-repository -y ppa:deadsnakes/ppa && \
     apt-get update && apt-get purge -y python3.10 python3.10-dev python3.10-minimal && \
-    apt-get install -y python3.11 python3.11-distutils python3.11-venv python3-pip python3.11-dev && \
+    apt-get install -y python3.11 python3.11-distutils python3.11-venv python3-pip python3.11-dev libpython3.11-dev && \
     apt-get autoremove -y && rm -rf /usr/bin/python3.10* /usr/lib/python3.10*
 
 # Set Python 3.11 as the default system Python
 RUN ln -sf /usr/bin/python3.11 /usr/bin/python3 && \
     ln -sf /usr/bin/python3.11 /usr/bin/python
+
+# Remove default GDB
+RUN apt-get purge -y gdb && apt-get autoremove -y
+
+# Compile GDB from source with Python 3.11 support
+RUN curl -o gdb.tar.gz -L http://ftp.gnu.org/gnu/gdb/gdb-13.2.tar.gz && \
+    tar -xzf gdb.tar.gz && \
+    cd gdb-13.2 && \
+    ./configure --with-python=/usr/bin/python3.11 && \
+    make -j$(nproc) && \
+    make install && \
+    cd .. && \
+    rm -rf gdb-13.2 gdb.tar.gz && \
+    gdb --version
 
 # Verify Python installation
 RUN python3 --version && python --version && python3.11 -m pip install --upgrade pip
