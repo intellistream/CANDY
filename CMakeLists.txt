@@ -44,6 +44,9 @@ message(STATUS "CANDY_SOURCE_FILES: ${CANDY_SOURCE_FILES}")
 
 get_headers(CANDY_HEADER_FILES)
 
+# Set the CUDA library path for linker flags
+set(CUDA_LIB_PATH "/usr/local/cuda/lib64")
+
 # Create the CANDY library from all the source files
 
 if (ENABLE_CUDA)
@@ -61,6 +64,17 @@ add_library(CANDY SHARED ${CANDY_SOURCE_FILES} ${CANDY_HEADER_FILES}
 # Add the include directory with absolute path
 target_include_directories(CANDY PUBLIC ${PROJECT_SOURCE_DIR}/include) # Include the "include/" directory as a system path
 target_include_directories(CANDY PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
+
+
+# Add the CUDA library path for all targets
+link_directories(${CUDA_LIB_PATH})
+
+# Ensure library paths are included for shared library builds
+target_link_directories(CANDY PUBLIC ${CUDA_LIB_PATH})
+
+# Add linker flags for executables and shared libraries
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -L${CUDA_LIB_PATH}")
+set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -L${CUDA_LIB_PATH}")
 
 if (ENABLE_CUDA)
     set(LIBRARIES ${LIBRARIES} cublas cudart)
