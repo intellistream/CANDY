@@ -6,7 +6,6 @@
 #ifndef BASIC_STORAGE_HPP
 #define BASIC_STORAGE_HPP
 #include <torch/torch.h>
-#include <ComputeEngine/BasicComputeEngine.hpp>
 #include <IO/AbstractStorageEngine.hpp>
 #include <Utils/ConfigMap.hpp>
 #include <map>
@@ -18,7 +17,6 @@ class BasicStorage: public AbstractStorageEngine{
 public:
   map <int, torch::Tensor> storageVector;
   int nowVid = 0;
-  BasicComputeEngine computeEngine;
 
   BasicStorage();
   ~BasicStorage() override;

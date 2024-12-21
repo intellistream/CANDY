@@ -15,8 +15,8 @@ VectorDB::VectorDB(size_t dimensions, CANDY_ALGO::ANNSBasePtr ann_algorithm)
     : ann_algorithm(ann_algorithm), is_running(false), dimensions(dimensions) {
   if (!this->ann_algorithm) {
     // Instantiate a default ANNS algorithm if none provided
-    this->ann_algorithm = std::make_shared<CANDY_ALGO::KnnSearch>(dimensions);
-    this->ann_algorithm->setConfig(nullptr);
+    this -> ann_algorithm = std::make_shared<CANDY_ALGO::KnnSearch>(dimensions);
+    this -> ann_algorithm -> setConfig(nullptr);
   }
 }
 

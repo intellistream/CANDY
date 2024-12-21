@@ -8,7 +8,7 @@
 #include <ComputeEngine/BasicComputeEngine.hpp>
 
 BasicStorage::BasicStorage(){
-
+  this->compute_engine = std::make_shared<CANDY_COMPUTE::BasicComputeEngine>();
 }
 BasicStorage::~BasicStorage() {
 
@@ -31,7 +31,7 @@ bool BasicStorage::insertTensor(const torch::Tensor &vector, int &vid) {
 }
 
 std::vector<torch::Tensor> BasicStorage::deleteTensor(std::vector<int> vids){
-  std::vector<int> result;
+  std::vector<torch::Tensor> result;
   for(int i = 0; i < vids.size(); i++){
     auto it = storageVector.find(vids[i]);
     if(it != storageVector.end()){

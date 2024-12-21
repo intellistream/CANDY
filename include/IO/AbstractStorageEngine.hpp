@@ -12,9 +12,10 @@
 #include <string>
 
 class AbstractStorageEngine {
-  public:
+public:
     AbstractStorageEngine() = default;
     virtual ~AbstractStorageEngine() = default;
+    CANDY_COMPUTE::AbstractComputeEnginePtr compute_engine;
     /**
      * @brief Get the index-specific to one vector
      * @return vid
