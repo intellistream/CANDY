@@ -2,8 +2,8 @@
 FROM nvidia/cuda:12.5.1-cudnn-devel-ubuntu22.04
 
 # Environment variables
-ENV USER=llh
-ENV PASSWD=llh
+ENV USER=sage
+ENV PASSWD=sage
 
 # 设置环境变量，防止apt-get进行交互式操作
 ENV DEBIAN_FRONTEND=noninteractive
