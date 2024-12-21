@@ -18,7 +18,7 @@ def test_simple_setup_py(monkeypatch, tmpdir, parallel, std):
     monkeypatch.chdir(tmpdir)
     monkeypatch.syspath_prepend(MAIN_DIR)
 
-    (tmpdir / "setup.py").write_text(
+    (tmpdir / "setup.sh").write_text(
         dedent(
             f"""\
             import sys
@@ -74,12 +74,12 @@ def test_simple_setup_py(monkeypatch, tmpdir, parallel, std):
     )
 
     out = subprocess.check_output(
-        [sys.executable, "setup.py", "build_ext", "--inplace"],
+        [sys.executable, "setup.sh", "build_ext", "--inplace"],
     )
     if not WIN:
         assert b"-g0" in out
     out = subprocess.check_output(
-        [sys.executable, "setup.py", "build_ext", "--inplace", "--force"],
+        [sys.executable, "setup.sh", "build_ext", "--inplace", "--force"],
         env=dict(os.environ, CFLAGS="-g"),
     )
     if not WIN:

@@ -331,10 +331,10 @@ things, though, everything works the way you would expect:
 
 ```bash
 # Normal package
-python3 setup.py sdist
+python3 setup.sh sdist
 
 # Global extra
-PYBIND11_GLOBAL_SDIST=1 python3 setup.py sdist
+PYBIND11_GLOBAL_SDIST=1 python3 setup.sh sdist
 ```
 
 A detailed explanation of the build procedure design for developers wanting to

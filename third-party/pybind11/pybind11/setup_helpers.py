@@ -83,7 +83,7 @@ STD_TMPL = "/std:c++{}" if WIN else "-std=c++{}"
 # file explicitly supports being copied into a user's project directory
 # standalone, and pulling pybind11 with the deprecated setup_requires feature.
 # If you copy the file, remember to add it to your MANIFEST.in, and add the current
-# directory into your path if it sits beside your setup.py.
+# directory into your path if it sits beside your setup.sh.
 
 
 class Pybind11Extension(_Extension):

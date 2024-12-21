@@ -115,7 +115,7 @@ sdist_files = {
     "pybind11/share/pkgconfig",
     "pyproject.toml",
     "setup.cfg",
-    "setup.py",
+    "setup.sh",
     "LICENSE",
     "MANIFEST.in",
     "README.rst",
@@ -159,7 +159,7 @@ def test_build_sdist(monkeypatch, tmpdir):
         version = start[9:-1]
         simpler = {n.split("/", 1)[-1] for n in tar.getnames()[1:]}
 
-        setup_py = read_tz_file(tar, "setup.py")
+        setup_py = read_tz_file(tar, "setup.sh")
         pyproject_toml = read_tz_file(tar, "pyproject.toml")
         pkgconfig = read_tz_file(tar, "pybind11/share/pkgconfig/pybind11.pc")
         cmake_cfg = read_tz_file(
@@ -209,7 +209,7 @@ def test_build_global_dist(monkeypatch, tmpdir):
         version = start[16:-1]
         simpler = {n.split("/", 1)[-1] for n in tar.getnames()[1:]}
 
-        setup_py = read_tz_file(tar, "setup.py")
+        setup_py = read_tz_file(tar, "setup.sh")
         pyproject_toml = read_tz_file(tar, "pyproject.toml")
         pkgconfig = read_tz_file(tar, "pybind11/share/pkgconfig/pybind11.pc")
         cmake_cfg = read_tz_file(
