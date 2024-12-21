@@ -4,7 +4,7 @@
 set -e
 
 # Variables
-new_image_name="intellistream/llh" # Docker Hub repository name
+new_image_name="intellistream/sage" # Docker Hub repository name
 tag="devel-ubuntu22.04"            # Image tag
 dockerfile_dir="./"                # Directory containing the Dockerfile
 
