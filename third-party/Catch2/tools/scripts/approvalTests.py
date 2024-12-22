@@ -26,7 +26,7 @@ if len(sys.argv) == 3:
     if not os.path.isdir(outputDirPath):
         os.mkdir(outputDirPath)
 else:
-    print('Usage: {} path-to-SelfTest-executable path-to-temp-output-dir'.format(sys.argv[0]))
+    print('Usage: {} path-to-SelfTest-executable path-to-temp.yml-output-dir'.format(sys.argv[0]))
     exit(1)
 
 
