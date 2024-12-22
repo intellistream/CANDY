@@ -12,3 +12,4 @@ services:
     tty: true                      # Enable a pseudo-TTY
     ports:
       - "2222:22"                  # Map SSH port to host
+    runtime: nvidia                # Use the NVIDIA runtime for GPU support
