@@ -50,13 +50,20 @@ bool SeparateKNNSearch::reviseTensor(const torch::Tensor& t, const torch::Tensor
   if (t.size(0) > w.size(0) || t.size(1) != w.size(1)) {
     return false;
   }
+  vector<bool> isDelete;
   // Use the searchTensor function to get the indices of k-nearest neighbors for each row in t
   std::vector<torch::Tensor> idxToDeleteTensors = searchTensor(t, 1);
   for (int64_t i = 0; i < t.size(0); ++i) {
     auto tensorAccessor = idxToDeleteTensors[i].accessor<int64_t, 1>();
     auto rowW = w.slice(0, i, i + 1);
-    this -> storage_engine -> reviseTensor(rowW, tensorAccessor[0]);
+    isDelete.push_back(this -> storage_engine -> reviseTensor(rowW, tensorAccessor[0]));
   }
+  for (int i = 0; i < isDelete.size(); i++) {
+        if (!isDelete[i]) {
+        return false;
+        }
+  }
+  return true;
 }
 std::vector<torch::Tensor> SeparateKNNSearch::findKnnTensorBurst(const torch::Tensor& q, int64_t k) {
   // Ensure dbTensor is contiguous in memory

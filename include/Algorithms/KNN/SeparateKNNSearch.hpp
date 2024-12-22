@@ -16,7 +16,7 @@ protected:
  torch::Tensor dbTensor;
  int64_t lastNNZ = 0;
  int64_t vecDim = 128, initialVolume = 1000, expandStep = 100;
- bool setConfig(INTELLI::ConfigMapPtr cfg);
+ bool setConfig(INTELLI::ConfigMapPtr cfg) override;
 public:
  SeparateKNNSearch () {}
  SeparateKNNSearch (size_t dimensions);

@@ -13,6 +13,9 @@ SeparateANNSBase::SeparateANNSBase() {
 SeparateANNSBase::~SeparateANNSBase() {
 
 }
+bool SeparateANNSBase::setConfig(INTELLI::ConfigMapPtr cfg) {
+  return true;
+}
 bool SeparateANNSBase::insertTensor(const torch::Tensor &t) {
   return storage_engine -> insertTensor(t);
 }

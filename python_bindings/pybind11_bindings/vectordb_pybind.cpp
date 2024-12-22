@@ -9,6 +9,7 @@
 #include <torch/extension.h>
 #include <Algorithms/HNSW/hnsw.hpp>
 #include <Algorithms/KNN/KNNSearch.hpp>
+#include <Algorithms/KNN/SeparateKNNSearch.hpp>
 #include <Core/vector_db.hpp>  // Corrected include to match header guard and existing header file
 #include <DataLoader/DataLoaderTable.hpp>
 #include <Utils/ConfigMap.hpp>
@@ -25,9 +26,9 @@ PYBIND11_MODULE(pycandy, m) {
 
   py::class_<VectorDB>(m, "VectorDB")
       .def(py::init([](size_t dimensions, const std::string& search_algorithm) {
-             std::shared_ptr<CANDY_ALGO::ANNSBase> algorithm;
+             std::shared_ptr<CANDY_ALGO::SeparateANNSBase> algorithm;
              if (search_algorithm == "knnsearch") {
-               algorithm = std::make_shared<CANDY_ALGO::KnnSearch>(dimensions);
+               algorithm = std::make_shared<CANDY_ALGO::SeparateKNNSearch>(dimensions);
                algorithm->setConfig(nullptr);
              } else {
                throw std::invalid_argument("Unsupported search algorithm: " +
@@ -39,13 +40,14 @@ PYBIND11_MODULE(pycandy, m) {
 
       .def(py::init([](size_t dimensions, const std::string& search_algorithm,
                        INTELLI::ConfigMapPtr cfg) {
-             std::shared_ptr<CANDY_ALGO::ANNSBase> algorithm;
+             std::shared_ptr<CANDY_ALGO::SeparateANNSBase> algorithm;
              if (search_algorithm == "knnsearch") {
-               algorithm = std::make_shared<CANDY_ALGO::KnnSearch>(dimensions);
+               algorithm = std::make_shared<CANDY_ALGO::SeparateKNNSearch>(dimensions);
                algorithm->setConfig(cfg);  // 使用传入的配置
              } else if (search_algorithm == "hnswsearch") {
-               algorithm = std::make_shared<CANDY_ALGO::HNSW>();
-               algorithm->setConfig(cfg);  // 使用传入的配置
+               //TODO:: add SeparateHnswSearch
+               // algorithm = std::make_shared<CANDY_ALGO::HNSW>();
+               // algorithm->setConfig(cfg);  // 使用传入的配置
              } else {
                throw std::invalid_argument("Unsupported search algorithm: " +
                                            search_algorithm);

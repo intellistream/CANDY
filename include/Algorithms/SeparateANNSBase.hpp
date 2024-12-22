@@ -7,8 +7,9 @@
 #ifndef SEPEARATE_ANNS_ALGORITHM_BASE_HPP
 #define SEPEARATE_ANNS_ALGORITHM_BASE_HPP
 #include <torch/torch.h>
-#include <vector>
 #include <Algorithms/AbstractSeparateANNSAlgorithm.hpp>
+#include <Utils/TimeStampGenerator.hpp>
+#include <vector>
 
 namespace CANDY_ALGO {
 class SeparateANNSBase: public AbstractSeparateANNSAlgorithm {
@@ -20,6 +21,7 @@ class SeparateANNSBase: public AbstractSeparateANNSAlgorithm {
   std::vector<torch::Tensor> deleteTensor(const torch::Tensor &t, int64_t k) override;
   bool reviseTensor(const torch::Tensor &t, const torch::Tensor &w) override;
   std::vector<int64_t> findKnnTensor(const torch::Tensor &t, int64_t k) override;
+  bool setConfig(INTELLI::ConfigMapPtr cfg);
 };
 typedef std::shared_ptr<SeparateANNSBase> SeparateANNSBasePtr;
 }  // namespace CANDY_ALGO
