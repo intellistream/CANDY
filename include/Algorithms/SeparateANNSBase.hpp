@@ -12,9 +12,7 @@
 #include <IO/BasicStorage.hpp>
 
 namespace CANDY_ALGO {
-class SeparateANNSBase;
-typedef std::shared_ptr<SeparateANNSBase> SeparateANNSBasePtr;
-class SeparateANNSBase: public CANDY::AbstractSeparateANNSAlgorithm{
+class SeparateANNSBase: public AbstractSeparateANNSAlgorithm {
  public:
   BasicStorage storage_engine;
   SeparateANNSBase();
@@ -25,5 +23,6 @@ class SeparateANNSBase: public CANDY::AbstractSeparateANNSAlgorithm{
   std::vector<int> deleteTensor(const torch::Tensor &t, int64_t k) override;
   std::vector<int> findKnnTensor(const torch::Tensor &t, int64_t k) override;
 };
+typedef std::shared_ptr<SeparateANNSBase> SeparateANNSBasePtr;
 }  // namespace CANDY_ALGO
 #endif  // SEPEARATE_ANNS_ALGORITHM_BASE_HPP

@@ -3,16 +3,18 @@
  * Created on: 2024/11/24
  * Description: [Provide description here]
  */
-#ifndef CANDY_INCLUDE_STORAGE_AbstractSparateANNSAlgorithm_H_
-#define CANDY_INCLUDE_STORAGE_AbstractSparateANNSAlgorithm_H_
+#ifndef CANDY_INCLUDE_ALGO_AbstractSparateANNSAlgorithm_H_
+#define CANDY_INCLUDE_ALGO_AbstractSparateANNSAlgorithm_H_
 #include <torch/torch.h>
 #include <vector>
+#include <IO/AbstractStorageEngine>
 
 namespace CANDY_ALGO {
 class AbstractSeparateANNSAlgorithm{
 public:
   AbstractSeparateANNSAlgorithm() = default;
   virtual ~AbstractSeparateANNSAlgorithm() = default;
+  CANDY_STORAGE::AbstractStorageEnginePtr storage_engine;
   /**
  * @brief insert a tensor with a rawId
  * @param t the tensor, some index needs to be single row
@@ -49,4 +51,4 @@ public:
   virtual std::vector<int> findKnnTensor(const torch::Tensor &t, int64_t k) = 0;
 };
 }  // namespace CANDY_ALGO
-#endif  //CANDY_INCLUDE_STORAGE_AbstractSparateANNSAlgorithm_H_
+#endif

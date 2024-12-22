@@ -6,7 +6,7 @@
  */
 #include <IO/BasicStorage.hpp>
 #include <ComputeEngine/BasicComputeEngine.hpp>
-
+namespace CANDY_STORAGE {
 BasicStorage::BasicStorage(){
   this->compute_engine = std::make_shared<CANDY_COMPUTE::BasicComputeEngine>();
 }
@@ -43,21 +43,21 @@ std::vector<torch::Tensor> BasicStorage::deleteTensor(std::vector<int> vids){
 }
 
 float BasicStorage::distanceCompute(int vid1, int vid2){
-    auto it1 = storageVector.find(vid1);
-    auto it2 = storageVector.find(vid2);
-    if(it1 != storageVector.end() && it2 != storageVector.end()){
-        return computeEngine.euclidean_distance(it1 -> second, it2 -> second);
-    } else {
-        return -1;
-    }
+  auto it1 = storageVector.find(vid1);
+  auto it2 = storageVector.find(vid2);
+  if(it1 != storageVector.end() && it2 != storageVector.end()){
+    return this->compute_engine->euclidean_distance(it1 -> second, it2 -> second);
+  } else {
+    return -1;
+  }
 }
 float BasicStorage::distanceCompute(const torch::Tensor &vector, int vid){
-    auto it = storageVector.find(vid);
-    if(it != storageVector.end()){
-        return computeEngine.euclidean_distance(it -> second, vector);
-    } else {
-        return -1;
-    }
+  auto it = storageVector.find(vid);
+  if(it != storageVector.end()){
+    return this->compute_engine->euclidean_distance(it -> second, vector);
+  } else {
+    return -1;
+  }
 }
 torch::Tensor BasicStorage::getVectorByVid(int vid) {
   auto it = storageVector.find(vid);
@@ -85,4 +85,5 @@ std::vector<torch::Tensor> BasicStorage::getAll(){
   }
 
   return tensorList;
+}
 }

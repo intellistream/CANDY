@@ -8,9 +8,10 @@
 #ifndef CANDY_INCLUDE_STORAGE_AbstractStorageEngine_H_
 #define CANDY_INCLUDE_STORAGE_AbstractStorageEngine_H_
 #include <torch/torch.h>
-#include <vector>
+#include <ComputeEngine/AbstractComputeEngine.hpp>
 #include <string>
-
+#include <vector>
+namespace CANDY_STORAGE{
 class AbstractStorageEngine {
 public:
     AbstractStorageEngine() = default;
@@ -71,5 +72,7 @@ public:
      */
     virtual std::string display() = 0;
 };
+typedef std::shared_ptr<AbstractStorageEngine> AbstractStorageEnginePtr;
+}
 
 #endif  //CANDY_INCLUDE_STORAGE_AbstractStorageEngine_H_

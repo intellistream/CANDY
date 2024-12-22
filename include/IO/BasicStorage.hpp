@@ -12,8 +12,8 @@
 #include <string>
 #include <vector>
 
-
-class BasicStorage: public AbstractStorageEngine{
+namespace CANDY_STORAGE {
+class BasicStorage: public AbstractStorageEngine {
 public:
   map <int, torch::Tensor> storageVector;
   int nowVid = 0;
@@ -30,4 +30,5 @@ public:
   std::vector<torch::Tensor> getAll() override;
   std::string display() override;
 };
+}
 #endif  // BASIC_STORAGE_HPP
