@@ -61,6 +61,12 @@ public:
      * @return torch::Tensor the vector
      */
     virtual torch::Tensor getVectorByVid(int vid) = 0;
+     /**
+    * @brief Get the vectors by vids
+    * @param vid the vids of the vectors
+    * @return torch::Tensor the vectors
+    */
+   virtual std::vector<torch::Tensor> getVectorByVids(std::vector<int> vids) = 0;
     /**
      * @brief Get all the vectors
      * @return std::vector<torch::Tensor> the vectors

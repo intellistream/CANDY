@@ -68,6 +68,16 @@ torch::Tensor BasicStorage::getVectorByVid(int vid) {
     return torch::zeros({1, 1});
   }
 }
+std::vector<torch::Tensor> BasicStorage::getVectorByVids(std::vector<int> vids){
+  std::vector<torch::Tensor> result;
+  for(int i = 0; i < vids.size(); i++){
+    auto it = storageVector.find(vids[i]);
+    if(it != storageVector.end()){
+      result.push_back(it -> second);
+    }
+  }
+  return result;
+}
 
 std::string BasicStorage::display() {
   string result;

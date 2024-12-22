@@ -9,18 +9,15 @@
 #include <torch/torch.h>
 #include <vector>
 #include <Algorithms/AbstractSeparateANNSAlgorithm.hpp>
-#include <IO/BasicStorage.hpp>
 
 namespace CANDY_ALGO {
 class SeparateANNSBase: public AbstractSeparateANNSAlgorithm {
  public:
-  BasicStorage storage_engine;
   SeparateANNSBase();
   ~SeparateANNSBase() override;
   bool insertTensor(const torch::Tensor &t) override;
-  bool insertTensorWithRawId(const torch::Tensor &t, int rowId) override;
-  std::vector<int> searchTensor(const torch::Tensor &t, int64_t k) override;
-  std::vector<int> deleteTensor(const torch::Tensor &t, int64_t k) override;
+  std::vector<torch::Tensor> searchTensor(const torch::Tensor &t, int64_t k) override;
+  std::vector<torch::Tensor> deleteTensor(const torch::Tensor &t, int64_t k) override;
   std::vector<int> findKnnTensor(const torch::Tensor &t, int64_t k) override;
 };
 typedef std::shared_ptr<SeparateANNSBase> SeparateANNSBasePtr;
