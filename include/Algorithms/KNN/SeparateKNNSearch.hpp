@@ -16,7 +16,6 @@ protected:
  torch::Tensor dbTensor;
  int64_t lastNNZ = 0;
  int64_t vecDim = 128, initialVolume = 1000, expandStep = 100;
- bool setConfig(INTELLI::ConfigMapPtr cfg) override;
 public:
  SeparateKNNSearch () {}
  SeparateKNNSearch (size_t dimensions);
@@ -26,6 +25,7 @@ public:
  std::vector<torch::Tensor> deleteTensor(const torch::Tensor &t, int64_t k) override;
  bool reviseTensor(const torch::Tensor &t, const torch::Tensor &w) override;
  std::vector<torch::Tensor> findKnnTensorBurst(const torch::Tensor &q, int64_t k);
+ bool setConfig(INTELLI::ConfigMapPtr cfg) override;
 private:
  size_t dimensions;
 };

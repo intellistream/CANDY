@@ -7,6 +7,7 @@
 #define CANDY_INCLUDE_ALGO_AbstractSparateANNSAlgorithm_H_
 #include <torch/torch.h>
 #include <IO/AbstractStorageEngine.hpp>
+#include <Utils/ConfigMap.hpp>
 #include <vector>
 
 namespace CANDY_ALGO {
@@ -43,6 +44,7 @@ public:
    * @return std::vector<int> the result vids
    */
   virtual std::vector<int64_t> findKnnTensor(const torch::Tensor &t, int64_t k) = 0;
+  virtual bool setConfig(INTELLI::ConfigMapPtr cfg) = 0;
 };
 }  // namespace CANDY_ALGO
 #endif
