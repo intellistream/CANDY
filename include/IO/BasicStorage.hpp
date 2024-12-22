@@ -15,19 +15,20 @@
 namespace CANDY_STORAGE {
 class BasicStorage: public AbstractStorageEngine {
 public:
-  map <int, torch::Tensor> storageVector;
+  map <int64_t, torch::Tensor> storageVector;
   int nowVid = 0;
 
   BasicStorage();
   ~BasicStorage() override;
   int getVid() override;
   bool insertTensor(const torch::Tensor &vector) override;
-  bool insertTensor(const torch::Tensor &vector, int &vid) override;
-  std::vector<torch::Tensor> deleteTensor(std::vector<int> vids) override;
-  float distanceCompute(int vid1, int vid2) override;
-  float distanceCompute(const torch::Tensor &vector, int vid) override;
-  torch::Tensor getVectorByVid(int vid) override;
-  std::vector<torch::Tensor> getVectorByVids(std::vector<int> vids) override;
+  bool insertTensor(const torch::Tensor &vector, int64_t &vid) override;
+  std::vector<torch::Tensor> deleteTensor(std::vector<int64_t> vids) override;
+  bool reviseTensor(const torch::Tensor &r_t, int64_t vid) override;
+  float distanceCompute(int64_t vid1, int64_t vid2) override;
+  float distanceCompute(const torch::Tensor &vector, int64_t vid) override;
+  torch::Tensor getVectorByVid(int64_t vid) override;
+  std::vector<torch::Tensor> getVectorByVids(std::vector<int64_t> vids) override;
   std::vector<torch::Tensor> getAll() override;
   std::string display() override;
 };

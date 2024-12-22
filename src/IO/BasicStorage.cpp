@@ -2,13 +2,12 @@
 * Copyright (C) 2024 by the INTELLI team
  * Created by: Jianjun Zhao
  * Created on: 2024/12/21
- * Description:
  */
 #include <IO/BasicStorage.hpp>
 #include <ComputeEngine/BasicComputeEngine.hpp>
 namespace CANDY_STORAGE {
 BasicStorage::BasicStorage(){
-  this->compute_engine = std::make_shared<CANDY_COMPUTE::BasicComputeEngine>();
+  this -> compute_engine = std::make_shared<CANDY_COMPUTE::BasicComputeEngine>();
 }
 BasicStorage::~BasicStorage() {
 
@@ -24,13 +23,13 @@ bool BasicStorage::insertTensor(const torch::Tensor &vector){
   return true;
 }
 
-bool BasicStorage::insertTensor(const torch::Tensor &vector, int &vid) {
+bool BasicStorage::insertTensor(const torch::Tensor &vector, int64_t &vid) {
   vid = getVid();
   storageVector.insert({vid, vector});
   return true;
 }
 
-std::vector<torch::Tensor> BasicStorage::deleteTensor(std::vector<int> vids){
+std::vector<torch::Tensor> BasicStorage::deleteTensor(std::vector<int64_t> vids){
   std::vector<torch::Tensor> result;
   for(int i = 0; i < vids.size(); i++){
     auto it = storageVector.find(vids[i]);
@@ -42,7 +41,17 @@ std::vector<torch::Tensor> BasicStorage::deleteTensor(std::vector<int> vids){
   return result;
 }
 
-float BasicStorage::distanceCompute(int vid1, int vid2){
+bool BasicStorage::reviseTensor(const torch::Tensor &r_t, int64_t vid){
+  auto it = storageVector.find(vid);
+  if(it != storageVector.end()){
+    it -> second = r_t;
+    return true;
+  } else {
+    return false;
+  }
+}
+
+float BasicStorage::distanceCompute(int64_t vid1, int64_t vid2){
   auto it1 = storageVector.find(vid1);
   auto it2 = storageVector.find(vid2);
   if(it1 != storageVector.end() && it2 != storageVector.end()){
@@ -51,7 +60,7 @@ float BasicStorage::distanceCompute(int vid1, int vid2){
     return -1;
   }
 }
-float BasicStorage::distanceCompute(const torch::Tensor &vector, int vid){
+float BasicStorage::distanceCompute(const torch::Tensor &vector, int64_t vid){
   auto it = storageVector.find(vid);
   if(it != storageVector.end()){
     return this->compute_engine->euclidean_distance(it -> second, vector);
@@ -59,7 +68,7 @@ float BasicStorage::distanceCompute(const torch::Tensor &vector, int vid){
     return -1;
   }
 }
-torch::Tensor BasicStorage::getVectorByVid(int vid) {
+torch::Tensor BasicStorage::getVectorByVid(int64_t vid) {
   auto it = storageVector.find(vid);
   if(it != storageVector.end()){
     return it -> second;
@@ -68,7 +77,7 @@ torch::Tensor BasicStorage::getVectorByVid(int vid) {
     return torch::zeros({1, 1});
   }
 }
-std::vector<torch::Tensor> BasicStorage::getVectorByVids(std::vector<int> vids){
+std::vector<torch::Tensor> BasicStorage::getVectorByVids(std::vector<int64_t> vids){
   std::vector<torch::Tensor> result;
   for(int i = 0; i < vids.size(); i++){
     auto it = storageVector.find(vids[i]);

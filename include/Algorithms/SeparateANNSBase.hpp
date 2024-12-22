@@ -18,7 +18,8 @@ class SeparateANNSBase: public AbstractSeparateANNSAlgorithm {
   bool insertTensor(const torch::Tensor &t) override;
   std::vector<torch::Tensor> searchTensor(const torch::Tensor &t, int64_t k) override;
   std::vector<torch::Tensor> deleteTensor(const torch::Tensor &t, int64_t k) override;
-  std::vector<int> findKnnTensor(const torch::Tensor &t, int64_t k) override;
+  bool reviseTensor(const torch::Tensor &t, const torch::Tensor &w) override;
+  std::vector<int64_t> findKnnTensor(const torch::Tensor &t, int64_t k) override;
 };
 typedef std::shared_ptr<SeparateANNSBase> SeparateANNSBasePtr;
 }  // namespace CANDY_ALGO

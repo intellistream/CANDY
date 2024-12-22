@@ -21,9 +21,7 @@ inline float computeL2Distance(const float* a, const float* b,
     float diff = x - y;
     return diff * diff;
   };
-  return std::inner_product(
-      a, a + size, b, 0.0f, std::plus<float>(),
-      func);  // std::plus<float>() is the binary function object that will be applied.
+  return std::inner_product(a, a + size, b, 0.0f, std::plus<float>(),func);  // std::plus<float>() is the binary function object that will be applied.
 }
 
 inline float computeL2Distance(const std::vector<float>& a,
