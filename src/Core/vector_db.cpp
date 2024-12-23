@@ -3,7 +3,7 @@
  * Created on: 2024/10/9
  * Description: [Provide description here]
  */
-#include <Algorithms/KNN/KNNSearch.hpp>
+#include <Algorithms/KNN/SeparateKNNSearch.hpp>
 #include <Core/vector_db.hpp>
 #include <iostream>
 #include <thread>
@@ -11,11 +11,13 @@
 
 // Constructor: Initialize the tensor database with a number of dimensions and a search algorithm
 
-VectorDB::VectorDB(size_t dimensions, CANDY_ALGO::ANNSBasePtr ann_algorithm)
+VectorDB::VectorDB(size_t dimensions,
+                   CANDY_ALGO::SeparateANNSBasePtr ann_algorithm)
     : ann_algorithm(ann_algorithm), is_running(false), dimensions(dimensions) {
   if (!this->ann_algorithm) {
     // Instantiate a default ANNS algorithm if none provided
-    this->ann_algorithm = std::make_shared<CANDY_ALGO::KnnSearch>(dimensions);
+    this->ann_algorithm =
+        std::make_shared<CANDY_ALGO::SeparateKNNSearch>(dimensions);
     this->ann_algorithm->setConfig(nullptr);
   }
 }
@@ -23,11 +25,6 @@ VectorDB::VectorDB(size_t dimensions, CANDY_ALGO::ANNSBasePtr ann_algorithm)
 // Destructor
 VectorDB::~VectorDB() {
   stop_streaming();
-}
-
-// Generate a new unique ID for each tensor
-size_t VectorDB::generate_id() {
-  return next_id++;
 }
 
 // Insert a tensor directly into the tensor database (exclusive write access)

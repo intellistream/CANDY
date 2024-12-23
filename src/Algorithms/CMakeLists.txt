@@ -8,6 +8,7 @@ add_subdirectory(FlatGPUIndex)
 
 add_sources(CANDY
         ANNSBase.cpp
+        SeparateANNSBase.cpp
 )
 
 if (ENABLE_CUDA)

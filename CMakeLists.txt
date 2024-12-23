@@ -57,6 +57,7 @@ if (ENABLE_CUDA)
 endif ()
 
 add_library(CANDY SHARED ${CANDY_SOURCE_FILES} ${CANDY_HEADER_FILES}
+        include/Algorithms/AbstractSeparateANNSAlgorithm.hpp
         include/DataLoader/DataLoaderTable.hpp
         src/Algorithms/AlgorithmTable.cpp
 )

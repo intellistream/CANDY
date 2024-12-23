@@ -10,21 +10,19 @@
 #ifndef VECTOR_DB_H
 #define VECTOR_DB_H
 
-#include <Algorithms/ANNSBase.hpp>
-#include <functional>
+#include <Algorithms/SeparateANNSBase.hpp>
 #include <memory>
-#include <mutex>  // For std::mutex
 #include <queue>
 #include <shared_mutex>  // For shared_mutex, unique_lock, shared_lock
 #include <thread>
-#include <unordered_map>
 #include <vector>
 
 class VectorDB {
  public:
   // Constructor and Destructor
 
-  VectorDB(size_t dimensions, CANDY_ALGO::ANNSBasePtr ann_algorithm = nullptr);
+  VectorDB(size_t dimensions,
+           CANDY_ALGO::SeparateANNSBasePtr ann_algorithm = nullptr);
 
   ~VectorDB();
 
@@ -55,7 +53,7 @@ class VectorDB {
  private:
   // ANNS algorithm for querying (e.g., k-NN, Approximate NN)
 
-  CANDY_ALGO::ANNSBasePtr ann_algorithm;
+  CANDY_ALGO::SeparateANNSBasePtr ann_algorithm;
 
   // Thread-safe data structures for concurrency
   mutable std::shared_mutex db_mutex;
