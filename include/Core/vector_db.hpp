@@ -21,7 +21,8 @@ class VectorDB {
  public:
   // Constructor and Destructor
 
-  VectorDB(size_t dimensions, CANDY_ALGO::SeparateANNSBasePtr ann_algorithm = nullptr);
+  VectorDB(size_t dimensions,
+           CANDY_ALGO::SeparateANNSBasePtr ann_algorithm = nullptr);
 
   ~VectorDB();
 

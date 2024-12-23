@@ -28,7 +28,8 @@ PYBIND11_MODULE(pycandy, m) {
       .def(py::init([](size_t dimensions, const std::string& search_algorithm) {
              std::shared_ptr<CANDY_ALGO::SeparateANNSBase> algorithm;
              if (search_algorithm == "knnsearch") {
-               algorithm = std::make_shared<CANDY_ALGO::SeparateKNNSearch>(dimensions);
+               algorithm =
+                   std::make_shared<CANDY_ALGO::SeparateKNNSearch>(dimensions);
                algorithm->setConfig(nullptr);
              } else {
                throw std::invalid_argument("Unsupported search algorithm: " +
@@ -42,7 +43,8 @@ PYBIND11_MODULE(pycandy, m) {
                        INTELLI::ConfigMapPtr cfg) {
              std::shared_ptr<CANDY_ALGO::SeparateANNSBase> algorithm;
              if (search_algorithm == "knnsearch") {
-               algorithm = std::make_shared<CANDY_ALGO::SeparateKNNSearch>(dimensions);
+               algorithm =
+                   std::make_shared<CANDY_ALGO::SeparateKNNSearch>(dimensions);
                algorithm->setConfig(cfg);  // 使用传入的配置
              } else if (search_algorithm == "hnswsearch") {
                //TODO:: add SeparateHnswSearch

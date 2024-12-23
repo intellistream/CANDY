@@ -7,31 +7,39 @@
 #include <Utils/TensorOP.hpp>
 
 namespace CANDY_ALGO {
-SeparateKNNSearch::SeparateKNNSearch(size_t dimensions) : dimensions(dimensions) {}
+SeparateKNNSearch::SeparateKNNSearch(size_t dimensions)
+    : dimensions(dimensions) {}
+
 bool SeparateKNNSearch::setConfig(INTELLI::ConfigMapPtr cfg) {
   if (cfg == nullptr) {
     dbTensor = torch::zeros({initialVolume, vecDim});
     lastNNZ = -1;
     return false;
   }
-  vecDim = cfg-> tryI64("vecDim", 768, true);
+  vecDim = cfg->tryI64("vecDim", 768, true);
   initialVolume = cfg->tryI64("initialVolume", 1000, true);
   expandStep = cfg->tryI64("expandStep", 100, true);
   dbTensor = torch::zeros({initialVolume, vecDim});
   lastNNZ = -1;
   return true;
 }
+
 bool SeparateKNNSearch::insertTensor(const torch::Tensor& t) {
-  return this -> storage_engine -> insertTensor(t);
+  return this->storage_engine->insertTensor(t);
 }
-std::vector<torch::Tensor> SeparateKNNSearch::searchTensor(const torch::Tensor& t, int64_t k) {
-  vector<torch::Tensor> all_vector = this -> storage_engine -> getAll();
+
+std::vector<torch::Tensor> SeparateKNNSearch::searchTensor(
+    const torch::Tensor& t, int64_t k) {
+  vector<torch::Tensor> all_vector = this->storage_engine->getAll();
   for (torch::Tensor a : all_vector) {
-    INTELLI::TensorOP::appendRowsBufferMode(&dbTensor, &a, &lastNNZ, expandStep);
+    INTELLI::TensorOP::appendRowsBufferMode(&dbTensor, &a, &lastNNZ,
+                                            expandStep);
   }
   return findKnnTensorBurst(t, k);
 }
-std::vector<torch::Tensor> SeparateKNNSearch::deleteTensor(const torch::Tensor& t, int64_t k) {
+
+std::vector<torch::Tensor> SeparateKNNSearch::deleteTensor(
+    const torch::Tensor& t, int64_t k) {
   // Use the searchTensor function to get the indices of k-nearest neighbors for each row in t
   std::vector<torch::Tensor> idxToDeleteTensors = searchTensor(t, k);
 
@@ -43,9 +51,11 @@ std::vector<torch::Tensor> SeparateKNNSearch::deleteTensor(const torch::Tensor& 
       idxToDelete.push_back(tensorAccessor[i]);
     }
   }
-  return this -> storage_engine -> deleteTensor(idxToDelete);
+  return this->storage_engine->deleteTensor(idxToDelete);
 }
-bool SeparateKNNSearch::reviseTensor(const torch::Tensor& t, const torch::Tensor& w) {
+
+bool SeparateKNNSearch::reviseTensor(const torch::Tensor& t,
+                                     const torch::Tensor& w) {
   // Check if dimensions match
   if (t.size(0) > w.size(0) || t.size(1) != w.size(1)) {
     return false;
@@ -56,16 +66,19 @@ bool SeparateKNNSearch::reviseTensor(const torch::Tensor& t, const torch::Tensor
   for (int64_t i = 0; i < t.size(0); ++i) {
     auto tensorAccessor = idxToDeleteTensors[i].accessor<int64_t, 1>();
     auto rowW = w.slice(0, i, i + 1);
-    isDelete.push_back(this -> storage_engine -> reviseTensor(rowW, tensorAccessor[0]));
+    isDelete.push_back(
+        this->storage_engine->reviseTensor(rowW, tensorAccessor[0]));
   }
   for (int i = 0; i < isDelete.size(); i++) {
-        if (!isDelete[i]) {
-        return false;
-        }
+    if (!isDelete[i]) {
+      return false;
+    }
   }
   return true;
 }
-std::vector<torch::Tensor> SeparateKNNSearch::findKnnTensorBurst(const torch::Tensor& q, int64_t k) {
+
+std::vector<torch::Tensor> SeparateKNNSearch::findKnnTensorBurst(
+    const torch::Tensor& q, int64_t k) {
   // Ensure dbTensor is contiguous in memory
   torch::Tensor dbData = dbTensor.contiguous();
   torch::Tensor queryData = q.contiguous();

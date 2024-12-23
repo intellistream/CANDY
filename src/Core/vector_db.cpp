@@ -11,12 +11,14 @@
 
 // Constructor: Initialize the tensor database with a number of dimensions and a search algorithm
 
-VectorDB::VectorDB(size_t dimensions, CANDY_ALGO::SeparateANNSBasePtr ann_algorithm)
+VectorDB::VectorDB(size_t dimensions,
+                   CANDY_ALGO::SeparateANNSBasePtr ann_algorithm)
     : ann_algorithm(ann_algorithm), is_running(false), dimensions(dimensions) {
-  if (!this -> ann_algorithm) {
+  if (!this->ann_algorithm) {
     // Instantiate a default ANNS algorithm if none provided
-    this -> ann_algorithm = std::make_shared<CANDY_ALGO::SeparateKNNSearch>(dimensions);
-    this -> ann_algorithm -> setConfig(nullptr);
+    this->ann_algorithm =
+        std::make_shared<CANDY_ALGO::SeparateKNNSearch>(dimensions);
+    this->ann_algorithm->setConfig(nullptr);
   }
 }
 
@@ -25,7 +27,6 @@ VectorDB::~VectorDB() {
   stop_streaming();
 }
 
-
 // Insert a tensor directly into the tensor database (exclusive write access)
 bool VectorDB::insert_tensor(const torch::Tensor& tensor) {
   {
@@ -33,7 +34,7 @@ bool VectorDB::insert_tensor(const torch::Tensor& tensor) {
     auto insert_container = torch::zeros({1, tensor.size(0)});
     insert_container[0] = tensor;
     if (ann_algorithm) {
-      ann_algorithm -> insertTensor(
+      ann_algorithm->insertTensor(
           insert_container);  // Insert into the ANNS algorithm's index
     }
   }
