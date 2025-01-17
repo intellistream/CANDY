@@ -28,19 +28,48 @@ streaming environments, enabling fast and efficient ANNS over dynamically changi
 
 ## Installation
 
-You need to have Docker, NVIDIA Container Toolkit, and CUDA installed. If any of them are not installed, follow the steps below for native Ubuntu:
+### Using Docker to Build the Project
 
+To build the CANDY project using Docker, follow the steps below:
+
+#### Prerequisites
+
+Ensure you have Docker and Docker Compose installed on your system.
+
+#### Steps
+
+1. Clone the repository:
 ```bash
 git clone https://github.com/intellistream/CANDY.git
 cd CANDY
 ```
 
-### Prerequisites
+2. Build and Run the Docker Container
 
-Ensure you have the following dependencies installed:
+Navigate to the `installation/container_setup` directory and run the `start.sh` script to build and start the Docker container.
 
-- Python 3.8+
-- NVIDIA CUDA (for GPU acceleration)
+```bash
+cd installation/container_setup
+./start.sh
+```
+3. Connect to the Docker Container via SSH
+
+Once the container is running, you can connect to it via SSH using the following command:
+
+```bash
+ssh root@<remote_server_ip> -p 2222
+```
+Replace `<remote_server_ip>` with the actual IP address of your remote server.
+
+4. Build the Project
+
+Inside the Docker container, navigate to the project root directory and run the `candy_build.sh` script to build the project.
+
+```bash
+cd /workspace/installation
+./candy_build.sh
+```
+
 
 [//]: # (Install required dependencies using `pip`:)
 
