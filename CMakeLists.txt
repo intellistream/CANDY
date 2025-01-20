@@ -1,6 +1,6 @@
 # CMakeLists.txt (root)
 
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.18)
 project(CANDY CXX)
 
 # Add the cmake/ directory to CMAKE_MODULE_PATH
@@ -12,9 +12,6 @@ include(cmake/DefaultOptions.cmake)
 
 # Set C++ Standard
 include(cmake/SetCXXStandard.cmake)
-
-# Determine OS and enable Log4cxx
-include(cmake/EnableLog4cxx.cmake)
 
 # Compiler and build flag settings
 include(cmake/CompilerSetup.cmake)
@@ -38,15 +35,11 @@ add_library(CANDY SHARED ${CANDY_SOURCE_FILES} ${CANDY_HEADER_FILES})
 target_include_directories(CANDY PUBLIC ${PROJECT_SOURCE_DIR}/include) # Include the "include/" directory as a system path
 target_include_directories(CANDY PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
 
-# Link with external libraries (e.g., Log4cxx)
-find_package(Log4cxx REQUIRED)
-target_link_libraries(CANDY PUBLIC ${Log4cxx_LIBRARY})
-
 # Set rpath for libCANDY.so to make it available to dependent libraries
 set_target_properties(CANDY PROPERTIES INSTALL_RPATH "$ORIGIN")
 
 # Add applications that depend on the CANDY library
-add_subdirectory(apps)
+add_subdirectory(examples)
 
 # Option to enable/disable building tests
 option(ENABLE_TESTS "Enable unit tests" ON)
@@ -57,7 +50,7 @@ if (ENABLE_TESTS)
 endif ()
 
 # Python bindings
-add_subdirectory(python_bindings/pybind11_bindings)
+#add_subdirectory(python_bindings/pybind11_bindings)
 
 # Install the core shared library (libCANDY.so) to user site-packages
 execute_process(
