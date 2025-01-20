@@ -1,6 +1,8 @@
 add_sources(stream_examples
         main.cpp
 )
+# add candy_path definition
+add_definitions(-DCANDY_PATH="${PROJECT_SOURCE_DIR}")
 
 # Get the source files for db_client
 get_sources(stream_examples DB_CLIENT_SOURCE_FILES)

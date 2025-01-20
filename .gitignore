@@ -39,4 +39,4 @@
 /.cmake/
 *.cmake
 */CMakeFiles/
-ThirdParty/libtorch/
+/data/vectors_input.csv

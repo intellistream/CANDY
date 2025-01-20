@@ -134,21 +134,25 @@ public:
    * @param key
    * @return bool for the result
    */
-  bool existU64(const std::string &key) { return (u64Map.count(key) == 1); }
+  bool existU64(const std::string &key) const {
+    return (u64Map.count(key) == 1);
+  }
 
   /**
    * @brief To detect whether the key exists and related to a I64
    * @param key
    * @return bool for the result
    */
-  bool existI64(const std::string &key) { return (i64Map.count(key) == 1); }
+  bool existI64(const std::string &key) const {
+    return (i64Map.count(key) == 1);
+  }
 
   /**
    * @brief To detect whether the key exists and related to a double
    * @param key
    * @return bool for the result
    */
-  bool existDouble(const std::string &key) {
+  bool existDouble(const std::string &key) const {
     return (doubleMap.count(key) == 1);
   }
 
@@ -157,14 +161,16 @@ public:
    * @param key
    * @return bool for the result
    */
-  bool existString(const std::string &key) { return (strMap.count(key) == 1); }
+  bool existString(const std::string &key) const {
+    return (strMap.count(key) == 1);
+  }
 
   /**
    * @brief To detect whether the key exists
    * @param key
    * @return bool for the result
    */
-  bool exist(const std::string &key) {
+  bool exist(const std::string &key) const {
     return existU64(key) || existI64(key) || existDouble(key) ||
            existString(key);
   }
@@ -175,7 +181,7 @@ public:
    * @return value
    * @warning the key must exist!!
    */
-  uint64_t getU64(const std::string &key) { return u64Map.at(key); }
+  uint64_t getU64(const std::string &key) const { return u64Map.at(key); }
 
   /**
    * @brief To get a I64 value by key
@@ -183,7 +189,7 @@ public:
    * @return value
    * @warning the key must exist!!
    */
-  int64_t getI64(const std::string &key) { return i64Map.at(key); }
+  int64_t getI64(const std::string &key) const { return i64Map.at(key); }
 
   /**
    * @brief To get a double value by key
@@ -191,7 +197,7 @@ public:
    * @return value
    * @warning the key must exist!!
    */
-  double getDouble(const std::string &key) { return doubleMap.at(key); }
+  double getDouble(const std::string &key) const { return doubleMap.at(key); }
 
   /**
    * @brief To get a std::string value by key
@@ -199,7 +205,7 @@ public:
    * @return value
    * @warning the key must exist!!
    */
-  std::string getString(const std::string &key) { return strMap.at(key); }
+  std::string getString(const std::string &key) const { return strMap.at(key); }
 
   /**
    * @brief convert the whole map to std::string and retuen
@@ -208,7 +214,7 @@ public:
    * @return the result
    */
   std::string toString(const std::string &separator = "\t",
-                       std::string newLine = "\n") {
+                       std::string newLine = "\n") const {
     std::string str =
         "key" + separator + "value" + separator + "type" + newLine;
     for (auto &iter : u64Map) {

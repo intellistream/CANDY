@@ -1,0 +1,6 @@
+# Default configuration for the vector processing pipeline
+
+inputPath = ./data/vectors_input.csv
+outputPath = ./data/vectors_output.csv
+topK = 5
+similarityThreshold = 0.8

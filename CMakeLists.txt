@@ -19,6 +19,9 @@ include(cmake/CompilerSetup.cmake)
 # Logging setup (if needed)
 include(cmake/LoggingSetup.cmake)
 
+# Find gperftools
+find_package(gperftools REQUIRED)
+
 # Collect Source Files
 add_subdirectory(src)
 
@@ -32,8 +35,17 @@ get_headers(CANDY_HEADER_FILES)
 add_library(CANDY SHARED ${CANDY_SOURCE_FILES} ${CANDY_HEADER_FILES})
 
 # Add the include directory with absolute path
-target_include_directories(CANDY PUBLIC ${PROJECT_SOURCE_DIR}/include) # Include the "include/" directory as a system path
+target_include_directories(CANDY PUBLIC ${PROJECT_SOURCE_DIR}/include) # Include the "include/" directory
 target_include_directories(CANDY PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
+
+# Link gperftools if found
+if (GPERFTOOLS_FOUND)
+    message(STATUS "Found gperftools: include=${GPERFTOOLS_INCLUDE_DIR}, library=${GPERFTOOLS_LIBRARY}")
+    target_include_directories(CANDY PUBLIC ${GPERFTOOLS_INCLUDE_DIR})
+    target_link_libraries(CANDY PRIVATE ${GPERFTOOLS_LIBRARY})
+else ()
+    message(FATAL_ERROR "gperftools not found.")
+endif ()
 
 # Set rpath for libCANDY.so to make it available to dependent libraries
 set_target_properties(CANDY PROPERTIES INSTALL_RPATH "$ORIGIN")
