@@ -51,7 +51,7 @@ endif ()
 set_target_properties(CANDY PROPERTIES INSTALL_RPATH "$ORIGIN")
 
 # Add applications that depend on the CANDY library
-add_subdirectory(examples)
+add_subdirectory(candy_examples)
 
 # Option to enable/disable building tests
 option(ENABLE_TESTS "Enable unit tests" ON)

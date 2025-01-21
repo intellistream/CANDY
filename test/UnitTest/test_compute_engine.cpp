@@ -1,51 +1,48 @@
 #define CATCH_CONFIG_MAIN
+#include <candy_core/common/data_types.hpp>
+#include <candy_core/compute_engine/compute_engine.hpp>
 #include <catch2/catch_approx.hpp>
-#include <ComputeEngine/compute_engine.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <cmath>
-using namespace ComputeEngine;
 
-// Test cases for ComputeEngine
-TEST_CASE("ComputeEngine: Euclidean Distance", "[compute]") {
-  Vector vec1 = {1.0, 2.0, 3.0};
-  Vector vec2 = {4.0, 5.0, 6.0};
+TEST_CASE("ComputeEngine calculates cosine similarity correctly", "[compute_similarity]") {
+  auto vec1 = candy::create_vector_record("id1", {1.0, 2.0, 3.0}, 1);
+  auto vec2 = candy::create_vector_record("id2", {4.0, 5.0, 6.0}, 2);
 
-  float expectedDistance = std::sqrt(27.0); // √((4-1)² + (5-2)² + (6-3)²)
-  REQUIRE(euclideanDistance(vec1, vec2) == Catch::Approx(expectedDistance));
+  double similarity = candy::ComputeEngine::calculateSimilarity(vec1, vec2);
+
+  REQUIRE(similarity == Catch::Approx(0.974631846).epsilon(0.0001));
 }
 
-TEST_CASE("ComputeEngine: Cosine Similarity", "[compute]") {
-  Vector vec1 = {1.0, 0.0, -1.0};
-  Vector vec2 = {-1.0, 0.0, 1.0};
+TEST_CASE("ComputeEngine calculates Euclidean distance correctly", "[compute_distance]") {
+  auto vec1 = candy::create_vector_record("id1", {1.0, 2.0, 3.0}, 1);
+  auto vec2 = candy::create_vector_record("id2", {4.0, 5.0, 6.0}, 2);
 
-  float expectedSimilarity = -1.0; // Cosine of 180° (vectors are opposites)
-  REQUIRE(cosineSimilarity(vec1, vec2) == Catch::Approx(expectedSimilarity));
+  double distance = candy::ComputeEngine::computeEuclideanDistance(vec1, vec2);
+
+  REQUIRE(distance == Catch::Approx(5.196152422).epsilon(0.0001));
 }
 
-TEST_CASE("ComputeEngine: Default Similarity (Cosine)", "[compute]") {
-  Vector vec1 = {1.0, 2.0, 3.0};
-  Vector vec2 = {4.0, 5.0, 6.0};
+TEST_CASE("ComputeEngine normalizes a vector correctly", "[normalize_vector]") {
+  auto vec = candy::create_vector_record("id1", {3.0, 4.0}, 1);
+  auto normalized = candy::ComputeEngine::normalizeVector(vec);
 
-  // Expected cosine similarity
-  float dotProduct = 1 * 4 + 2 * 5 + 3 * 6;       // 32
-  float normA = std::sqrt(1 * 1 + 2 * 2 + 3 * 3); // √14
-  float normB = std::sqrt(4 * 4 + 5 * 5 + 6 * 6); // √77
-  float expectedSimilarity = dotProduct / (normA * normB);
-
-  REQUIRE(calculateSimilarity(vec1, vec2) == Catch::Approx(expectedSimilarity));
+  REQUIRE(normalized->data->size() == vec->data->size());
+  REQUIRE((*normalized->data)[0] == Catch::Approx(0.6).epsilon(0.0001));
+  REQUIRE((*normalized->data)[1] == Catch::Approx(0.8).epsilon(0.0001));
 }
 
-TEST_CASE("ComputeEngine: Edge Cases", "[compute]") {
-  SECTION("Identical Vectors") {
-    Vector vec = {1.0, 2.0, 3.0};
-    REQUIRE(euclideanDistance(vec, vec) == Catch::Approx(0.0));
-    REQUIRE(cosineSimilarity(vec, vec) == Catch::Approx(1.0));
-  }
+TEST_CASE("ComputeEngine finds top K correctly", "[find_top_k]") {
+  std::vector<std::shared_ptr<candy::VectorRecord>> records = {
+    candy::create_vector_record("id1", {1.0, 2.0}, 1),
+    candy::create_vector_record("id2", {3.0, 4.0}, 2),
+    candy::create_vector_record("id3", {5.0, 6.0}, 3)};
 
-  SECTION("Zero Vectors for Cosine Similarity") {
-    Vector vec1 = {0.0, 0.0, 0.0};
-    Vector vec2 = {1.0, 2.0, 3.0};
-    REQUIRE(cosineSimilarity(vec1, vec2) ==
-            Catch::Approx(0.0)); // Division by zero handled
-  }
+  auto topK = candy::ComputeEngine::findTopK(records, 2, [](const std::shared_ptr<candy::VectorRecord>& record) {
+    return record->timestamp;
+  });
+
+  REQUIRE(topK.size() == 2);
+  REQUIRE(topK[0]->id == "id3");
+  REQUIRE(topK[1]->id == "id2");
 }
